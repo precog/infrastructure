@@ -1,0 +1,3 @@
+<% @node[:postfix][:smtp_sasl_password_maps].each do |password_map| -%>
+<%= password_map %>
+<% end -%>

@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/8/chef/cookbooks/postfix/templates/default
+END
+main.cf.erb
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/3/chef/cookbooks/postfix/templates/default/main.cf.erb
+END
+generic.erb
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/3/chef/cookbooks/postfix/templates/default/generic.erb
+END
+aliases.erb
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/3/chef/cookbooks/postfix/templates/default/aliases.erb
+END
+postfix.monit.erb
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/8/chef/cookbooks/postfix/templates/default/postfix.monit.erb
+END
+sasl_passwd.erb
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/3/chef/cookbooks/postfix/templates/default/sasl_passwd.erb
+END

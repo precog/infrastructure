@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/10/chef/cookbooks/java/files/default
+END
+java.seed
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/10/chef/cookbooks/java/files/default/java.seed
+END
+java.security
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/10/chef/cookbooks/java/files/default/java.security
+END

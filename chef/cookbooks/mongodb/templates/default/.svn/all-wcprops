@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/17/chef/cookbooks/mongodb/templates/default
+END
+mongodb.default.erb
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/5/chef/cookbooks/mongodb/templates/default/mongodb.default.erb
+END
+mongos.conf.init.erb
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/14/chef/cookbooks/mongodb/templates/default/mongos.conf.init.erb
+END
+mongodb.conf.erb
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/17/chef/cookbooks/mongodb/templates/default/mongodb.conf.erb
+END
+mongodb.monit.erb
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/17/chef/cookbooks/mongodb/templates/default/mongodb.monit.erb
+END
+mongodb.conf.init.erb
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/14/chef/cookbooks/mongodb/templates/default/mongodb.conf.init.erb
+END
+mongodb-backup.js.erb
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/14/chef/cookbooks/mongodb/templates/default/mongodb-backup.js.erb
+END
+mongodb.logrotate.erb
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/5/chef/cookbooks/mongodb/templates/default/mongodb.logrotate.erb
+END
+mongos.default.erb
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/5/chef/cookbooks/mongodb/templates/default/mongos.default.erb
+END
+mongos.conf.erb
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/14/chef/cookbooks/mongodb/templates/default/mongos.conf.erb
+END
+mongos.monit.erb
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/14/chef/cookbooks/mongodb/templates/default/mongos.monit.erb
+END

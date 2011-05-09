@@ -1,0 +1,70 @@
+default_run_options[:pty] = true
+#default_run_options[:max_hosts] = 1
+
+set :user, "ubuntu"
+ssh_options[:keys] = [File.join(File.dirname(__FILE__),  'ec2', 'ec2-keypair.pem')]
+
+
+role :none
+role :appserver, *[1, 2, 4, 5].map { |i| "mongodb#{'%02d' % i}.reportgrid.com" }
+role :haproxy, *[1, 2, 4, 5].map { |i| "mongodb#{'%02d' % i}.reportgrid.com" }
+role :mongodb, *(1..6).map { |i| "mongodb#{'%02d' % i}.reportgrid.com" }
+role :mongodb_config, *(1..3).map { |i| "mongodb-config#{'%02d' % i}.reportgrid.com" }
+
+
+#
+# Service management
+#
+desc "Manage a Service"
+task :service, :roles => :none, :max_hosts => 1 do
+  run "#{sudo} service #{ENV['SERVICE']} #{ENV['ACTION']}"
+end
+
+
+#
+# Package management
+#
+desc "Deploy a ReportGrid service"
+task :deploy, :roles => :appserver, :sudo => true, :max_hosts => 1 do
+  ENV['SERVICE'] = 'FIXME' unless ENV.include?('SERVICE')
+  run "#{sudo} rm /usr/share/java/#{ENV['SERVICE']}.jar && \
+       #{sudo} wget -O /usr/share/java/#{ENV['SERVICE']}.jar http://reportgrid.com.s3.amazonaws.com/deploy/production/#{ENV['SERVICE']}.jar && \
+       #{sudo} service #{ENV['SERVICE']} restart"
+end
+
+desc "Get package version"
+task :get_version, :roles => :none do
+  run "/usr/bin/dpkg-query --showformat '${Version}' --show #{ENV['PACKAGE']}"
+end
+
+
+#
+# Monit
+#
+desc "Monit monitor all"
+task :monit_monitor_all, :roles => :none do
+  run "#{sudo} monit monitor all"
+end
+
+desc "Monit unmonitor all"
+task :monit_unmonitor_all, :roles => :none do
+  run "#{sudo} monit unmonitor all"
+end
+
+
+#
+# Download
+#
+desc "Download files"
+task :download_files, :roles => :none do
+  download(ENV['FROM'], ENV['TO'] + File::Separator + File.basename(ENV['FROM']) + "-$CAPISTRANO:HOST$")
+end
+
+
+#
+# HAProxy
+#
+desc "Reload HAProxy"
+task :haproxy_reload, :roles => :haproxy, :max_hosts => 1 do
+  run "#{sudo} service haproxy reload"
+end

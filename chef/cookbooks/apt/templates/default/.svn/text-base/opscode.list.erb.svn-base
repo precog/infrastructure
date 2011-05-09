@@ -1,0 +1,2 @@
+deb http://apt.opscode.com/ <%= @node[:lsb][:codename] %> main
+deb-src http://apt.opscode.com/ <%= @node[:lsb][:codename] %> main

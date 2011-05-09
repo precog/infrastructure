@@ -1,0 +1,19 @@
+# Ubuntu upstart file at /etc/init/mongos.conf
+
+pre-start script
+    for dir in /var/run/mongodb /var/log/mongodb
+    do
+      [ -d $dir ] || install -m 755 -o mongodb -g mongodb -d $dir
+    done
+end script
+
+start on runlevel [2345]
+stop on runlevel [06]
+
+limit nofile 65535 65535
+
+script
+  ENABLE_MONGOS="yes"
+  if [ -f /etc/default/mongos ]; then . /etc/default/mongos; fi
+  if [ "x$ENABLE_MONGOS" = "xyes" ]; then exec start-stop-daemon --start --quiet --chuid mongodb --exec /usr/bin/mongos -- --config /etc/mongos.conf; fi
+end script

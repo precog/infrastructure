@@ -1,0 +1,43 @@
+check filesystem mongodb_data with path <%= @node[:mongodb][:data_mount_point] %>
+  start program  = "/bin/mount <%= @node[:mongodb][:data_mount_point] %>"
+  stop program  = "/bin/umount <%= @node[:mongodb][:data_mount_point] %>"
+  if space usage > 80% for 5 times within 15 cycles then alert
+  if space usage > 99% then stop
+  group mongodb
+
+check process mongodb with pidfile /var/run/mongodb/mongodb.pid
+  start program = "/usr/sbin/service mongodb start"
+  stop program  = "/usr/sbin/service mongodb stop"
+  <% if @node[:recipes].include?('mongodb::config-server') %>
+  if failed port <%= @node[:mongodb][:port][:config] %> with timeout 15 seconds for 3 cycles then restart
+  <% end -%>
+  <% if @node[:recipes].include?('mongodb::shard-server') %>
+  if failed port <%= @node[:mongodb][:port][:shard] %> with timeout 15 seconds for 3 cycles then restart
+  <% end -%>
+  <% if !@node[:recipes].include?('mongodb::config-server') && !@node[:recipes].include?('mongodb::shard-server') %>
+  if failed port <%= @node[:mongodb][:port][:standalone] %> with timeout 15 seconds for 3 cycles then restart
+  <% end -%>
+  if 3 restarts within 10 cycles then timeout
+  depends on mongodb_data
+  group mongodb
+
+check file mongodb.log with path <%= @node[:mongodb][:data_mount_point] %>/logs/mongodb.log
+  if match "object too large" then alert
+  if match "RS102" then alert
+  if match "Assertion" then alert
+  depends on mongodb
+  group mongodb
+
+# FIXME: temporarily disabled
+#check file mongodb-health.log with path <%= @node[:mongodb][:data_mount_point] %>/logs/mongodb-health.log
+#  if timestamp > 20 minutes then alert
+#  if match "ERROR" then alert
+#  depends on mongodb
+#  group mongodb
+
+<% if File.exists?("#{@node[:mongodb][:data_mount_point]}/logs/mongodb-backup.log") %>
+check file mongodb-backup.log with path <%= @node[:mongodb][:data_mount_point] %>/logs/mongodb-backup.log
+  if timestamp > 1440 minutes then alert
+  depends on mongodb
+  group mongodb
+<% end -%>

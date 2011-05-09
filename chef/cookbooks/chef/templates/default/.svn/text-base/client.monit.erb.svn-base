@@ -1,0 +1,7 @@
+check process chef-client with pidfile /var/run/chef/client.pid
+  start program = "/usr/sbin/service chef-client start"
+  stop program  = "/usr/sbin/service chef-client stop"
+  # FIXME: temporarily disable this alert due to constant crashes
+  <% (@node[:monit][:alert_recipients] | @node[:monit][:critical_alert_recipients]).each do |recipient| -%>
+  alert <%= recipient %> but not on { action, instance, nonexist, pid, ppid }
+  <% end -%>

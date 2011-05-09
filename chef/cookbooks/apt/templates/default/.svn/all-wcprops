@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/18/chef/cookbooks/apt/templates/default
+END
+50unattended-upgrades.erb
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/2/chef/cookbooks/apt/templates/default/50unattended-upgrades.erb
+END
+sources.list.erb
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/14/chef/cookbooks/apt/templates/default/sources.list.erb
+END
+10periodic.erb
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/2/chef/cookbooks/apt/templates/default/10periodic.erb
+END
+server_density.list.erb
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/18/chef/cookbooks/apt/templates/default/server_density.list.erb
+END
+s3tools.list.erb
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/14/chef/cookbooks/apt/templates/default/s3tools.list.erb
+END
+10gen.list.erb
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/14/chef/cookbooks/apt/templates/default/10gen.list.erb
+END
+opscode.list.erb
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/14/chef/cookbooks/apt/templates/default/opscode.list.erb
+END

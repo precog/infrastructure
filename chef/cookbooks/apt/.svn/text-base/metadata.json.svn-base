@@ -1,0 +1,29 @@
+{
+  "groupings": {
+  },
+  "recipes": {
+  },
+  "recommendations": {
+  },
+  "attributes": {
+  },
+  "suggestions": {
+  },
+  "dependencies": {
+  },
+  "conflicting": {
+  },
+  "license": "All rights reserved",
+  "long_description": "= DESCRIPTION:\n\n= REQUIREMENTS:\n\n= ATTRIBUTES: \n\n= USAGE:\n\n",
+  "providing": {
+  },
+  "platforms": {
+  },
+  "version": "0.1.0",
+  "maintainer": "ReportGrid",
+  "name": "apt",
+  "replacing": {
+  },
+  "maintainer_email": "operations@reportgrid.com",
+  "description": "Installs/Configures apt"
+}

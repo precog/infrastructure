@@ -1,0 +1,11 @@
+deb http://us.ec2.archive.ubuntu.com/ubuntu/ <%= @node[:lsb][:codename] %> main universe multiverse
+deb-src http://us.ec2.archive.ubuntu.com/ubuntu/ <%= @node[:lsb][:codename] %> main universe multiverse
+
+deb http://us.ec2.archive.ubuntu.com/ubuntu/ <%= @node[:lsb][:codename] %>-updates main universe multiverse
+deb-src http://us.ec2.archive.ubuntu.com/ubuntu/ <%= @node[:lsb][:codename] %>-updates main universe multiverse
+
+deb http://security.ubuntu.com/ubuntu/ <%= @node[:lsb][:codename] %>-security main universe multiverse
+deb-src http://security.ubuntu.com/ubuntu/ <%= @node[:lsb][:codename] %>-security main universe multiverse
+
+deb http://archive.canonical.com/ubuntu/ <%= @node[:lsb][:codename] %> partner
+deb-src http://archive.canonical.com/ubuntu/ <%= @node[:lsb][:codename] %> partner

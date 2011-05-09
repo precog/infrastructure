@@ -1,0 +1,8 @@
+#!/bin/bash
+#
+# This script updates the public DNS records for this host
+#
+
+<% @node[:ec2][:route53][:opts].each do |opts| -%>
+/var/lib/gems/1.8/bin/route53 <% opts.each do |opt| -%><%= opt %> <% end -%> 2>&1 | tee -a <%= @node[:ec2][:route53][:log] %>
+<% end -%>

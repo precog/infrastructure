@@ -1,0 +1,14 @@
+check process <%= @service_name %>-<%= @version %> with pidfile /var/run/reportgrid/<%= @service_name %>-<%= @version %>.pid
+  start program = "/usr/sbin/service <%= @service_name %>-<%= @version %> start" with timeout 30 seconds
+  stop program  = "/usr/sbin/service <%= @service_name %>-<%= @version %> stop"
+  if failed port <%= @port %> protocol http and request '<%= @health_path %>' with timeout 15 seconds for 3 cycles then restart
+  if 3 restarts within 10 cycles then timeout
+  group <%= @service_name %>-<%= @version %>
+
+check file <%= @service_name %>-<%= @version %>-health.log with path /var/log/reportgrid/<%= @service_name %>-<%= @version %>-health.log
+  start program  = "/usr/bin/touch /var/log/reportgrid/<%= @service_name %>-<%= @version %>-health.log && /bin/chown reportgrid:reportgrid /var/log/reportgrid/<%= @service_name %>-<%= @version %>-health.log"
+  stop program  = "/bin/rm /var/log/reportgrid/<%= @service_name %>-<%= @version %>-health.log"
+  if timestamp > 20 minutes then alert
+  if match "ERROR" for 3 cycles then alert
+  depends on <%= @service_name %>-<%= @version %>
+  group <%= @service_name %>-<%= @version %>

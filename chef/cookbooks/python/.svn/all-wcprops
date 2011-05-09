@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/18/chef/cookbooks/python
+END
+metadata.rb
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/18/chef/cookbooks/python/metadata.rb
+END
+README.rdoc
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/18/chef/cookbooks/python/README.rdoc
+END
+metadata.json
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/18/chef/cookbooks/python/metadata.json
+END

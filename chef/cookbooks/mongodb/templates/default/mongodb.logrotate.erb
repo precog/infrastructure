@@ -1,0 +1,19 @@
+<%= @node[:mongodb][:data_mount_point] %>/logs/ {
+  weekly
+  rotate 4
+  missingok
+  notifempty
+  compress
+  sharedscripts
+  copytruncate
+  delaycompress
+  postrotate
+    for daemon in mongod mongos
+    do
+      pid=$(pidof ${daemon})
+      if [ "$?" -eq "0" ]; then
+         kill -USR1 ${pid}
+      fi
+    done
+  endscript
+}

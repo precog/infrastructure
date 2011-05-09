@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/13/chef/cookbooks/haproxy/templates/default
+END
+haproxy.cfg.erb
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/13/chef/cookbooks/haproxy/templates/default/haproxy.cfg.erb
+END
+haproxy.default.erb
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/13/chef/cookbooks/haproxy/templates/default/haproxy.default.erb
+END
+haproxy.monit.erb
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/13/chef/cookbooks/haproxy/templates/default/haproxy.monit.erb
+END

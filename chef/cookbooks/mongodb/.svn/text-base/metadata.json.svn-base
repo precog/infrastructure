@@ -1,0 +1,35 @@
+{
+  "groupings": {
+  },
+  "recipes": {
+  },
+  "recommendations": {
+  },
+  "attributes": {
+  },
+  "suggestions": {
+  },
+  "dependencies": {
+    "apt": [
+
+    ],
+    "ec2": [
+
+    ]
+  },
+  "conflicting": {
+  },
+  "license": "All rights reserved",
+  "long_description": "= DESCRIPTION:\n\n= REQUIREMENTS:\n\n= ATTRIBUTES: \n\n= USAGE:\n\n",
+  "providing": {
+  },
+  "platforms": {
+  },
+  "version": "0.1.0",
+  "maintainer": "ReportGrid",
+  "name": "mongodb",
+  "replacing": {
+  },
+  "maintainer_email": "operations@reportgrid.com",
+  "description": "Installs/Configures mongodb"
+}

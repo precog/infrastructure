@@ -1,0 +1,23 @@
+default[:server_density][:url] = 'https://reportgrid.serverdensity.com'
+default[:server_density][:agent_key] = case hostname
+when 'mongodb01'
+  '16deecc010907e5823cc057855fa73f4'
+when 'mongodb02'
+  'f3cc613d611e01f959a2ca9826792b1a'
+when 'mongodb03'
+  '0bb2c983a0b359bcb4d8ea661a35614a'
+when 'mongodb04'
+  'f36bbdd164fd1b5318fc954b8248ebc3'
+when 'mongodb05'
+  '45113e588b7198d02c2bda0a7bcf0d2e'
+when 'mongodb06'
+  'daac9058479ca2caf2f237faf41be972'
+when 'mongodb-config01'
+  '87d75f4cbc9f7eb6ef874af20c2ffdb0'
+when 'mongodb-config02'
+  'e8ea05e0cb6d6718ccfb9877976ffb41'
+when 'mongodb-config03'
+  'b4aad80a75dac10fba50cd09029e2069'
+else
+  'FIXME'
+end

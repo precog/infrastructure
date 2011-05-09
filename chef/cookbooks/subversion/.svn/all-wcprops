@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/14/chef/cookbooks/subversion
+END
+metadata.rb
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/13/chef/cookbooks/subversion/metadata.rb
+END
+README.rdoc
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/13/chef/cookbooks/subversion/README.rdoc
+END
+metadata.json
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/14/chef/cookbooks/subversion/metadata.json
+END

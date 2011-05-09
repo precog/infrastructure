@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/9/chef/cookbooks/monit/templates/default
+END
+system.monit.erb
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/9/chef/cookbooks/monit/templates/default/system.monit.erb
+END
+monitrc.erb
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/9/chef/cookbooks/monit/templates/default/monitrc.erb
+END
+monit.erb
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/9/chef/cookbooks/monit/templates/default/monit.erb
+END

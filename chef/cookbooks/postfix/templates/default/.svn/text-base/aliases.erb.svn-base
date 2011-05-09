@@ -1,0 +1,4 @@
+# See man 5 aliases for format
+postmaster:    root
+root:          <%= @node[:postfix][:root_email] %>
+devnull:       /dev/null

@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/13/chef/cookbooks/reportgrid/templates/default
+END
+blueeyes_service.default.erb
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/9/chef/cookbooks/reportgrid/templates/default/blueeyes_service.default.erb
+END
+blueeyes_service.monit.erb
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/9/chef/cookbooks/reportgrid/templates/default/blueeyes_service.monit.erb
+END
+blueeyes_service.init.conf.erb
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/9/chef/cookbooks/reportgrid/templates/default/blueeyes_service.init.conf.erb
+END
+reportgrid.nginx.erb
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/13/chef/cookbooks/reportgrid/templates/default/reportgrid.nginx.erb
+END

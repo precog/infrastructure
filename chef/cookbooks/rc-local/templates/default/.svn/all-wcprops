@@ -1,0 +1,11 @@
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/10/chef/cookbooks/rc-local/templates/default
+END
+rc.local.erb
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/10/chef/cookbooks/rc-local/templates/default/rc.local.erb
+END

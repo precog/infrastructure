@@ -1,0 +1,10 @@
+server {
+  listen 80;
+  server_name reportgrid.com www.reportgrid.com;
+
+  location / {
+    root <%= @node[:reportgrid][:website][:root] %>;
+    index index.html;
+  }
+}
+

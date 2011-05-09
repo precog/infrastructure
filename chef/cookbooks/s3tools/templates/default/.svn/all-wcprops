@@ -1,0 +1,11 @@
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/18/chef/cookbooks/s3tools/templates/default
+END
+s3cfg.erb
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/nbrain_reportgrid-infrastructure/!svn/ver/18/chef/cookbooks/s3tools/templates/default/s3cfg.erb
+END
