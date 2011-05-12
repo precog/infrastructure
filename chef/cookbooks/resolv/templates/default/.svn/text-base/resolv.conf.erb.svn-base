@@ -1,3 +1,0 @@
-domain <%= @node[:domain] %>
-search <%= @node[:domain] %> <%= @node[:ec2][:hostname].split('.').drop(1).join('.') %>
-nameserver 172.16.0.23

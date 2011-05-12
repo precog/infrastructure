@@ -1,5 +1,0 @@
-check process mongos with pidfile /var/run/mongodb/mongos.pid
-  start program = "/usr/sbin/service mongos start"
-  stop program  = "/usr/sbin/service mongos stop"
-  if failed port 27017 with timeout 15 seconds for 3 cycles then restart
-  if 3 restarts within 10 cycles then timeout

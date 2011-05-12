@@ -1,2 +1,0 @@
-check file route53.log with path <%= @node[:ec2][:route53][:log] %>
-  if match "ERROR" then alert

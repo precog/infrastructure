@@ -1,1 +1,0 @@
-ENABLE_MONGODB=<%= (@node[:recipes] & ['mongodb::server', 'mongodb::replset-server', 'mongodb::config-server', 'mongodb::shard-server']).length > 0 ? 'yes' : 'no' %>

@@ -1,3 +1,0 @@
-<% @node[:postfix][:smtp_generic_maps].each do |generic_map| -%>
-<%= generic_map %>
-<% end -%>
