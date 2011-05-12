@@ -23,9 +23,13 @@ include_recipe "reportgrid::source"
 #  notifies :restart, resources(:service => "nginx")
 #end
 
-# FIXME: rexclude used as a workaround for exclude option not excluding the dot files in the root
-cron "svn_update_website" do
-  command "cd #{node[:reportgrid][:source][:root]}/reportgrid && /usr/bin/svn update >> /dev/null 2>&1 && /usr/bin/s3cmd -v --acl-public --exclude='/.*' --rexclude='\\.(svn|project)' --add-header='Cache-Control:max-age=0' sync ./ s3://www.reportgrid.com/ >> /dev/null 2>&1"
+execute "git_clone_website" do
+  command "cd #{node[:reportgrid][:source][:root]} && /usr/bin/git clone git@github.com:reportgrid/website.git"
+  not_if { File.directory?("#{node[:reportgrid][:source][:root]}/website") }
+end
+
+cron "git_pull_website" do
+  command "cd #{node[:reportgrid][:source][:root]}/website && /usr/bin/git pull >> /dev/null 2>&1 && /usr/bin/s3cmd -v --exclude='.git/*' --acl-public --add-header='Cache-Control:max-age=0' sync ./ s3://www.reportgrid.com/ >> /dev/null 2>&1"
   minute "*"
   only_if { File.directory?(node[:reportgrid][:source][:root]) }
 end
