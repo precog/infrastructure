@@ -21,7 +21,7 @@ route53 --zone reportgrid.com. -r --name calendar.reportgrid.com. --type CNAME -
 route53 --zone reportgrid.com. -c --name calendar.reportgrid.com. --type CNAME --ttl 3600 --values "apps.rackspace.com."
 
 route53 --zone reportgrid.com. -g --name www.reportgrid.com. --type CNAME --ttl 300 --values "www.reportgrid.com.s3-website-us-east-1.amazonaws.com."
-route53 --zone reportgrid.com. -r --name reportgrid.com. --type A --ttl 300 --values "50.16.25.242"
+route53 --zone reportgrid.com. -c --name reportgrid.com. --type A --ttl 300 --values "174.129.25.170"
 
 
 
