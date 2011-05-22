@@ -9,5 +9,5 @@ case environment
 when "staging"
   default[:postfix][:root_email] = "/dev/null"
 else
-  default[:postfix][:root_email] = "operations@reportgrid.com"
+  default[:postfix][:root_email] = "mike@reportgrid.com"
 end

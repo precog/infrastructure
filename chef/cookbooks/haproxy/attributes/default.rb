@@ -24,8 +24,8 @@ default[:haproxy][:defaults] = [
   'timeout server 60s'
 ]
 
-real_servers_prefix = 'mongodb'
-real_servers = [1, 2, 4, 5]
+real_servers_prefix = 'appserver'
+real_servers = [1, 2]
 cache_servers_prefix = 'varnish'
 cache_servers = ()
 services = [

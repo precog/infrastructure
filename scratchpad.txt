@@ -37,6 +37,12 @@ ec2-run-instances --key ec2-keypair --availability-zone us-east-1a --block-devic
 ec2-run-instances --key ec2-keypair --availability-zone us-east-1b --block-device-mapping '/dev/sda1=:15:false' --instance-type m1.large --group mongodb ami-4a0df923
 ec2-run-instances --key ec2-keypair --availability-zone us-east-1c --block-device-mapping '/dev/sda1=:15:false' --instance-type t1.micro --group mongodb ami-4a0df923
 
+ec2-run-instances --key ec2-keypair --availability-zone us-east-1a --block-device-mapping '/dev/sda1=:50:false' --instance-type m1.large --group appserver ami-4a0df923
+ec2-run-instances --key ec2-keypair --availability-zone us-east-1b --block-device-mapping '/dev/sda1=:50:false' --instance-type m1.large --group appserver ami-4a0df923
+
+ec2-authorize mongodb -P tcp -p 27017-27019 -o appserver -u 894794041869
+
+
 
 config = {_id: '1', members: [
          {_id: 0, host: 'mongodb01.reportgrid.com:27018'},
@@ -106,7 +112,7 @@ echo "deb http://apt.opscode.com/ lucid main" > /etc/apt/sources.list.d/opscode.
 aptitude update
 aptitude -y safe-upgrade
 
-/bin/echo "mongodb04" > /etc/hostname
+/bin/echo "appserver02" > /etc/hostname
 /bin/hostname -F /etc/hostname
 #edit hosts file
 /usr/sbin/service rsyslog restart
@@ -155,3 +161,20 @@ END
 /etc/init.d/chef-client restart && tail -f /var/log/chef/client.log
 tail -f /var/log/mongodb/mongodb.log
 /etc/init.d/monit start
+
+
+
+sudo -i
+rm /etc/monit/conf.d/haproxy.monit
+rm /etc/monit/conf.d/analytics-v0.monit
+rm /etc/monit/conf.d/mongos.monit
+/etc/init.d/monit restart
+
+aptitude -y purge haproxy
+
+/etc/init.d/mongos stop
+/etc/init.d/analytics-v0 stop
+rm -rf /etc/reportgrid/
+rm -rf /var/log/reportgrid/
+userdel reportgrid
+chef-client
