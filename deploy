@@ -1,0 +1,36 @@
+#!/bin/bash
+#
+# Deploy a service to production.
+#
+# Note: This script assumes that the name of the service can be derived by
+# stripping off the .jar extension.
+#
+
+FILE=$1
+if [[ -z $FILE ]]
+then
+  echo 'Usage: deploy <path_to_jar>'
+  exit 1
+fi
+
+INSTALL_TO="/usr/share/java/$(basename ${FILE})"
+SERVICE="$(basename ${FILE%.*})"
+
+HOSTS="mongodb01.reportgrid.com  mongodb02.reportgrid.com mongodb04.reportgrid.com mongodb05.reportgrid.com"
+SSH_USER="ubuntu"
+SSH_PARAMS="-i $(dirname $(readlink /proc/$$/fd/255))/ec2/ec2-keypair.pem"
+
+for host in $HOSTS
+do
+  echo "Uploading to ${host}"
+  rsync -vz --progress -e "ssh ${SSH_PARAMS}" ${FILE} ${SSH_USER}@${host}:~/$(basename ${FILE}) &&
+  ssh ${SSH_PARAMS} ${SSH_USER}@${host} <<EOF
+      if [[ -e ${INSTALL_TO} ]]
+      then
+        sudo mv -v ${INSTALL_TO} ${INSTALL_TO}-$(date +%Y-%m-%d-%H-%M-%S)
+      fi
+      sudo cp -v /home/ubuntu/$(basename ${FILE}) ${INSTALL_TO} &&
+      sudo chown -v root:root ${INSTALL_TO} &&
+      sudo service ${SERVICE} restart
+EOF
+done
