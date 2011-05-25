@@ -39,6 +39,7 @@ ec2-run-instances --key ec2-keypair --availability-zone us-east-1c --block-devic
 
 ec2-run-instances --key ec2-keypair --availability-zone us-east-1a --block-device-mapping '/dev/sda1=:50:false' --instance-type m1.large --group appserver ami-4a0df923
 ec2-run-instances --key ec2-keypair --availability-zone us-east-1b --block-device-mapping '/dev/sda1=:50:false' --instance-type m1.large --group appserver ami-4a0df923
+ec2-run-instances --key ec2-keypair --availability-zone us-east-1c --block-device-mapping '/dev/sda1=:50:false' --instance-type m1.large --group appserver ami-4a0df923
 
 ec2-authorize mongodb -P tcp -p 27017-27019 -o appserver -u 894794041869
 
@@ -112,7 +113,7 @@ echo "deb http://apt.opscode.com/ lucid main" > /etc/apt/sources.list.d/opscode.
 aptitude update
 aptitude -y safe-upgrade
 
-/bin/echo "appserver02" > /etc/hostname
+/bin/echo "appserver03" > /etc/hostname
 /bin/hostname -F /etc/hostname
 #edit hosts file
 /usr/sbin/service rsyslog restart
