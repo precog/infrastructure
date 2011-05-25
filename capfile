@@ -6,7 +6,7 @@ ssh_options[:keys] = [File.join(File.dirname(__FILE__),  'ec2', 'ec2-keypair.pem
 
 
 role :none
-role :appserver, *[1, 2, 4, 5].map { |i| "mongodb#{'%02d' % i}.reportgrid.com" }
+role :appserver, *[1, 2, 3, 4].map { |i| "appserver#{'%02d' % i}.reportgrid.com" }
 role :haproxy, *[1, 2, 4, 5].map { |i| "mongodb#{'%02d' % i}.reportgrid.com" }
 role :mongodb, *(1..6).map { |i| "mongodb#{'%02d' % i}.reportgrid.com" }
 role :mongodb_config, *(1..3).map { |i| "mongodb-config#{'%02d' % i}.reportgrid.com" }

@@ -94,8 +94,41 @@ use admin
 db.runCommand( { addshard : "1/mongodb01.reportgrid.com:27018,mongodb02.reportgrid.com:27018" } );
 db.runCommand( { addshard : "2/mongodb04.reportgrid.com:27018,mongodb05.reportgrid.com:27018" } );
 
-db.runCommand( { enablesharding : "<db>" } );
+db.runCommand( { enablesharding : "analytics" } );
 db.runCommand( { shardcollection : "<namespace>", key : <shardkeypatternobject> });
+
+
+
+db.runCommand( { shardcollection : "analytics.variable_series", key : { "path":1, "accountTokenId":1, "period":1, "order":1, "where.variable0":1, "where.variable1":1, "where.variable2":1, "where.variable3":1, "where.variable4":1, "where.variable5":1, "where.variable6":1, "where.variable7":1, "where.variable8":1, "where.variable9":1, "where.predicate0":1, "where.predicate1":1, "where.predicate2":1, "where.predicate3":1, "where.predicate4":1, "where.predicate5":1, "where.predicate6":1, "where.predicate7":1, "where.predicate8":1, "where.predicate9":1 }  });
+
+db.runCommand( { shardcollection : "analytics.variable_value_series", key : { path:1, accountTokenId:1, period:1, order:1,
+"where.variable0":1,
+"where.variable1":1,
+"where.variable2":1,
+"where.variable3":1,
+"where.variable4":1,
+"where.variable5":1,
+"where.variable6":1,
+"where.variable7":1,
+"where.variable8":1,
+"where.variable9":1,
+"where.predicate0":1,
+"where.predicate1":1,
+"where.predicate2":1,
+"where.predicate3":1,
+"where.predicate4":1,
+"where.predicate5":1,
+"where.predicate6":1,
+"where.predicate7":1,
+"where.predicate8":1,
+"where.predicate9":1 }  });
+
+db.runCommand( { shardcollection : "analytics.variable_values", key :  { path:1, accountTokenId:1, variable:1 } });
+db.runCommand( { shardcollection : "analytics.variable_children", key :  { path:1, accountTokenId:1, variable:1 } });
+db.runCommand( { shardcollection : "analytics.path_children", key :  { path:1, accountTokenId:1 } });
+
+
+
 
 
 
@@ -113,7 +146,7 @@ echo "deb http://apt.opscode.com/ lucid main" > /etc/apt/sources.list.d/opscode.
 aptitude update
 aptitude -y safe-upgrade
 
-/bin/echo "appserver03" > /etc/hostname
+/bin/echo "appserver04" > /etc/hostname
 /bin/hostname -F /etc/hostname
 #edit hosts file
 /usr/sbin/service rsyslog restart

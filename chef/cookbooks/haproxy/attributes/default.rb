@@ -25,7 +25,7 @@ default[:haproxy][:defaults] = [
 ]
 
 real_servers_prefix = 'appserver'
-real_servers = [1, 2]
+real_servers = [1, 2, 3, 4]
 cache_servers_prefix = 'varnish'
 cache_servers = ()
 services = [
