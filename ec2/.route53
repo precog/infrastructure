@@ -1,0 +1,6 @@
+--- 
+api: "2010-10-01"
+default_ttl: "3600"
+access_key: AKIAIQVREYXKPKIKCBEA
+secret_key: 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
+endpoint: https://route53.amazonaws.com/

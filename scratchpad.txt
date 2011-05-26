@@ -23,6 +23,7 @@ route53 --zone reportgrid.com. -c --name calendar.reportgrid.com. --type CNAME -
 route53 --zone reportgrid.com. -g --name www.reportgrid.com. --type CNAME --ttl 300 --values "www.reportgrid.com.s3-website-us-east-1.amazonaws.com."
 route53 --zone reportgrid.com. -c --name reportgrid.com. --type A --ttl 300 --values "174.129.25.170"
 
+route53 --zone reportgrid.com. -c --name gluecon.reportgrid.com. --type CNAME --ttl 3600 --values "unbouncepages.com."
 
 
 ec2-run-instances --key ec2-keypair --availability-zone us-east-1a --block-device-mapping '/dev/sda1=:15:false' --instance-type m1.large --group mongodb ami-4a0df923
