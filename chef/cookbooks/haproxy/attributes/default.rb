@@ -19,6 +19,7 @@ default[:haproxy][:defaults] = [
   'option forwardfor',
   'stats enable',
   'stats hide-version',
+  'stats refresh 2s',
   'stats uri /haproxy/stats',
   'timeout client 60s',
   'timeout connect 60s',
