@@ -220,3 +220,19 @@ chef-client
 
 
 mongo --port 27018 --eval 'db.getCollectionNames().forEach(function(o) { if (o != "tokens" && o != "system.indexes") { db.getCollection(o).drop(); } })' analytics2
+
+
+
+
+
+
+
+
+
+
+
+
+mongodump --port 27018 -o mongodump
+mongorestore --port 27018 mongodump/analytics2/tokens.bson --drop -d analytics2 -c tokens
+
+
