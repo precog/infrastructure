@@ -23,7 +23,6 @@ default[:haproxy][:defaults] = [
   'timeout client 60s',
   'timeout connect 60s',
   'timeout http-request 5s',
-  'timeout queue 60s',
   'timeout server 60s'
 ]
 
