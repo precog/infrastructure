@@ -1,0 +1,1 @@
+default[:rsyslog][:work_dir] = "/var/spool/rsyslog"

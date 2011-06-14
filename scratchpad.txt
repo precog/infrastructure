@@ -215,3 +215,8 @@ rm -rf /etc/reportgrid/
 rm -rf /var/log/reportgrid/
 userdel reportgrid
 chef-client
+
+
+
+
+mongo --port 27018 --eval 'db.getCollectionNames().forEach(function(o) { if (o != "tokens" && o != "system.indexes") { db.getCollection(o).drop(); } })' analytics2

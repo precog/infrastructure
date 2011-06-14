@@ -36,3 +36,16 @@ template "haproxy.monit" do
   mode "0644"
   notifies :restart, resources(:service => "monit")
 end
+
+template "21-haproxy.conf" do
+  source "21-haproxy.conf.erb"
+  path "/etc/rsyslog.d/21-haproxy.conf"
+  mode "0644"
+  notifies :restart, resources(:service => "rsyslog")
+end
+
+template "haproxy.logrotate" do
+  source "haproxy.logrotate.erb"
+  path "/etc/logrotate.d/haproxy"
+  mode "0644"
+end
