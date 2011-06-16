@@ -16,8 +16,7 @@ fi
 INSTALL_TO="/usr/share/java/$(basename ${FILE})"
 SERVICE="$(basename ${FILE%.*})"
 
-#HOSTS="mongodb01.reportgrid.com mongodb02.reportgrid.com mongodb04.reportgrid.com mongodb05.reportgrid.com"
-HOSTS="appserver01.reportgrid.com appserver02.reportgrid.com"
+HOSTS="appserver01.reportgrid.com appserver02.reportgrid.com appserver03.reportgrid.com appserver04.reportgrid.com"
 SSH_USER="ubuntu"
 SSH_PARAMS="-i $(dirname $0)/../ec2/ec2-keypair.pem"
 

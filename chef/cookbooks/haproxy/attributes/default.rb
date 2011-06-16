@@ -1,80 +1,72 @@
 # Note: http://haproxy.1wt.eu/download/1.3/doc/configuration.txt
 
 default[:haproxy][:enabled] = '1'
+default[:haproxy][:log_level] = 'notice'
+
+default[:haproxy][:monitor_uri] = '/haproxy/health'
 
 default[:haproxy][:defaults] = [
   'balance roundrobin',
   'log global',
   'maxconn 19500',
   'mode http',
+  "monitor-uri #{haproxy[:monitor_uri]}",
+  'option allbackups',
   'option abortonclose',
   'option dontlognull',
   'option httpclose',
   'option httplog',
   'option forwardfor',
-  'retries 5',
   'stats enable',
   'stats hide-version',
-  'stats uri /haproxy?stats',
-  'stats auth admin:haGrid7',
+  'stats refresh 2s',
+  'stats uri /haproxy/stats',
   'timeout client 60s',
-  'timeout connect 4s',
+  'timeout connect 60s',
   'timeout http-request 5s',
-  'timeout queue 60s',
   'timeout server 60s'
 ]
 
-real_servers_prefix = 'appserver'
-real_servers = [1, 2, 3, 4]
-cache_servers_prefix = 'varnish'
-cache_servers = ()
-services = [
-  ['analytics', 'v0', 30010, false],
-]
+services = {
+  ['analytics', 'v0'] => {
+    :servers => (1..4).map { |i| "appserver#{'%02d' % i}.reportgrid.com" },
+    :port    => 30010
+  }
+}
 
-acls = []
-services.each do |service,version,port,cache|
-  acls.push("acl services_#{service}_#{version} path_reg ^/services/#{service}/#{version}/")
-  acls.push("use_backend services_#{service}_#{version} if services_#{service}_#{version}")
-end
-
-default[:haproxy][:frontend] = [{
-  :http => [
-    'bind *:80',
-    acls,
-    'default_backend website'].flatten
-}]
+default[:haproxy][:frontend] = [{:http => %Q{
+  bind *:80
+  #{services.sort.inject([]) { |memo,obj|
+    memo << "acl services_#{obj[0][0]}_#{obj[0][1]} path_reg ^/services/#{obj[0][0]}/#{obj[0][1]}/"
+    memo << "use_backend services_#{obj[0][0]}_#{obj[0][1]} if services_#{obj[0][0]}_#{obj[0][1]}"
+  }.join("\n  ")}
+  default_backend website
+}}]
 
 backends = []
-services.each do |service,version,port,cache|
+services.sort.each do |service,params|
 
   httpchk = 'option httpchk GET '
-  if cache
-    httpchk << "/services/#{service}/#{version}"
-  else
-    httpchk << "/blueeyes/services/#{service}/#{version}/health"
+  httpchk << "/services/#{service[0]}/#{service[1]}" if params[:cache_enabled]
+  httpchk << (params.has_key?(:health) ? params[:health] : "/blueeyes/services/#{service[0]}/#{service[1]}/health")
+  cache_port = 6081
+
+  health_interval = 1000 * (params.has_key?(:health_interval) ? params[:health_interval] : 5)
+  health_threshold = params.has_key?(:health_threshold) ? params[:health_threshold] : 2
+
+  backend_servers = params[:servers].map do |s|
+    port = params[:cache_enabled] ? cache_port : params[:port]
+    "server #{s}:#{port} #{s}:#{port} check inter #{health_interval} rise #{health_threshold} fall #{health_threshold} #{'backup' if s != fqdn}"
   end
 
-  backend_servers = []
-  if cache
-    cache_servers.each do |server_id|
-      backend_servers.push("server #{cache_servers_prefix}%02d #{cache_servers_prefix}%02d.reportgrid.com:80 check inter 10000" % [server_id, server_id])
-    end
-  else
-    real_servers.each do |server_id|
-      backend_servers.push("server #{real_servers_prefix}%02d #{real_servers_prefix}%02d.reportgrid.com:#{port} check inter 10000" % [server_id, server_id])
-    end
-  end
-
-  backends.push({
-    "services_#{service}_#{version}".to_sym => [
-      cache ? nil : 'reqrep ^([^\ ]*)\ /services/[[:alnum:]-]+/[[:alnum:]-]+/(.*) \1\ /\2',
-      #httpchk,
+  backends << {
+    "services_#{service[0]}_#{service[1]}".to_sym => [
+      params[:cache_enabled] ? nil : 'reqrep ^([^\ ]*)\ /services/[[:alnum:]-]+/[[:alnum:]-]+/(.*) \1\ /\2',
+      "reqadd X-Service-URL-Root:\ /services/#{service[0]}/#{service[1]}",
+      httpchk,
       backend_servers
-      ].flatten.reject { |obj| obj.nil? }
-  })
+      ].flatten.reject { |obj| obj.nil? }.join("\n  ")
+  }
 end
-
 default[:haproxy][:backend] = backends
-
-default[:haproxy][:backend].push({:website => [ 'server www.reportgrid.com www.reportgrid.com:80' ]})
+default[:haproxy][:backend] << {:website => 'server www.reportgrid.com www.reportgrid.com:80'}

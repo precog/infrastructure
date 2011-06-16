@@ -3,7 +3,7 @@ global
   daemon
   user haproxy
   group haproxy
-  log localhost daemon notice
+  log /dev/log daemon <%= @node[:haproxy][:log_level] %>
   stats socket /var/run/haproxy.stat
 
   maxconn 20000
@@ -22,9 +22,7 @@ defaults
 <% @node[:haproxy][type].each do |proxy| %>
 <% proxy.each do |name,options| %>
 <%= type %> <%= name %>
-<% options.each do |option| %>
-  <%= option %>
-<% end -%>
+  <%= options %>
 <% end -%>
 
 

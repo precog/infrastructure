@@ -1,3 +1,5 @@
 check process haproxy with pidfile /var/run/haproxy.pid
   start program = "/usr/sbin/service haproxy start"
   stop program  = "/usr/sbin/service haproxy stop"
+  if failed port 80 protocol http and request '<%= @node[:haproxy][:monitor_uri] %>' with timeout 15 seconds for 3 cycles then restart
+  if 3 restarts within 10 cycles then timeout
