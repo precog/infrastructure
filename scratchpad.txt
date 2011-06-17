@@ -236,3 +236,48 @@ mongodump --port 27018 -o mongodump
 mongorestore --port 27018 mongodump/analytics2/tokens.bson --drop -d analytics2 -c tokens
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#!/bin/sh
+
+mongo --port 27018 --eval 'rs.stepDown();'
+sleep 10
+/etc/init.d/monit stop
+/etc/init.d/mongodb stop
+
+aptitude -y install mdadm
+mdadm --create /dev/md0 --force --metadata=1.1 --level 10 --raid-devices 4 /dev/sdm /dev/sdn /dev/sdo /dev/sdp
+
+aptitude -y install lvm2
+pvcreate /dev/md0
+vgcreate -s 64M VolGroupMongoDB /dev/md0
+lvcreate -l 100%FREE --name LogVolMongoDB VolGroupMongoDB
+
+mkfs.ext4 /dev/mapper/VolGroupMongoDB-LogVolMongoDB
+
+mkdir /srv/mongodb.raid
+mount /dev/mapper/VolGroupMongoDB-LogVolMongoDB /srv/mongodb.raid
+rsync -avz --progress /srv/mongodb/ /srv/mongodb.raid
+
+umount /srv/mongodb.raid
+rmdir /srv/mongodb.raid
+umount /srv/mongodb
+sed -i 's/\/dev\/sdh/\/dev\/mapper\/VolGroupMongoDB-LogVolMongoDB/' /etc/fstab
+mount /srv/mongodb
+
+chef-client
+
+/etc/init.d/mongodb start
+/etc/init.d/monit start
