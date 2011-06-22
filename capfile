@@ -19,6 +19,16 @@ task :service, :roles => :none, :max_hosts => 1 do
   run "#{sudo} service #{ENV['SERVICE']} #{ENV['ACTION']}"
 end
 
+desc "Stop Chef"
+task :chef_client_stop do
+  run "#{sudo} service chef-client stop"
+end
+
+desc "Start Chef"
+task :chef_client_start do
+  run "#{sudo} service chef-client start"
+end
+
 desc "Restart Chef"
 task :chef_client_restart, :roles => :none, :max_hosts => 1 do
   run "#{sudo} service chef-client restart"
@@ -46,12 +56,12 @@ end
 # Monit
 #
 desc "Monit monitor all"
-task :monit_monitor_all, :roles => :none do
+task :monit_monitor_all do
   run "#{sudo} monit monitor all"
 end
 
 desc "Monit unmonitor all"
-task :monit_unmonitor_all, :roles => :none do
+task :monit_unmonitor_all do
   run "#{sudo} monit unmonitor all"
 end
 

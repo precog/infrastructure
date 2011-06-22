@@ -1,4 +1,4 @@
-default[:mongodb][:version] = '1.8.1'
+#default[:mongodb][:version] = '1.8.2'
 
 default[:mongodb][:data_device]      = File.blockdev?('/dev/mapper/VolGroupMongoDB-LogVolMongoDB') ? "/dev/mapper/VolGroupMongoDB-LogVolMongoDB" : "/dev/sdh"
 default[:mongodb][:data_mount_point] = "/srv/mongodb"
