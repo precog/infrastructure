@@ -115,6 +115,13 @@ define :blueeyes_service, :action=>:create, :port=>8100, :health_path=>nil do
       mode "0755"
     end
 
+    cookbook_file "#{params[:name]}.jar" do
+      backup 20
+      source "#{params[:name]}.jar"
+      path "/usr/share/java/#{params[:name]}.jar"
+      mode "0644"
+    end
+
     cron "#{params[:name]}-health" do
       command "/usr/local/bin/#{params[:name]}-health.sh > /var/log/reportgrid/#{params[:name]}-health.log 2>&1"
       user "reportgrid"
