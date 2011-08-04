@@ -4,8 +4,8 @@
 # Download tools at: http://aws.amazon.com/developertools
 #
 
-EC2_INF_HOME=~/projects/reportgrid/infrastructure/ec2
-EC2_ROOT=~/ec2
+EC2_INF_HOME=~/reportgrid/infrastructure/ec2
+EC2_ROOT=~/bin/ec2
 
 export EC2_HOME=${EC2_ROOT}/ec2-api-tools
 export EC2_AMITOOL_HOME=${EC2_ROOT}/ec2-ami-tools

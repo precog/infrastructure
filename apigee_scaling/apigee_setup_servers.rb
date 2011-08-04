@@ -8,13 +8,18 @@ end
 
 def build_server(hostname, group, zone, instance_type, sda_size, data_size, roles, params = {}) 
   device_names = case group
-    when "mongodb" then [
-      {:device_name =>"/dev/sda1", :size => sda_size}
-      {:device_name => "/dev/sdm", :size => data_size}, 
-      {:device_name => "/dev/sdn", :size => data_size},
-      {:device_name => "/dev/sdo", :size => data_size},
-      {:device_name => "/dev/sdp", :size => data_size}
-    ]
+    when "mongodb" 
+      if instance_type == "t1.micro"
+        [{:device_name =>"/dev/sda1", :size => sda_size}]
+      else 
+        [
+          {:device_name =>"/dev/sda1", :size => sda_size},
+          {:device_name => "/dev/sdm", :size => data_size}, 
+          {:device_name => "/dev/sdn", :size => data_size},
+          {:device_name => "/dev/sdo", :size => data_size},
+          {:device_name => "/dev/sdp", :size => data_size}
+        ]
+      end
     when "appserver" then [
       {:device_name =>"/dev/sda1", :size => sda_size}
     ] 
@@ -26,7 +31,7 @@ def build_server(hostname, group, zone, instance_type, sda_size, data_size, role
       build_appserver_user_data("setup_servers.erb", 
         {
           :hostname => hostname,
-          :block_device_mapping => device_names,
+          :block_device_mapping => device_names.reject{|d| d[:device_name] == "/dev/sda1"},
           :chef_run_list => ["role[default]"] + roles
         }.merge(params)
       )
@@ -34,9 +39,10 @@ def build_server(hostname, group, zone, instance_type, sda_size, data_size, role
   end
 
   device_mapping_args = device_names.inject([]) do |acc, value|
-    acc << "--block-device-mapping '#{value[:device_name]}=:#{disk_size}:false'"
+    acc << "--block-device-mapping '#{value[:device_name]}=:#{value[:size]}:true'"
   end
 
+  #`ec2-run-instances --key ec2-keypair --availability-zone #{zone} #{device_mapping_args.join(" ")} --instance-type #{instance_type} --group #{group} ami-4a0df923 --user-data-file #{filename}`
   puts "ec2-run-instances --key ec2-keypair --availability-zone #{zone} #{device_mapping_args.join(" ")} --instance-type #{instance_type} --group #{group} ami-4a0df923 --user-data-file #{filename}"
 end
 
@@ -46,7 +52,7 @@ def build_appserver_set(hostbase, host_base_id, quantity)
   while (hosts < quantity)
     ["us-east-1a", "us-east-1b", "us-east-1c"].each do |zone|
       hostname = "#{hostbase}-%03d" % host_id
-      build_server(hostname, "appserver", zone, "m1.large", 50, 0, ["role[appserver]"])
+      build_server(hostname, "appserver", zone, "m1.large", 25, 0, ["role[appserver]"])
       host_id += 1
       hosts += 1
     end
@@ -70,17 +76,17 @@ def build_mongo_replicasets(hostbase, host_base_id, quantity)
       };
       rs.initiate(config);
     ENDSCRIPT
-    build_server(hostname, "mongodb", "us-east-1a", "m2.2xlarge", 15, 500, ["role[mongodb-shard-server]", "role[mongodb-replset-server]"], :mongo => {:replica_set_conf => conf})
+    build_server(hostname, "mongodb", "us-east-1a", "m2.2xlarge", 15, 500, ["role[mongodb-shard-server]", "role[mongodb-replset-server]"], :mongo => {:replica_set_conf => conf, :db => true})
     host_id += 1
     hosts += 1
 
     hostname = "#{hostbase}-%03d" % host_id
-    build_server(hostname, "mongodb", "us-east-1b", "m2.2xlarge", 15, 500, ["role[mongodb-shard-server]", "role[mongodb-replset-server]"])
+    build_server(hostname, "mongodb", "us-east-1b", "m2.2xlarge", 15, 500, ["role[mongodb-shard-server]", "role[mongodb-replset-server]"], :mongo => {:db => true})
     host_id += 1
     hosts += 1
 
     hostname = "#{hostbase}-%03d" % host_id
-    build_server(hostname, "mongodb", "us-east-1c", "m1.micro", 15, 500, ["role[mongodb-shard-server]", "role[mongodb-replset-server]"])
+    build_server(hostname, "mongodb", "us-east-1c", "t1.micro", 15, 0, ["role[mongodb-shard-server]", "role[mongodb-replset-server]"], :mongo => {:db => false})
     host_id += 1
     hosts += 1
 
@@ -88,6 +94,19 @@ def build_mongo_replicasets(hostbase, host_base_id, quantity)
   end
 end
 
+def build_mongo_configservs(hostbase, host_base_id, quantity) 
+  host_id = host_base_id
+  hosts = 0
+  while (hosts < quantity)
+    ["us-east-1a", "us-east-1b", "us-east-1c"].each do |zone|
+      hostname = "#{hostbase}-%03d" % host_id
+      build_server(hostname, "mongodb", zone, "t1.micro", 25, 0, ["role[mongodb-config-server]"])
+      host_id += 1
+      hosts += 1
+    end
+  end
+end
 
-#build_appserver_set("rga", 12, 30)
-build_mongo_replicasets("rgm", 12, 12)
+#build_appserver_set("rga", 15, 27)
+build_mongo_replicasets("rgm", 12, 3)
+#build_mongo_configservs("rgmconf", 12, 3)
