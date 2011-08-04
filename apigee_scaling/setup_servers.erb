@@ -38,10 +38,7 @@ fi
 # resize and format disks as necessary
 /sbin/resize2fs /dev/sda1
 
-#echo 'finished resize' >> /tmp/reportgrid_setup.log
-
 <% if params[:mongo] && params[:mongo][:db] %>
-#echo 'starting mongo setup' >> /tmp/reportgrid_setup.log
 
 /usr/bin/aptitude -y install mdadm
 /usr/bin/aptitude -y install lvm2
@@ -54,7 +51,6 @@ lvcreate -l 100%free --name logvolmongodb volgroupmongodb
 
 mkfs.ext4 /dev/mapper/volgroupmongodb-logvolmongodb
 
-#echo 'finished mongo setup' >> /tmp/reportgrid_setup.log
 <% end %>
 
 # FIXME: reset hostname (due to ec2-init breaking it again)
@@ -67,8 +63,6 @@ then
   /bin/echo "chef chef/chef_server_url string https://${CHEF_SERVER}" | debconf-set-selections
   /usr/bin/aptitude -y install chef
 fi
-
-#echo 'chef installed' >> /tmp/reportgrid_setup.log
 
 # kill existing chef clients
 if [ `pgrep -c chef-client` -gt 0 ]
@@ -115,17 +109,14 @@ mPDG6fERBvPfRWftfhQMMMZrXU382nbm3yRrcNr3wNrNHtH0MmA=
 -----END RSA PRIVATE KEY-----
 END
 
-#echo 'starting initial chef run' >> /tmp/reportgrid_setup.log
-
 # write temporary json file
 /bin/cat <<END > ${JSON_ATTRIBUTES_FILE}
 {"run_list": [ "<%= params[:chef_run_list].join('", "') if params.has_key?(:chef_run_list) %>" ] }
 END
 
 # do initial (non-daemonized) chef run
-/usr/bin/chef-client -L /var/log/chef/client.log -l debug -j ${JSON_ATTRIBUTES_FILE}
+/usr/bin/chef-client -l debug -j ${JSON_ATTRIBUTES_FILE}
 
-#echo 'initial chef run complete' >> /tmp/reportgrid_setup.log
 
 # start chef daemon
 /usr/sbin/service chef-client start
