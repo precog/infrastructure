@@ -108,5 +108,5 @@ def build_mongo_configservs(hostbase, host_base_id, quantity)
 end
 
 #build_appserver_set("rga", 15, 27)
-build_mongo_replicasets("rgm", 13, 3)
-#build_mongo_configservs("rgmconf", 13, 3)
+#build_mongo_replicasets("rgm", 13, 3)
+build_mongo_configservs("rgmconf", 13, 3)

@@ -10,9 +10,9 @@ default[:mongodb][:port][:standalone] = 27017
 
 if hostname =~ /^rg.*/
   default[:mongodb][:config_servers] = [
-    'rgmconf-012.reportgrid.com:27019',
     'rgmconf-013.reportgrid.com:27019',
-    'rgmconf-014.reportgrid.com:27019'
+    'rgmconf-014.reportgrid.com:27019',
+    'rgmconf-015.reportgrid.com:27019'
   ]
 else
   default[:mongodb][:config_servers] = [
