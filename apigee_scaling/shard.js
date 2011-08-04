@@ -1,7 +1,7 @@
-db.runCommand( { addshard : "4/rgm-012.reportgrid.com:27018,rgm-013.reportgrid.com:27018" } );
-db.runCommand( { addshard : "5/rgm-015.reportgrid.com:27018,rgm-016.reportgrid.com:27018" } );
-db.runCommand( { addshard : "6/rgm-018.reportgrid.com:27018,rgm-017.reportgrid.com:27018" } );
-db.runCommand( { addshard : "7/rgm-021.reportgrid.com:27018,rgm-022.reportgrid.com:27018" } );
+db.runCommand( { addshard : "5/rgm-013.reportgrid.com:27018,rgm-014.reportgrid.com:27018" } );
+db.runCommand( { addshard : "6/rgm-016.reportgrid.com:27018,rgm-017.reportgrid.com:27018" } );
+db.runCommand( { addshard : "7/rgm-019.reportgrid.com:27018,rgm-018.reportgrid.com:27018" } );
+db.runCommand( { addshard : "8/rgm-022.reportgrid.com:27018,rgm-023.reportgrid.com:27018" } );
 
 db.runCommand( { enablesharding : "analytics0-3" } );
 

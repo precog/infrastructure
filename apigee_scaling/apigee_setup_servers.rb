@@ -42,8 +42,8 @@ def build_server(hostname, group, zone, instance_type, sda_size, data_size, role
     acc << "--block-device-mapping '#{value[:device_name]}=:#{value[:size]}:true'"
   end
 
-  `ec2-run-instances --key ec2-keypair --availability-zone #{zone} #{device_mapping_args.join(" ")} --instance-type #{instance_type} --group #{group} ami-4a0df923 --user-data-file #{filename}`
-  #puts "ec2-run-instances --key ec2-keypair --availability-zone #{zone} #{device_mapping_args.join(" ")} --instance-type #{instance_type} --group #{group} ami-4a0df923 --user-data-file #{filename}"
+  #puts `ec2-run-instances --key ec2-keypair --availability-zone #{zone} #{device_mapping_args.join(" ")} --instance-type #{instance_type} --group #{group} ami-4a0df923 --user-data-file #{filename}`
+  puts "ec2-run-instances --key ec2-keypair --availability-zone #{zone} #{device_mapping_args.join(" ")} --instance-type #{instance_type} --group #{group} ami-4a0df923 --user-data-file #{filename}"
 end
 
 def build_appserver_set(hostbase, host_base_id, quantity) 
@@ -108,5 +108,5 @@ def build_mongo_configservs(hostbase, host_base_id, quantity)
 end
 
 #build_appserver_set("rga", 15, 27)
-#build_mongo_replicasets("rgm", 13, 3)
-build_mongo_configservs("rgmconf", 13, 3)
+build_mongo_replicasets("rgm", 19, 3)
+#build_mongo_configservs("rgmconf", 13, 3)
