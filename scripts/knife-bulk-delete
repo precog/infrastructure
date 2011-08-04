@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+
+#(31..40).each do |i|
+#  puts `knife client -y delete rga-#{"%03d" % i}.reportgrid.com`
+#  puts `knife node -y delete rga-#{"%03d" % i}.reportgrid.com`
+#end
+
