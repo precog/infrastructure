@@ -51,7 +51,7 @@ define :blueeyes_service, :action=>:create, :port=>8100, :health_path=>nil do
     end
 
     file "#{params[:name]}.conf" do
-    path "/etc/reportgrid/#{params[:name]}.conf"
+      path "/etc/reportgrid/#{params[:name]}.conf"
       action :delete
     end
 
@@ -90,8 +90,8 @@ define :blueeyes_service, :action=>:create, :port=>8100, :health_path=>nil do
       action :create_if_missing
     end
 
-    cookbook_file "#{params[:name]}.conf" do
-      source "#{params[:name]}.conf"
+    template "#{params[:name]}.conf" do
+      source "#{params[:name]}.conf.erb"
       path "/etc/reportgrid/#{params[:name]}.conf"
       mode "0644"
       notifies :restart, resources(:service => params[:name])
