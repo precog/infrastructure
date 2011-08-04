@@ -92,11 +92,6 @@ port = <%= @node[:mongodb][:port][:standalone] %>
 #master = true
 #source = slave.example.com
 
-# Address of a server to pair with.
-#pairwith = <server:port>
-<% if @node[:mongodb][:pairwith] %>
-pairwith = <%= @node[:mongodb][:pairwith] %>
-<% end -%>
 # Address of arbiter server.
 #arbiter = <server:port>
 # Automatically resync if slave data is stale

@@ -27,12 +27,21 @@ default[:haproxy][:defaults] = [
   'timeout server 60s'
 ]
 
-services = {
-  ['analytics', 'v0'] => {
-    :servers => (1..4).map { |i| "appserver#{'%02d' % i}.reportgrid.com" },
-    :port    => 30010
+services = if hostname =~ /^rg.*/
+  {
+    ['analytics', 'v0'] => {
+      :servers => (12..41).map { |i| "rga-#{'%03d' % i}.reportgrid.com" },
+      :port    => 30010
+    }
   }
-}
+else
+  {
+    ['analytics', 'v0'] => {
+      :servers => (1..4).map { |i| "appserver#{'%02d' % i}.reportgrid.com" },
+      :port    => 30010
+    }
+  }
+end
 
 default[:haproxy][:frontend] = [{:http => %Q{
   bind *:80

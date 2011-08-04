@@ -19,6 +19,11 @@ task :service, :roles => :none, :max_hosts => 1 do
   run "#{sudo} service #{ENV['SERVICE']} #{ENV['ACTION']}"
 end
 
+desc "Run Chef"
+task :chef_client do
+  run "#{sudo} service chef-client"
+end
+
 desc "Stop Chef"
 task :chef_client_stop do
   run "#{sudo} service chef-client stop"
