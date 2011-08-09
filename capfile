@@ -6,11 +6,12 @@ ssh_options[:keys] = [File.join(File.dirname(__FILE__),  'ec2', 'ec2-keypair.pem
 
 
 role :none
-role :appserver, *(1..4).map { |i| "appserver#{'%02d' % i}.reportgrid.com" }
+role :appserver, *(1..6).map { |i| "appserver#{'%02d' % i}.reportgrid.com" }
 role :mongodb, *(1..6).map { |i| "mongodb#{'%02d' % i}.reportgrid.com" }
 role :mongodb_config, *(1..3).map { |i| "mongodb-config#{'%02d' % i}.reportgrid.com" }
 
 role :rga, *(12..41).map {|i| "rga-#{'%03d' % i}.reportgrid.com" }
+#role :rga, *(23..41).map {|i| "rga-#{'%03d' % i}.reportgrid.com" }
 role :rgm, *(13..30).map {|i| "rgm-#{'%03d' % i}.reportgrid.com" }
 
 
@@ -24,7 +25,7 @@ end
 
 desc "Run Chef"
 task :chef_client do
-  run "#{sudo} service chef-client"
+  run "#{sudo} chef-client"
 end
 
 desc "Stop Chef"

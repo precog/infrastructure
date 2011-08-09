@@ -37,7 +37,7 @@ services = if hostname =~ /^rg.*/
 else
   {
     ['analytics', 'v0'] => {
-      :servers => (1..4).map { |i| "appserver#{'%02d' % i}.reportgrid.com" },
+      :servers => (1..6).map { |i| "appserver#{'%02d' % i}.reportgrid.com" },
       :port    => 30010
     }
   }
