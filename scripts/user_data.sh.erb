@@ -29,8 +29,10 @@ then
 fi
 
 # update packages
+#/usr/bin/apt-add-repository ppa:awstools-dev/awstools
 /usr/bin/aptitude update
 /usr/bin/aptitude -y safe-upgrade
+#/usr/bin/aptitude -y install ec2-api-tools
 
 # disable monit
 #/usr/sbin/service monit stop
@@ -56,6 +58,10 @@ mkfs.ext4 /dev/mapper/volgroupmongodb-logvolmongodb
 # FIXME: reset hostname (due to ec2-init breaking it again)
 /bin/hostname -F /etc/hostname
 /usr/sbin/service rsyslog restart
+
+# the following needs the private key... not sure whether this should be distributed
+#/usr/bin/ec2addtag `curl http://instance-data/latest/meta-data/instance-id` --tag Name=`/bin/hostname`
+
 
 # install chef
 if [ ! -d ${CHEF_CONF} ]
