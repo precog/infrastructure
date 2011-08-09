@@ -6,14 +6,14 @@ export DEBIAN_FRONTEND=noninteractive
 
 EC2_LOCAL_IPV4=`/usr/bin/curl --silent http://instance-data.ec2.internal/latest/meta-data/local-ipv4`
 EC2_AMI_LAUNCH_INDEX=`/usr/bin/curl --silent http://instance-data.ec2.internal/latest/meta-data/ami-launch-index`
-HOSTNAME='<%= params[:hostname] %>'
+HOSTNAME='appserver05'
 DOMAIN="reportgrid.com"
 CHEF_SERVER="api.opscode.com/organizations/reportgrid"
 CHEF_CONF="/etc/chef"
-JSON_ATTRIBUTES_FILE="/root/chef-init.json"
-MONGO_INIT_FILE="/root/mongo-init.js"
+JSON_ATTRIBUTES_FILE="/tmp/chef-init.json"
+MONGO_INIT_FILE="/tmp/mongo-init.js"
 
-exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
+exec > >(tee /var/log/init-user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
 
 # set hostname
 /bin/echo ${HOSTNAME} > /etc/hostname
@@ -38,20 +38,7 @@ fi
 # resize and format disks as necessary
 /sbin/resize2fs /dev/sda1
 
-<% if params[:mongo] && params[:mongo][:db] %>
 
-/usr/bin/aptitude -y install mdadm
-/usr/bin/aptitude -y install lvm2
-
-mdadm --create /dev/md0 --force --metadata=1.1 --level 10 --raid-devices 4 <%= params[:block_device_mapping].map {|m| m[:device_name]}.join(" ") %>
-
-pvcreate /dev/md0
-vgcreate -s 64m volgroupmongodb /dev/md0
-lvcreate -l 100%free --name logvolmongodb volgroupmongodb
-
-mkfs.ext4 /dev/mapper/volgroupmongodb-logvolmongodb
-
-<% end %>
 
 # FIXME: reset hostname (due to ec2-init breaking it again)
 /bin/hostname -F /etc/hostname
@@ -111,7 +98,7 @@ END
 
 # write temporary json file
 /bin/cat <<END > ${JSON_ATTRIBUTES_FILE}
-{"run_list": [ "<%= params[:chef_run_list].join('", "') if params.has_key?(:chef_run_list) %>" ] }
+{"run_list": [ "role[default]", "role[appserver]" ] }
 END
 
 # do initial (non-daemonized) chef run
@@ -124,13 +111,4 @@ END
 # enable monit
 #/usr/sbin/service monit start
 
-<% if params[:mongo] && params[:mongo][:replica_set_conf] %>
 
-/bin/cat <<END > ${MONGO_INIT_FILE}
-<%= params[:mongo][:replica_set_conf] %>
-END
-
-#sleep 600 
-#mongo --port 27018 admin ${MONGO_INIT_FILE}
-
-<% end %>

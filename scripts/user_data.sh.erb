@@ -10,10 +10,10 @@ HOSTNAME='<%= params[:hostname] %>'
 DOMAIN="reportgrid.com"
 CHEF_SERVER="api.opscode.com/organizations/reportgrid"
 CHEF_CONF="/etc/chef"
-JSON_ATTRIBUTES_FILE="/root/chef-init.json"
-MONGO_INIT_FILE="/root/mongo-init.js"
+JSON_ATTRIBUTES_FILE="/tmp/chef-init.json"
+MONGO_INIT_FILE="/tmp/mongo-init.js"
 
-exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
+exec > >(tee /var/log/init-user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
 
 # set hostname
 /bin/echo ${HOSTNAME} > /etc/hostname

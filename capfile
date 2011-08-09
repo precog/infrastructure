@@ -4,16 +4,27 @@ default_run_options[:pty] = true
 set :user, "ubuntu"
 ssh_options[:keys] = [File.join(File.dirname(__FILE__),  'ec2', 'ec2-keypair.pem')]
 
-
 role :none
 role :appserver, *(1..6).map { |i| "appserver#{'%02d' % i}.reportgrid.com" }
 role :mongodb, *(1..6).map { |i| "mongodb#{'%02d' % i}.reportgrid.com" }
 role :mongodb_config, *(1..3).map { |i| "mongodb-config#{'%02d' % i}.reportgrid.com" }
 
 role :rga, *(12..41).map {|i| "rga-#{'%03d' % i}.reportgrid.com" }
-#role :rga, *(23..41).map {|i| "rga-#{'%03d' % i}.reportgrid.com" }
 role :rgm, *(13..30).map {|i| "rgm-#{'%03d' % i}.reportgrid.com" }
+role :rgm_conf, *(13..15).map {|i| "rgmconf-#{'%03d' % i}.reportgrid.com" }
 
+#
+# Monit
+#
+desc "Monit monitor all"
+task :monit_monitor_all do
+  run "#{sudo} monit monitor all"
+end
+
+desc "Monit unmonitor all"
+task :monit_unmonitor_all do
+  run "#{sudo} monit unmonitor all"
+end
 
 #
 # Service management
@@ -23,6 +34,29 @@ task :service, :roles => :none, :max_hosts => 1 do
   run "#{sudo} service #{ENV['SERVICE']} #{ENV['ACTION']}"
 end
 
+desc "Reload HAProxy"
+task :haproxy_reload, :roles => :appserver, :max_hosts => 1 do
+  run "#{sudo} service haproxy reload"
+end
+
+desc "Reload Mongos"
+task :restart_mongos, :roles => :appserver, :max_hosts => 1 do
+  run "#{sudo} /etc/init.d/mongos restart"
+end
+
+desc "Reload Analytics-v0"
+task :analytics_restart, :roles => :appserver, :max_hosts => 1 do
+  run "#{sudo} service analytics-v0 restart"
+end
+
+desc "Reload MongoDB"
+task :mongodb_restart, :roles => :mongodb, :max_hosts => 1 do
+  run "#{sudo} service mongodb restart"
+end
+
+#
+# Chef
+#
 desc "Run Chef"
 task :chef_client do
   run "#{sudo} chef-client"
@@ -43,7 +77,6 @@ task :chef_client_restart, :roles => :none, :max_hosts => 1 do
   run "#{sudo} service chef-client restart"
 end
 
-
 #
 # Package management
 #
@@ -60,44 +93,15 @@ task :get_version, :roles => :none do
   run "/usr/bin/dpkg-query --showformat '${Version}' --show #{ENV['PACKAGE']}"
 end
 
-
 #
-# Monit
-#
-desc "Monit monitor all"
-task :monit_monitor_all do
-  run "#{sudo} monit monitor all"
-end
-
-desc "Monit unmonitor all"
-task :monit_unmonitor_all do
-  run "#{sudo} monit unmonitor all"
-end
-
-
-#
-# Download
+# Download / Install
 #
 desc "Download files"
 task :download_files, :roles => :none do
   download(ENV['FROM'], ENV['TO'] + File::Separator + File.basename(ENV['FROM']) + "-$CAPISTRANO:HOST$")
 end
 
-
-#
-# HAProxy
-#
-desc "Reload HAProxy"
-task :haproxy_reload, :roles => :appserver, :max_hosts => 1 do
-  run "#{sudo} service haproxy reload"
-end
-
-desc "Reload MongoDB"
-task :mongodb_restart, :roles => :appserver, :max_hosts => 1 do
-  run "#{sudo} service mongodb restart"
-end
-
-desc "Reload Analytics-v0"
-task :analytics_restart, :roles => :appserver, :max_hosts => 1 do
-  run "#{sudo} service analytics-v0 restart"
+desc "Aptitude Install"
+task :aptitude_install, :roles => :none do
+  run "#{sudo} aptitude install #{ENV['PACKAGE']}"
 end
