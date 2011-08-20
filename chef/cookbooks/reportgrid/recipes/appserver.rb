@@ -28,7 +28,7 @@ directory "reportgrid_logs" do
   mode '755'
 end
 
-[['analytics', 'v0', 30010]].each do |service,version,port|
+[['analytics', 'v0', 30010], ['analytics', 'v1', 30020]].each do |service,version,port|
   blueeyes_service "#{service}-#{version}" do
     port "#{port}"
   end

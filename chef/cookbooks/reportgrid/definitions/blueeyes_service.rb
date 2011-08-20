@@ -82,13 +82,13 @@ define :blueeyes_service, :action=>:create, :port=>8100, :health_path=>nil do
       action :enable
     end
 
-    remote_file "#{params[:name]}.jar" do
-      source "http://reportgrid.com.s3.amazonaws.com/deploy/production/#{params[:name]}.jar"
-      path "/usr/share/java/#{params[:name]}.jar"
-      mode "0644"
-      notifies :restart, resources(:service => params[:name])
-      action :create_if_missing
-    end
+    #remote_file "#{params[:name]}.jar" do
+    #  source "http://reportgrid.com.s3.amazonaws.com/deploy/production/#{params[:name]}.jar"
+    #  path "/usr/share/java/#{params[:name]}.jar"
+    #  mode "0644"
+    #  notifies :restart, resources(:service => params[:name])
+    #  action :create_if_missing
+    #end
 
     template "#{params[:name]}.conf" do
       source "#{params[:name]}.conf.erb"
