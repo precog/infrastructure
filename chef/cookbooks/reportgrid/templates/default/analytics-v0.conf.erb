@@ -42,6 +42,11 @@ services {
         servers = ["<%= @node[:reportgrid][:mongo][:hosts].join('", "') %>"]
       }
 
+      v1 {
+        host = "localhost"
+        port = 30020
+      }
+
       variable_series {
         collection = "variable_series"
 

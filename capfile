@@ -46,7 +46,7 @@ end
 
 desc "Reload Analytics-v0"
 task :analytics_restart, :roles => :appserver, :max_hosts => 1 do
-  run "#{sudo} service analytics-v0 restart"
+  run "#{sudo} service analytics-v1 restart"
 end
 
 desc "Reload MongoDB"
