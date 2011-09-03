@@ -45,7 +45,12 @@ task :restart_mongos, :roles => :appserver, :max_hosts => 1 do
 end
 
 desc "Reload Analytics-v0"
-task :analytics_restart, :roles => :appserver, :max_hosts => 1 do
+task :analytics_restart_v0, :roles => :appserver, :max_hosts => 1 do
+  run "#{sudo} service analytics-v0 restart"
+end
+
+desc "Reload Analytics-v1"
+task :analytics_restart_v1, :roles => :appserver, :max_hosts => 1 do
   run "#{sudo} service analytics-v1 restart"
 end
 
