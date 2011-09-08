@@ -11,7 +11,7 @@ server {
   sslEnable = false
 
   log {
-    level = "info"
+    level = "debug"
     console = true
     filename = "/var/log/reportgrid/analytics-v1.log"
     roll = "daily"
@@ -23,7 +23,7 @@ services {
   analytics {
     v1 {
       log {
-        level = "info"
+        level = "debug"
         console = true
         filename = "/var/log/reportgrid/analytics-v1.log"
         roll = "daily"
