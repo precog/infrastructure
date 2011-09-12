@@ -1,19 +1,12 @@
-log {
-  level = "info"
-  console = true
-  filename = "/var/log/reportgrid/analytics-v1.log"
-  roll = "daily"
-}
-
 server {
-  port = 30020
-  sslPort = 30021
+  port = <%= @port %>
+  sslPort = <%= @port.to_i + 1 %>
   sslEnable = false
 
   log {
-    level = "debug"
+    level = "info"
     console = true
-    filename = "/var/log/reportgrid/analytics-v1.log"
+    filename = "/var/log/reportgrid/<%=@service_name%>-<%=@version%>.server.log"
     roll = "daily"
     use_parents = false
   }
@@ -25,14 +18,14 @@ services {
       log {
         level = "debug"
         console = true
-        filename = "/var/log/reportgrid/analytics-v1.log"
+        filename = "/var/log/reportgrid/<%=@service_name%>-<%=@version%>.log"
         roll = "daily"
         use_parents = false
       }
 
       requestLog {
         enabled = false
-        file = "/var/log/reportgrid/analytics-v1.request.log"
+        file = "/var/log/reportgrid/<%=@service_name%>-<%=@version%>.request.log"
         roll = "daily"
         fields = "date time c-ip cs-method cs-uri-stem cs-uri-query sc-status"
       }

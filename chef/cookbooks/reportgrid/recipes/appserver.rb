@@ -21,6 +21,11 @@ directory "reportgrid_conf" do
   mode '755'
 end
 
+directory "reportgrid_data" do 
+  path "/opt/reportgrid"
+  mode '755'
+end
+
 directory "reportgrid_logs" do
   path "/var/log/reportgrid"
   owner 'reportgrid'
@@ -28,7 +33,12 @@ directory "reportgrid_logs" do
   mode '755'
 end
 
-[['analytics', 'v0', 30010], ['analytics', 'v1', 30020]].each do |service,version,port|
+cookbook_file "/opt/reportgrid/GeoLiteCity.dat" do
+  source "GeoLiteCity.dat"
+  mode "0644"
+end
+
+[['analytics', 'v0', 30010], ['analytics', 'v1', 30020], ['jessup', 'v1', 30030]].each do |service,version,port|
   blueeyes_service "#{service}-#{version}" do
     port "#{port}"
   end

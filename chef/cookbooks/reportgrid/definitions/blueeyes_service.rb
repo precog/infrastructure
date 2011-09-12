@@ -5,6 +5,7 @@ define :blueeyes_service, :action=>:create, :port=>8100, :health_path=>nil do
   else
     raise ArgumentError, "Name parameter not in the form of <name>-<version>: %s" % param
   end
+
   [:action].each do |param|
     raise ArgumentError, "Missing required parameter: %s" % param if params[param].nil?
   end
@@ -60,15 +61,14 @@ define :blueeyes_service, :action=>:create, :port=>8100, :health_path=>nil do
       action :delete
     end
 
-  else
+  else # on service creation, etc.
 
-    template "#{params[:name]}.init.conf" do
+    template "/etc/init/#{params[:name]}.conf" do
       variables(
         :service_name => service_name,
         :version      => version
       )
       source "blueeyes_service.init.conf.erb"
-      path "/etc/init/#{params[:name]}.conf"
       mode "0644"
     end
 
@@ -90,28 +90,34 @@ define :blueeyes_service, :action=>:create, :port=>8100, :health_path=>nil do
     #  action :create_if_missing
     #end
 
-    template "#{params[:name]}.conf" do
+    template "/etc/reportgrid/#{params[:name]}.conf" do
+      variables(
+        :service_name => service_name,
+        :version      => version,
+        :port         => params[:port]
+      )
       source "#{params[:name]}.conf.erb"
-      path "/etc/reportgrid/#{params[:name]}.conf"
       mode "0644"
       notifies :restart, resources(:service => params[:name])
     end
 
-    template "#{params[:name]}.default" do
+    template "/etc/default/#{params[:name]}" do
       variables(
         :service_name => service_name,
         :version      => version,
         :port         => params[:port]
       )
       source "blueeyes_service.default.erb"
-      path "/etc/default/#{params[:name]}"
       mode "0644"
       notifies :restart, resources(:service => params[:name])
     end
 
-    cookbook_file "#{params[:name]}-health.sh" do
-      source "#{params[:name]}-health.sh"
-      path "/usr/local/bin/#{params[:name]}-health.sh"
+    template "/usr/local/bin/#{params[:name]}-health.sh" do
+      variables(
+        :health_path  => params[:health_path],
+        :port         => params[:port]
+      )
+      source "blueeyes_service-health.sh.erb"
       mode "0755"
     end
 
@@ -127,7 +133,7 @@ define :blueeyes_service, :action=>:create, :port=>8100, :health_path=>nil do
       user "reportgrid"
     end
 
-    template "#{params[:name]}.monit" do
+    template "/etc/monit/conf.d/#{params[:name]}.monit" do
       variables(
         :service_name => service_name,
         :version      => version,
@@ -135,10 +141,8 @@ define :blueeyes_service, :action=>:create, :port=>8100, :health_path=>nil do
         :health_path  => params[:health_path]
       )
       source "blueeyes_service.monit.erb"
-      path "/etc/monit/conf.d/#{params[:name]}.monit"
       mode "0644"
       notifies :restart, resources(:service => "monit")
     end
-
   end
 end

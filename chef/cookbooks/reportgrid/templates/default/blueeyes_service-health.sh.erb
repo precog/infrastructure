@@ -1,0 +1,9 @@
+#!/bin/bash
+
+STATUS=`curl --silent http://localhost:<%=@port%><%=@health_path%>`
+if [[ -n $STATUS ]]
+then
+  echo $STATUS
+else
+  echo "ERROR"
+fi

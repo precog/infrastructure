@@ -1,0 +1,35 @@
+server {
+  port = <%= @port %>
+  sslEnable = false
+
+  log {
+    level = "info"
+    console = true
+    filename = "/var/log/reportgrid/<%=@service_name%>-<%=@version%>.server.log"
+    roll = "daily"
+    use_parents = false
+  }
+}
+
+services {
+  jessup {
+    v1 {
+      dbpath = "/opt/reportgrid/GeoLiteCity.dat"
+
+      log {
+        level = "debug"
+        console = true
+        filename = "/var/log/reportgrid/<%=@service_name%>-<%=@version%>.log"
+        roll = "daily"
+        use_parents = false
+      }
+
+      requestLog {
+        enabled = false
+        file = "/var/log/reportgrid/<%=@service_name%>-<%=@version%>.request.log"
+        roll = "daily"
+        fields = "date time c-ip cs-method cs-uri-stem cs-uri-query sc-status"
+      }
+    }
+  }
+}
