@@ -43,6 +43,10 @@ else
     ['analytics', 'v1'] => {
       :servers => (1..6).map { |i| "appserver#{'%02d' % i}.reportgrid.com" },
       :port    => 30020
+    },
+    ['jessup', 'v1'] => {
+      :servers => (1..6).map { |i| "appserver#{'%02d' % i}.reportgrid.com" },
+      :port    => 30030
     }
   }
 end
