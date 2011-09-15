@@ -48,10 +48,10 @@ fi
 mdadm --create /dev/md0 --force --metadata=1.1 --level 10 --raid-devices 4 <%= params[:block_device_mapping].map {|m| m[:device_name]}.join(" ") %>
 
 pvcreate /dev/md0
-vgcreate -s 64m volgroupmongodb /dev/md0
-lvcreate -l 100%free --name logvolmongodb volgroupmongodb
+vgcreate -s 64m VolGroupMongoDB /dev/md0
+lvcreate -l 100%free --name LogVolMongoDB VolGroupMongoDB 
 
-mkfs.ext4 /dev/mapper/volgroupmongodb-logvolmongodb
+mkfs.ext4 /dev/mapper/VolGroupMongoDB-LogVolMongoDB
 
 <% end %>
 

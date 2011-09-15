@@ -35,6 +35,11 @@ services {
         servers = ["<%= @node[:reportgrid][:mongo][:hosts].join('", "') %>"]
       }
 
+      jessup {
+        host = "api.reportgrid.com"
+        path = "/services/jessup/v1"
+      }
+
       variable_series {
         collection = "variable_series"
 
