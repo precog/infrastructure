@@ -7,4 +7,12 @@ db.runCommand( { enablesharding : "analytics0-3" } );
 db.runCommand( { shardcollection : "analytics0-3.variable_value_series", key : { "id":1}});
 db.runCommand( { shardcollection : "analytics0-3.variable_series", key : { "id":1}});
 db.runCommand( { shardcollection : "analytics0-3.variable_values", key : { "id":1}});
-db.runCommand( { shardcollection : "analytics0-3.variable_values_infinite", key : { "id":1}});
+db.runCommand( { shardcollection : "analytics0-3u", key : { "id":1}});
+
+db.runCommand( { enablesharding : "analytics1" } );
+
+db.runCommand( { shardcollection : "analytics1.variable_value_series", key : { "id":1}});
+db.runCommand( { shardcollection : "analytics1.variable_series", key : { "id":1}});
+db.runCommand( { shardcollection : "analytics1.variable_values", key : { "id":1}});
+db.runCommand( { shardcollection : "analytics1.variable_values_infinite", key : { "id":1}});
+db.runCommand( { shardcollection : "analytics1.events", key : { "token":1, "path": 1, "timestamp": 1}});
