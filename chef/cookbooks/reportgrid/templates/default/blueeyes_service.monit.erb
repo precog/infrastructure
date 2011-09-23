@@ -6,7 +6,7 @@ check process <%= @service_name %>-<%= @version %> with pidfile /var/run/reportg
   group <%= @service_name %>-<%= @version %>
 
 check file <%= @service_name %>-<%= @version %>-health.log with path /var/log/reportgrid/<%= @service_name %>-<%= @version %>-health.log
-  start program  = "/usr/bin/touch /var/log/reportgrid/<%= @service_name %>-<%= @version %>-health.log && /bin/chown reportgrid:reportgrid /var/log/reportgrid/<%= @service_name %>-<%= @version %>-health.log"
+  start program  = "/usr/bin/touch -c /var/log/reportgrid/<%= @service_name %>-<%= @version %>-health.log && /bin/chown reportgrid:reportgrid /var/log/reportgrid/<%= @service_name %>-<%= @version %>-health.log"
   stop program  = "/bin/rm /var/log/reportgrid/<%= @service_name %>-<%= @version %>-health.log"
   if timestamp > 20 minutes then alert
   if match "ERROR" for 3 cycles then alert
