@@ -19,14 +19,26 @@ cookbook_file "ssh_config" do
   mode "600"
 end
 
-cookbook_file "id_github" do
-  source "id_github"
-  path "/root/.ssh/id_github"
+cookbook_file "id_github_website" do
+  source "id_github_website"
+  path "/root/.ssh/id_github_website"
   mode "600"
 end
 
-cookbook_file "id_github.pub" do
-  source "id_github.pub"
-  path "/root/.ssh/id_github.pub"
+cookbook_file "id_github_website.pub" do
+  source "id_github_website.pub"
+  path "/root/.ssh/id_github_website.pub"
+  mode "644"
+end
+
+cookbook_file "id_github_apisite" do
+  source "id_github_apisite"
+  path "/root/.ssh/id_github_apisite"
+  mode "600"
+end
+
+cookbook_file "id_github_apisite.pub" do
+  source "id_github_apisite.pub"
+  path "/root/.ssh/id_github_apisite.pub"
   mode "644"
 end

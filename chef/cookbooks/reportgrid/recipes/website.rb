@@ -24,7 +24,7 @@ include_recipe "reportgrid::source"
 #end
 
 execute "git_clone_website" do
-  command "cd #{node[:reportgrid][:source][:root]} && /usr/bin/git clone git@github.com:reportgrid/website.git"
+  command "cd #{node[:reportgrid][:source][:root]} && /usr/bin/git clone git@rgsite.github.com:reportgrid/website.git"
   not_if { File.directory?("#{node[:reportgrid][:source][:root]}/website") }
 end
 
