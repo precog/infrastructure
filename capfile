@@ -106,3 +106,20 @@ desc "Aptitude Install"
 task :aptitude_install, :roles => :none do
   run "#{sudo} aptitude install #{ENV['PACKAGE']}"
 end
+
+
+#
+# RackSpace ubuntu account setup
+#
+desc "RackSpace Initial setup"
+task :rackspace_setup do
+  "You can set the password via \"-s password=...\" on the command line"
+  set :user, "root"
+  run "adduser \"ubuntu\" --gecos \"Management user\" --disabled-password &&
+       echo \"ubuntu ALL=(ALL) NOPASSWD:ALL\" >> /etc/sudoers &&
+       mkdir ~ubuntu/.ssh &&
+       chown ubuntu:ubuntu ~ubuntu/.ssh &&
+       chmod 700 ~ubuntu/.ssh"
+  upload("ec2/ec2_keypair_authorized_keys", "/home/ubuntu/.ssh/authorized_keys", :via => :scp)
+  run "chown ubuntu:ubuntu ~ubuntu/.ssh/authorized_keys"
+end
