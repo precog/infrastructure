@@ -1,0 +1,10 @@
+{
+  "id": "nagiosadmin",
+  "groups": "sysadmin",
+  "htpasswd": "{SHA}R7VIUMDGzCXLJutl4CJHzKHCvvE=",
+  "openid": "http://nagiosadmin.myopenid.com/",
+  "nagios": {
+    "pager": "derek@reportgrid.com",
+    "email": "derek@reportgrid.com"
+  }
+}
