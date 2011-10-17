@@ -3,6 +3,17 @@
 # This script updates the public DNS records for this host
 #
 
-<% @node[:ec2][:route53][:opts].each do |opts| -%>
-/var/lib/gems/1.8/bin/route53 <% opts.each do |opt| -%><%= opt %> <% end -%> 2>&1 | tee -a <%= @node[:ec2][:route53][:log] %>
-<% end -%>
+<% 
+# Need to handle different installation locations (to support older LTS)
+if FileTest.exists? "/usr/bin/route53" then
+  route53bin = "/usr/bin/route53"
+elsif FileTest.exists? "/var/lib/gems/1.8/bin/route53" then
+  route53bin = "/var/lib/gems/1.8/bin/route53"
+end
+%>
+
+# Delete the existing CNAME (if any)
+<%= "#{route53bin} --file /root/.route53 --zone reportgrid.com. --remove --name #{node[:fqdn] + '.'} --type CNAME" %>
+
+# Add in the new CNAME
+<%= "#{route53bin} --file /root/.route53 --zone reportgrid.com. --create --name #{node[:fqdn] + '.'} --type CNAME --ttl 60 --values #{node[:cloud][:public_hostname] + '.'} | tee -a #{node[:ec2][:route53][:log]} " %>
