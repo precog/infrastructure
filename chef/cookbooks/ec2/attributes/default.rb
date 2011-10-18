@@ -4,3 +4,6 @@ default[:ec2][:secret_key] = "GI2tRbW8vtOCVMGz06xR4Zgjz6LLUzZmhOjluh0G"
 default[:ec2][:ephemeral_backups] = "/mnt/backups"
 
 default[:ec2][:route53][:log] = '/var/log/route53.log'
+
+# Add additional DNS aliases at the node level
+default[:ec2][:route53][:aliases] = []

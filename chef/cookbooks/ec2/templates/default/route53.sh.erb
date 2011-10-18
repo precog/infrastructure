@@ -12,8 +12,16 @@ elsif FileTest.exists? "/var/lib/gems/1.8/bin/route53" then
 end
 %>
 
-# Delete the existing CNAME (if any)
+# Delete the existing CNAMEs (if any)
 <%= "#{route53bin} --file /root/.route53 --zone reportgrid.com. --remove --name #{node[:fqdn] + '.'} --type CNAME" %>
 
-# Add in the new CNAME
+<% node[:ec2][:route53][:aliases].each do |dnsalias| %>
+<%= "#{route53bin} --file /root/.route53 --zone reportgrid.com. --remove --name #{dnsalias + '.'} --type CNAME"  %>
+<% end %>
+
+# Add in the new CNAMEs
 <%= "#{route53bin} --file /root/.route53 --zone reportgrid.com. --create --name #{node[:fqdn] + '.'} --type CNAME --ttl 60 --values #{node[:cloud][:public_hostname] + '.'} | tee -a #{node[:ec2][:route53][:log]} " %>
+
+<% node[:ec2][:route53][:aliases].each do |dnsalias|  %>
+<%= "#{route53bin} --file /root/.route53 --zone reportgrid.com. --create --name #{dnsalias + '.'} --type CNAME --ttl 60 --values #{node[:cloud][:public_hostname] + '.'} | tee -a #{node[:ec2][:route53][:log]} " %>
+<% end %>
