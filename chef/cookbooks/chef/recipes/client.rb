@@ -12,6 +12,8 @@ package "libshadow-ruby" do
   package_name "libshadow-ruby1.8"
 end
 
+package "chef"
+
 service "chef-client" do
   service_name "chef-client"
   action :enable
