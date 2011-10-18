@@ -6,4 +6,4 @@ run_list "recipe[rc-local]", "recipe[hosts]", "recipe[resolv]", "recipe[apt]", "
          "recipe[zsh]", "recipe[pam]", "recipe[sudo]", "recipe[openssh::client]", "recipe[openssh::server]", "recipe[openssh::roundhousesupport]",
          "recipe[git]", "recipe[zip]",
          "recipe[tmux]", "recipe[htop]", "recipe[iftop]", "recipe[nethogs]", "recipe[iotop]", "recipe[sysstat]", "recipe[chef::client]",
-         "recipe[jazor]"
+         "recipe[jazor]", "recipe[munin::client]"

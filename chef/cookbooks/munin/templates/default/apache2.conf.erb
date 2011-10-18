@@ -1,0 +1,25 @@
+<VirtualHost *:80>
+  ServerAdmin     operations@reportgrid.com
+  ServerName      munin.<%= node[:app_environment] %>.<%= @public_domain %>
+<% case node[:platform] -%>
+<% when "arch" -%>
+  Alias /munin /srv/http/munin
+  DocumentRoot /srv/http/munin
+<% else -%>
+  DocumentRoot /var/www/munin
+  #Alias /munin /var/www/munin
+<% end -%>
+  CustomLog       <%= node[:apache][:log_dir] %>/munin_access.log combined
+  ErrorLog        <%= node[:apache][:log_dir] %>/munin_error.log
+
+  <Location />
+    AuthName "Nagios Server"
+    AuthType Basic
+    AuthUserFile "<%= node['nagios']['conf_dir'] %>/htpasswd.users"
+    require valid-user
+  </Location>
+
+  RewriteEngine On
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /.*index\.html\ HTTP/
+  RewriteRule ^(.*)index\.html$ $1 [R=301,L]
+</VirtualHost>
