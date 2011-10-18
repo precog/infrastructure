@@ -8,6 +8,6 @@ description 'The default/base role for all nodes (i.e. all other roles are assum
 #         "recipe[tmux]", "recipe[htop]", "recipe[iftop]", "recipe[nethogs]", "recipe[iotop]", "recipe[sysstat]", "recipe[chef::client]",
 #         "recipe[jazor]"
 
-run_list "recipe[rc-local]", "recipe[hosts]", "recipe[at]", "recipe[ruby]",
+run_list "recipe[ubuntu_user]", "recipe[rc-local]", "recipe[hosts]", "recipe[at]", "recipe[ruby]",
          "recipe[python]", "recipe[monit]", "recipe[ec2::route53]", "recipe[postfix]",
          "recipe[mailx]", "recipe[munin::client]", "recipe[apt]", "recipe[chef::client]"
