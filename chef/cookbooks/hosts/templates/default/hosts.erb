@@ -1,5 +1,5 @@
 127.0.0.1 localhost
-<%= @node[:ipaddress] %> <%= @node[:fqdn] %> <%= @node[:hostname] %> <%= @node[:ec2][:hostname] %> <%= @node[:ec2][:local_hostname] %> <%= @node[:ec2][:public_hostname] %>
+<%= @node[:ipaddress] %> <%= @node[:fqdn] %> <%= @node[:hostname] %> <%= @node[:cloud][:local_hostname] %> <%= @node[:cloud][:public_hostname] %>
 
 # The following lines are desirable for IPv6 capable hosts
 ::1 ip6-localhost ip6-loopback
