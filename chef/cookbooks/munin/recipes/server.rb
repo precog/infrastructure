@@ -41,7 +41,7 @@ else
   end
 end
 
-munin_nodes = search(:node, "munin:[* TO *] AND ((chef_environment:Production AND (name:appserver* OR name:mongo*)) OR name:devops*)")
+munin_nodes = search(:node, "munin:[* TO *] AND role:monitored")
 
 if node[:public_domain]
   case node[:app_environment]

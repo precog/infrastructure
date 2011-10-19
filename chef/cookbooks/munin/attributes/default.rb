@@ -17,8 +17,6 @@
 # limitations under the License.
 #
 
-default['app_environment'] = 'production'
-
 default['munin']['server_role'] = 'monitoring'
 
 case node[:platform]

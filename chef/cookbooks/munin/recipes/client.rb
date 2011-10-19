@@ -24,7 +24,7 @@ service "munin-node" do
   action :enable
 end
 
-munin_servers = search(:node, "role:#{node['munin']['server_role']} AND app_environment:#{node['app_environment']}")
+munin_servers = search(:node, "role:#{node['munin']['server_role']}")
 
 template "/etc/munin/munin-node.conf" do
   source "munin-node.conf.erb"
