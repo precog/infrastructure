@@ -6,3 +6,8 @@ cookbook_versions ({
   "apt" => "0.1",
   "chef" => "0.1"
 })
+default_attributes ({
+  "postfix" => {
+    "root_email" => "operations@reportgrid.com"
+  }
+})
