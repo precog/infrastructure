@@ -12,6 +12,7 @@ group "ubuntu"
 user "ubuntu" do
   gid "ubuntu"
   home "/home/ubuntu"
+  shell "/bin/bash"
   supports :manage_home => "true"
 end
 
