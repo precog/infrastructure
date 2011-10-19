@@ -27,7 +27,8 @@ include_recipe "apache2::mod_rewrite"
 include_recipe "nagios::client"
 
 sysadmins = search(:users, 'groups:sysadmin')
-nodes = search(:node, "hostname:[* TO *] AND chef_environment:#{node.chef_environment}")
+#nodes = search(:node, "hostname:[* TO *] AND chef_environment:#{node.chef_environment}")
+nodes = search(:node, "role:monitored OR role:monitoring")
 
 if nodes.empty?
   Chef::Log.info("No nodes returned from search, using this node so hosts.cfg has data")
@@ -40,12 +41,13 @@ sysadmins.each do |s|
   members << s['id']
 end
 
-role_list = Array.new
+# Compile the list of all roles assigned to monitored servers
+role_list = (nodes.map {|n| n.run_list.role_names }).flatten.uniq
+
 service_hosts= Hash.new
-search(:role, "*:*") do |r|
-  role_list << r.name
-  search(:node, "role:#{r.name} AND chef_environment:#{node.chef_environment}") do |n|
-    service_hosts[r.name] = n['hostname']
+role_list.each do |r|
+  search(:node, "role:#{r} AND chef_environment:#{node.chef_environment}") do |n|
+    service_hosts[r] = n['hostname']
   end
 end
 

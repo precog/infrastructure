@@ -4,20 +4,11 @@
 define hostgroup {
   hostgroup_name all
   alias all
-  members *
+  members ^.*$
 }
 
-<% @roles.each do |r| 
-  if r =~ /monitoring|appserver/ then -%>
+<% @roles.each do |role| %>
 define hostgroup {
-  hostgroup_name <%= r %>
-  alias <%= r %>
+  hostgroup_name <%= role %>
 }
-
-<% end 
-end -%>
-
-define hostgroup {
-  hostgroup_name mongodb-replset-server
-  alias mongodb-replset-server
-}
+<% end %>
