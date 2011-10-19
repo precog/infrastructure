@@ -1,20 +1,35 @@
 #!/bin/bash
 
 case "$#" in
-    1)
-        HOST=$1
-        NODE=$1
-	shift
-        ;;
+    0|1)
+        echo "Usage: $0 <hostname> <ubuntu|username:password> [<node name>]"
+        exit
+	;;
     2)
         HOST=$1
-        NODE=$2
+	USERNAME=$2
+        NODE=$1
 	shift
 	shift
         ;;
-    0)
-        echo "Usage: $0 <hostname> [<node name>]"
-        exit
+    *)
+        HOST=$1
+	USERNAME=$2
+        NODE=$3
+	shift
+	shift
+	shift
+        ;;
 esac
 
-knife bootstrap --identity-file ec2/ec2-keypair.pem --ssh-user ubuntu --sudo --node-name ${NODE} ${HOST} "$@"
+if echo ${USERNAME} | grep ubuntu; then
+    AUTHOPTS="--identity-file ec2/ec2-keypair.pem --ssh-user ubuntu --sudo"
+elif echo ${USERNAME} | grep -v ':'; then
+    echo "Non-ubuntu users need a username:password value"
+    exit
+else
+    AUTHOPTS="--ssh-user ${USERNAME%:*} --ssh-password ${USERNAME#*:}"
+fi
+
+knife bootstrap ${AUTHOPTS} --node-name ${NODE} ${HOST} "$@"
+
