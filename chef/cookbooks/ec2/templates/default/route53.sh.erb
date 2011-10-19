@@ -3,6 +3,9 @@
 # This script updates the public DNS records for this host
 #
 
+# Indicate that we've run once this boot
+touch <%= node[:ec2][:route53][:flagfile] %>
+
 <% 
 # Need to handle different installation locations (to support older LTS)
 if FileTest.exists? "/usr/bin/route53" then
@@ -13,10 +16,10 @@ end
 %>
 
 # Delete the existing CNAMEs (if any)
-<%= "#{route53bin} --file /root/.route53 --zone reportgrid.com. --remove --name #{node[:fqdn] + '.'} --type CNAME" %>
+<%= "#{route53bin} --file /root/.route53 --zone reportgrid.com. --remove --name #{node[:fqdn] + '.'} --type CNAME | tee -a #{node[:ec2][:route53][:log]}" %>
 
 <% node[:ec2][:route53][:aliases].each do |dnsalias| %>
-<%= "#{route53bin} --file /root/.route53 --zone reportgrid.com. --remove --name #{dnsalias + '.'} --type CNAME"  %>
+<%= "#{route53bin} --file /root/.route53 --zone reportgrid.com. --remove --name #{dnsalias + '.'} --type CNAME | tee -a #{node[:ec2][:route53][:log]}"  %>
 <% end %>
 
 # Add in the new CNAMEs

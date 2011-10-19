@@ -15,20 +15,23 @@ end
 execute "route53.sh" do
   command "/etc/rc.local.d/route53.sh"
   action :nothing
+  # Allow for a first-time run
+  not_if "test -f #{node[:ec2][:route53][:flagfile]}"
+  only_if "test -f /etc/rc.local.d/route53.sh"
 end
 
 template "route53" do
   source "route53.erb"
   path "/root/.route53"
   mode "0600"
-#  notifies :run, resources(:execute => "route53.sh")
+  notifies :run, resources(:execute => "route53.sh")
 end
 
 template "route53.sh" do
   source "route53.sh.erb"
   path "/etc/rc.local.d/route53.sh"
   mode "755"
-#  notifies :run, resources(:execute => "route53.sh")
+  notifies :run, resources(:execute => "route53.sh")
 end
 
 # FIXME: how do we monitor this file?
