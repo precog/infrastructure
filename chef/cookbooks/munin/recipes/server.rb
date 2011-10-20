@@ -41,7 +41,7 @@ else
   end
 end
 
-munin_nodes = search(:node, "munin:[* TO *] AND role:monitored")
+munin_nodes = search(:node, "munin:[* TO *] AND (role:monitored OR role:monitoring)")
 
 if node[:public_domain]
   case node[:app_environment]
