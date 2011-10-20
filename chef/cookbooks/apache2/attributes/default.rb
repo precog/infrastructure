@@ -71,8 +71,8 @@ end
 ###
 
 # General settings
-default[:apache][:listen_ports] = [ "80","443" ]
-default[:apache][:contact] = "ops@example.com"
+default[:apache][:listen_ports] = [ "20000" ]
+default[:apache][:contact] = "operations@reportgrid.com"
 default[:apache][:timeout] = 300
 default[:apache][:keepalive] = "On"
 default[:apache][:keepaliverequests] = 100
