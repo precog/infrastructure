@@ -23,7 +23,7 @@ case "$#" in
 esac
 
 if echo ${USERNAME} | grep ubuntu; then
-    AUTHOPTS="--identity-file ec2/ec2-keypair.pem --ssh-user ubuntu --sudo"
+    AUTHOPTS="--identity-file `dirname $0`/../ec2/ec2-keypair.pem --ssh-user ubuntu --sudo"
 elif echo ${USERNAME} | grep -v ':'; then
     echo "Non-ubuntu users need a username:password value"
     exit

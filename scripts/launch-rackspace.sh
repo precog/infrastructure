@@ -12,6 +12,6 @@ FQDN=$3
 shift 3
 
 # Fix hosts/hostname
-`dirname $0`/fix-rackspace.sh $IP $PASS
+`dirname $0`/pre-chef.sh $IP $FQDN $PASS
 
 `dirname $0`/chef-boot.sh $IP "root:$PASS" $FQDN "$@"
