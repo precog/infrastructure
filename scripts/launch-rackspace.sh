@@ -11,6 +11,13 @@ FQDN=$3
 
 shift 3
 
+if host $IP | grep -v pointer > /dev/null ; then
+    IP=`dig +short $IP`
+fi
+
+echo "Launching instance at $IP"
+
+
 # Fix hosts/hostname
 `dirname $0`/pre-chef.sh $IP $FQDN $PASS
 
