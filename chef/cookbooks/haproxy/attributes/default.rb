@@ -29,15 +29,15 @@ default[:haproxy][:defaults] = [
 
 services = {
   ['analytics', 'v0'] => {
-    :servers => (1..4).map { |i| "appserver#{'%02d' % i}.reportgrid.com" },
+    :servers => (1..6).map { |i| "appserver#{'%02d' % i}.reportgrid.com" },
     :port    => 30010
   },
   ['analytics', 'v1'] => {
-    :servers => (1..4).map { |i| "appserver#{'%02d' % i}.reportgrid.com" },
+    :servers => (1..6).map { |i| "appserver#{'%02d' % i}.reportgrid.com" },
     :port    => 30020
   },
   ['jessup', 'v1'] => {
-    :servers => (1..4).map { |i| "appserver#{'%02d' % i}.reportgrid.com" },
+    :servers => (1..6).map { |i| "appserver#{'%02d' % i}.reportgrid.com" },
     :port    => 30030
   }
 }
