@@ -1,6 +1,6 @@
 <?
 
-define("PHANTOMJS", "/usr/local/bin/phantomjs");
+define("PHANTOMJS", "DISPLAY=:0 /usr/local/bin/phantomjs");
 
 require_once('lib/config.class.php');
 

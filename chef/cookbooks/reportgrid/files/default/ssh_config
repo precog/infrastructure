@@ -10,3 +10,8 @@ Host rgclient.github.com
     IdentityFile=/root/.ssh/id_github_apisite
     StrictHostKeyChecking no
 
+Host rgviz.github.com
+    User git
+    HostName github.com
+    IdentityFile=/root/.ssh/id_github_visualization
+    StrictHostKeyChecking no
