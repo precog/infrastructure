@@ -2,7 +2,6 @@ name "Production"
 description "Production server env"
 cookbook_versions ({
   "apt" => "0.1",
-  "chef" => "0.1",
   "reportgrid" => "0.1",
   "mongodb" => "0.1"
 })
