@@ -9,5 +9,5 @@ description 'The default/base role for all nodes (i.e. all other roles are assum
 #         "recipe[jazor]"
 
 run_list "recipe[ubuntu_user]", "recipe[sudo]", "recipe[rc-local]", "recipe[hosts]", "recipe[at]", "recipe[ruby]",
-         "recipe[python]", "recipe[monit]", "recipe[ec2::route53]", "recipe[postfix]",
+         "recipe[python]", "recipe[monit]", "recipe[ec2::route53]", "recipe[postfix]", "recipe[rsyslog]",
          "recipe[mailx]", "recipe[munin::client]", "recipe[apt]", "recipe[chef::client]"
