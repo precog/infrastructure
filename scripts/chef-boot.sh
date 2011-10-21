@@ -2,7 +2,7 @@
 
 case "$#" in
     0|1)
-        echo "Usage: $0 <hostname> <ubuntu|username:password> [<node name>]"
+        echo "Usage: $0 <hostname> <ubuntu|username:password> [<node name>] [<additional chef params>]"
         exit
 	;;
     2)
