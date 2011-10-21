@@ -72,13 +72,17 @@ done
 echo "  Restarting instance post-snapshot"
 startInstance
 
-echo "Sleeping 30 seconds for SSH to start"
-sleep 30
+# Reset on startup
+HOSTNAME=`ec2-describe-instances ${IID} | awk -F'\t' "/INSTANCE\t${IID}/{ print \\$4 }"`
+
+echo "Sleeping 10 seconds for SSH to start"
+sleep 10
 
 echo "Upgrading ${HOSTNAME} packages and installing grub-legacy-ec2"
 
 # Tip for disabling host key check from http://linuxcommando.blogspot.com/2008/10/how-to-disable-ssh-host-key-checking.html
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i `dirname $0`/ec2-keypair.pem ubuntu@${HOSTNAME} "sudo aptitude update && sudo aptitude -y safe-upgrade && sudo aptitude install grub-legacy-ec2" || { echo "Failed to upgrade!" ; exit }
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i `dirname $0`/ec2-keypair.pem ubuntu@${HOSTNAME} \
+"sudo aptitude update && sudo aptitude -y safe-upgrade && sudo aptitude install grub-legacy-ec2" || { echo "Failed to upgrade!" ; exit }
 
 echo "Stopping instance for kernel AKI change"
 stopInstance
