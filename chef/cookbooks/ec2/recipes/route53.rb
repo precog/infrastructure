@@ -15,8 +15,8 @@ end
 execute "route53.sh" do
   command "/etc/rc.local.d/route53.sh"
   action :nothing
-  # Allow for a first-time run
-  not_if "test -f #{node[:ec2][:route53][:flagfile]}"
+  # Only run if we have a mismatch
+  only_if "route53 -l reportgrid.com. | grep #{node[:hostname]} | grep -v #{node[:cloud][:public_hostname]}"
   only_if "test -f /etc/rc.local.d/route53.sh"
 end
 
