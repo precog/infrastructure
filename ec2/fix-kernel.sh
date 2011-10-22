@@ -59,9 +59,9 @@ stopInstance
 
 TIMESTAMP=`date "+%Y%m%d-%H%M%S"`
 
-for vol in ${DISKS}; do
+for vol in `echo ${DISKS}`; do
     echo "  Taking snapshot of volume ${vol}"
-    SNAPID=`ec2-create-snapshot -d "AKI upgrade snapshot ${TIMESTAMP}" ${vol} | awk -F'\t' '/SNAPSHOT/{print $2}' || { echo "Snapshot failed!"; exit } ` 
+    SNAPID=`ec2-create-snapshot -d "AKI upgrade snapshot $1-${TIMESTAMP}" ${vol} | awk -F'\t' '/SNAPSHOT/{print $2}' || { echo "Snapshot failed!"; exit } ` 
     
     while [ "`ec2-describe-snapshots ${SNAPID} | awk -F'\t' '/SNAPSHOT/{ print $4 }'`" != "completed" ]; do
 	echo "    Waiting on snapshot ${SNAPID}"
