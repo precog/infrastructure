@@ -10,7 +10,14 @@ package "ntp" do
   package_name "ntp"
 end
 
+template "/etc/ntp.conf" do
+  owner "root"
+  group "root"
+  mode "644"
+  notifies :restart, "service[ntp]"
+end
+
 service "ntp" do
   service_name "ntp"
-  action :enable
+  action [ :enable, :start ]
 end
