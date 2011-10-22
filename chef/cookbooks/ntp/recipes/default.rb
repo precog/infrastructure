@@ -10,6 +10,11 @@ package "ntp" do
   package_name "ntp"
 end
 
+service "ntp" do
+  service_name "ntp"
+  action [ :enable, :start ]
+end
+
 template "/etc/ntp.conf" do
   owner "root"
   group "root"
@@ -17,7 +22,3 @@ template "/etc/ntp.conf" do
   notifies :restart, "service[ntp]"
 end
 
-service "ntp" do
-  service_name "ntp"
-  action [ :enable, :start ]
-end
