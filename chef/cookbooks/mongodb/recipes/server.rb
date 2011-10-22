@@ -26,6 +26,7 @@ user "mongodb" do
   home "/var/lib/mongodb"
   shell "/bin/false"
   ignore_failure true # FIXME: fails if the user is logged in (ignore for now)
+  supports :manage_home => false
 end
 
 group "mongodb" do
@@ -45,11 +46,13 @@ end
 link "mongodb_db" do
   to "#{node[:mongodb][:data_mount_point]}/db"
   target_file "/var/lib/mongodb"
+  not_if { File.directory?("#{node[:mongodb][:data_mount_point]}/db") }
 end
 
 link "mongodb_logs" do
   to "#{node[:mongodb][:data_mount_point]}/logs"
   target_file "/var/log/mongodb"
+  not_if { File.directory?("#{node[:mongodb][:data_mount_point]}/db") }
 end
 
 template "mongodb.logrotate" do
