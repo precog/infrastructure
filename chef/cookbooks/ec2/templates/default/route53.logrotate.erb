@@ -1,0 +1,8 @@
+<%= node[:ec2][:route53][:log] %> {
+  rotate 4
+  weekly
+  compress
+  missingok
+  notifempty
+  create 0644 root root
+}

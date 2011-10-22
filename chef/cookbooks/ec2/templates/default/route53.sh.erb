@@ -12,20 +12,33 @@ elsif FileTest.exists? "/var/lib/gems/1.8/bin/route53" then
 end
 %>
 
+echo "Route53 run starting at `date`" | tee -a <%= node[:ec2][:route53][:log] %>
+
+# Use Ohai to get our current public hostname
+PUBHOST=`echo "require 'rubygems'; require 'ohai'; o = Ohai::System.new; o.all_plugins ; puts o[:cloud][:public_hostname]" | ruby`
+
+if [ -z "${PUBHOST}" ]; then
+    echo "  Could not determine current public hostname!" | tee -a <%= node[:ec2][:route53][:log] %>
+    exit
+fi
 
 # Handle the primary names
-if <%= route53bin %> -l reportgrid.com. | grep `hostname` | grep -v <%= node[:cloud][:public_hostname] %>; then
-    <%= "#{route53bin} --file /root/.route53 --zone reportgrid.com. --remove --name #{node[:fqdn] + '.'} --type CNAME | tee -a #{node[:ec2][:route53][:log]}" %>
-
-    <%= "#{route53bin} --file /root/.route53 --zone reportgrid.com. --create --name #{node[:fqdn] + '.'} --type CNAME --ttl 60 --values #{node[:cloud][:public_hostname] + '.'} | tee -a #{node[:ec2][:route53][:log]} " %>
+if <%= route53bin %> --file /root/.route53 -l reportgrid.com. | egrep "^`hostname`" | grep -v ${PUBHOST} > /dev/null ; then
+    <%= route53bin %> --file /root/.route53 --zone reportgrid.com. --remove --name <%= node[:fqdn] + '.' %> --type CNAME | tee -a <%= node[:ec2][:route53][:log] %>
+    <%= route53bin %> --file /root/.route53 --zone reportgrid.com. --create --name <%= node[:fqdn] + '.' %> --type CNAME --ttl 60 --values "${PUBHOST}." | tee -a <%= node[:ec2][:route53][:log] %>
+else
+    echo "  Primary <%= node[:fqdn] %> points correctly to ${PUBHOST}" | tee -a <%= node[:ec2][:route53][:log] %>
 fi
 
 
 <% node[:ec2][:route53][:aliases].each do |dnsalias| %>
-# Handle alias <%= dnsalias %>
-if <%= route53bin %> -l reportgrid.com. | grep dnsalias | grep -v <%= node[:cloud][:public_hostname] %>; then
-    <%= "#{route53bin} --file /root/.route53 --zone reportgrid.com. --remove --name #{dnsalias + '.'} --type CNAME | tee -a #{node[:ec2][:route53][:log]}"  %>
-    <%= "#{route53bin} --file /root/.route53 --zone reportgrid.com. --create --name #{dnsalias + '.'} --type CNAME --ttl 60 --values #{node[:cloud][:public_hostname] + '.'} | tee -a #{node[:ec2][:route53][:log]} " %>
+# Handle alias <%= dnsalias %> to <%= node[:fqdn] %>
+if <%= route53bin %> --file /root/.route53 -l reportgrid.com. | egrep "^<%= dnsalias %>" | grep -v <%= node[:fqdn] %> > /dev/null ; then
+    <%= route53bin %> --file /root/.route53 --zone reportgrid.com. --remove --name <%= dnsalias + '.' %> --type CNAME | tee -a <%= node[:ec2][:route53][:log] %>
+    <%= route53bin %> --file /root/.route53 --zone reportgrid.com. --create --name <%= dnsalias + '.' %> --type CNAME --ttl 60 --values <%= node[:fqdn] + '.' %> | tee -a <%= node[:ec2][:route53][:log] %>
+else
+    echo "  Alias <%= dnsalias %> is pointed correctly to <%= node[:fqdn] %>" | tee -a <%= node[:ec2][:route53][:log] %>
 fi
 <% end %>
 
+echo "Route53 run ending at `date`" | tee -a <%= node[:ec2][:route53][:log] %>

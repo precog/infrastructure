@@ -15,8 +15,6 @@ end
 execute "route53.sh" do
   command "/etc/rc.local.d/route53.sh"
   action :nothing
-  # Only run if we have a mismatch
-  only_if "route53 -l reportgrid.com. | grep #{node[:hostname]} | grep -v #{node[:cloud][:public_hostname]}"
   only_if "test -f /etc/rc.local.d/route53.sh"
 end
 
@@ -32,6 +30,11 @@ template "route53.sh" do
   path "/etc/rc.local.d/route53.sh"
   mode "755"
   notifies :run, resources(:execute => "route53.sh")
+end
+
+template "/etc/logrotate.d/route53" do
+  source "route53.logrotate.erb"
+  mode "644"
 end
 
 # FIXME: how do we monitor this file?
