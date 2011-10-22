@@ -23,7 +23,7 @@ if [ -z "${PUBHOST}" ]; then
 fi
 
 # Handle the primary names
-if <%= route53bin %> --file /root/.route53 -l reportgrid.com. | egrep "^`hostname`" | grep -v ${PUBHOST} > /dev/null ; then
+if ! <%= route53bin %> --file /root/.route53 -l reportgrid.com | egrep "^`hostname -f`" > /dev/null || <%= route53bin %> --file /root/.route53 -l reportgrid.com. | egrep "^`hostname -f`" | grep -v ${PUBHOST} > /dev/null ; then
     <%= route53bin %> --file /root/.route53 --zone reportgrid.com. --remove --name <%= node[:fqdn] + '.' %> --type CNAME | tee -a <%= node[:ec2][:route53][:log] %>
     <%= route53bin %> --file /root/.route53 --zone reportgrid.com. --create --name <%= node[:fqdn] + '.' %> --type CNAME --ttl 60 --values "${PUBHOST}." | tee -a <%= node[:ec2][:route53][:log] %>
 else
