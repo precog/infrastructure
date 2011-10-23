@@ -1,0 +1,27 @@
+<% @params[:server_aliases] ||= [] %>
+<VirtualHost *:443>
+  ServerName <%= @params[:server_name] %>:443
+  ServerAlias <% @params[:server_aliases].each do |a| %><%= "#{a}" %> <% end %>
+  RewriteEngine On
+
+  SSLCertificateFile /etc/apache2/ssl/reportgrid.cert
+  SSLCertificateKeyFile /etc/apache2/ssl/reportgrid.key
+  SSLEngine on
+
+  SSLProxyEngine on
+  ProxyRequests off
+  ProxyReceiveBufferSize 4096
+  ProxyPreserveHost on
+
+  LogLevel info
+  ErrorLog <%= node[:apache][:log_dir] %>/<%= @params[:name] %>-error.log
+  CustomLog <%= node[:apache][:log_dir] %>/<%= @params[:name] %>-access.log combined
+
+  <Proxy *>
+    Order deny,allow
+    Allow from all
+  </Proxy>
+
+  # Forward all SSL to the local haproxy instance
+  ProxyPass / http://localhost:80/
+</VirtualHost>
