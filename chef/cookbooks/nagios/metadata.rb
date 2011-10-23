@@ -1,11 +1,11 @@
 # THIS INSTALL HAS BEEN TWEAKED BY REPORTGRID!!!
 
-maintainer        "Opscode, Inc."
+maintainer        "ReportGrid, Inc."
 maintainer_email  "cookbooks@opscode.com"
 license           "Apache 2.0"
 description       "Installs and configures nagios"
 long_description  IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version           "1.0.1"
+version           "10.0.2"
 
 recipe "nagios", "Includes the client recipe."
 recipe "nagios::client", "Installs and configures a nagios client with nrpe"

@@ -161,7 +161,7 @@ define service {
     use                 default-service
     hostgroup_name          mongodb-replset-server
     service_description     Mongo Replication Lag
-    check_command           check_mongodb!replication_lag!27018!15!30
+    check_command           check_mongodb!replication_lag!27018!300!900
 }
 
 define service {
