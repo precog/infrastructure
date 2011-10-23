@@ -309,8 +309,14 @@ def check_flushing(con, warning, critical, avg, perf_data):
             data = con.admin.command(pymongo.son.SON([('serverStatus', 1)]))
 
         if avg:
+            last_flush_time = float(data['backgroundFlushing']['last_ms'])
             flush_time = float(data['backgroundFlushing']['average_ms'])
             stat_type = "Average"
+
+            # Disregard falling times
+            if last_flush_time < (flush_time / 2):
+                stat_type = "Falling Average %.2fms. Last" % flush_time
+                flush_time = last_flush_time
         else:
             flush_time = float(data['backgroundFlushing']['last_ms'])
             stat_type = "Last"
