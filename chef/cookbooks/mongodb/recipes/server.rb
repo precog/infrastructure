@@ -111,6 +111,7 @@ if node[:hostname].match(/[0-9]+/)[0].to_i % 3 == 2
     owner 'mongodb'
     group 'mongodb'
     mode '755'
+    recursive true
   end
 
   template "mongodb-backup.js" do
