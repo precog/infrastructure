@@ -1,0 +1,53 @@
+server {
+  port = <%= @port %>
+  sslPort = <%= @port.to_i + 1 %>
+  sslEnable = false 
+
+  log {
+    level = "info"
+    console = true
+    filename = "/var/log/reportgrid/<%=@service_name%>-<%=@version%>.server.log"
+    roll = "daily"
+    use_parents = false
+  }
+}
+
+services {
+  billing {
+    v1 {
+      log {
+        level = "debug"
+        console = true
+        filename = "/var/log/reportgrid/<%=@service_name%>-<%=@version%>.log"
+        roll = "daily"
+        use_parents = false
+      }
+
+      requestLog {
+        enabled = false
+        file = "/var/log/reportgrid/<%=@service_name%>-<%=@version%>.request.log"
+        roll = "daily"
+        fields = "date time c-ip cs-method cs-uri-stem cs-uri-query sc-status"
+      }
+      
+      mongo {
+        database = "accounts_v1"
+        collection = "accounts"
+        servers = ["<%= node[:reportgrid][:mongo][:hosts].join('", "') %>"]
+      }
+      
+      braintree {
+        environment = "sandbox"
+        merchantId = "zrfxsyvnfvf8x73f" 
+        publicKey = "pyvkc5m7g6bvztfv"
+        privateKey = "zxv9467dx36zkd8y"
+      }
+
+      tokenGenerator {
+        rootUrl = "http://api.reportgrid.com/services/analytics/v1/tokens/"
+        rootToken = "A3BC1539-E8A9-4207-BB41-3036EC2C6E6D"
+      }
+
+    }
+  }
+}

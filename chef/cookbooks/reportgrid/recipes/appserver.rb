@@ -14,7 +14,7 @@ cookbook_file "/opt/reportgrid/GeoLiteCity.dat" do
   mode "0644"
 end
 
-[['analytics', 'v0', 30010], ['analytics', 'v1', 30020], ['jessup', 'v1', 30030]].each do |service,version,port|
+[['analytics', 'v0', 30010], ['analytics', 'v1', 30020], ['jessup', 'v1', 30030], ['billing', 'v1', 30040]].each do |service,version,port|
   blueeyes_service "#{service}-#{version}" do
     port "#{port}"
   end
