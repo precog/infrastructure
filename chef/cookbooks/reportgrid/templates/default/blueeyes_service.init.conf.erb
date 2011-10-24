@@ -16,7 +16,7 @@ end script
 script
   ulimit -n 65535
   if [ -f /etc/default/<%= @service_name %>-<%= @version %> ]; then . /etc/default/<%= @service_name %>-<%= @version %>; fi
-  su reportgrid -s "/bin/bash" -c "/usr/bin/java $JAVA_OPTS -jar /usr/share/java/<%= @service_name %>-<%= @version %>.jar --configFile /etc/reportgrid/<%= @service_name %>-<%= @version %>.conf"
+  su reportgrid -s "/bin/bash" -c "/usr/bin/java $JAVA_OPTS -jar /usr/share/java/<%= @jar_file %> --configFile /etc/reportgrid/<%= @service_name %>-<%= @version %>.conf"
 end script
 
 post-start script

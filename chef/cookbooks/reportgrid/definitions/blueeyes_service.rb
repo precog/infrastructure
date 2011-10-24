@@ -1,4 +1,4 @@
-define :blueeyes_service, :action=>:create, :port=>8100, :health_path=>nil do
+define :blueeyes_service, :action=>:create, :port=>8100, :health_path=>nil, :memory => nil, :jar_file => nil do
 
   if params[:name].split('-').length == 2
     service_name, version = params[:name].split('-')
@@ -10,8 +10,10 @@ define :blueeyes_service, :action=>:create, :port=>8100, :health_path=>nil do
     raise ArgumentError, "Missing required parameter: %s" % param if params[param].nil?
   end
 
+  # Set defaults for unspecified params
   params[:health_path] ||= '/blueeyes/services/%s/%s/health' % [service_name, version]
   params[:memory] ||= 4096
+  params[:jar_file] ||= "#{params[:name]}.jar"
 
   case params[:action]
   when :delete
@@ -57,8 +59,8 @@ define :blueeyes_service, :action=>:create, :port=>8100, :health_path=>nil do
       action :delete
     end
 
-    file "#{params[:name]}.jar" do
-      path "/usr/share/java/#{params[:name]}.jar"
+    file params[:jar_file] do
+      path "/usr/share/java/#{params[:jar_file]}"
       action :delete
     end
 
@@ -67,7 +69,8 @@ define :blueeyes_service, :action=>:create, :port=>8100, :health_path=>nil do
     template "/etc/init/#{params[:name]}.conf" do
       variables(
         :service_name => service_name,
-        :version      => version
+        :version      => version,
+        :jar_file     => params[:jar_file]
       )
       source "blueeyes_service.init.conf.erb"
       mode "0644"
@@ -83,9 +86,9 @@ define :blueeyes_service, :action=>:create, :port=>8100, :health_path=>nil do
       action :enable
     end
 
-    #remote_file "#{params[:name]}.jar" do
-    #  source "http://reportgrid.com.s3.amazonaws.com/deploy/production/#{params[:name]}.jar"
-    #  path "/usr/share/java/#{params[:name]}.jar"
+    #remote_file "#{params[:jar_file]}" do
+    #  source "http://reportgrid.com.s3.amazonaws.com/deploy/production/#{params[:jar_file]}"
+    #  path "/usr/share/java/#{params[:jar_file]}"
     #  mode "0644"
     #  notifies :restart, resources(:service => params[:name])
     #  action :create_if_missing
@@ -123,10 +126,10 @@ define :blueeyes_service, :action=>:create, :port=>8100, :health_path=>nil do
       mode "0755"
     end
 
-    cookbook_file "#{params[:name]}.jar" do
+    cookbook_file "#{params[:jar_file]}" do
       backup 20
-      source "#{params[:name]}.jar"
-      path "/usr/share/java/#{params[:name]}.jar"
+      source "#{params[:jar_file]}"
+      path "/usr/share/java/#{params[:jar_file]}"
       mode "0644"
     end
 

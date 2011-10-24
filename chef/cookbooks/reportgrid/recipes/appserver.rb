@@ -14,10 +14,15 @@ cookbook_file "/opt/reportgrid/GeoLiteCity.dat" do
   mode "0644"
 end
 
-[['analytics', 'v0', 30010], ['analytics', 'v1', 30020], ['jessup', 'v1', 30030]].each do |service,version,port|
+[['analytics', 'v0', 30010], ['jessup', 'v1', 30030]].each do |service,version,port|
   blueeyes_service "#{service}-#{version}" do
     port "#{port}"
   end
+end
+
+blueeyes_service "analytics-v1" do
+  port "30020"
+  jar_file "analytics-assembly-1.2.0-SNAPSHOT.jar"
 end
 
 # Separate so we can specify memory needed
