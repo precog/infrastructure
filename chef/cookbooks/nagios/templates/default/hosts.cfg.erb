@@ -11,7 +11,7 @@
 -%>
 define host {
   use server
-  address <%= n['cloud']['public_ipv4'] %>
+  address <%= if n['cloud'] then n['cloud']['public_ipv4'] else n['ipaddress'] end %>
   host_name <%= n['hostname'] %>
 <% if n.run_list.roles.nil? || n.run_list.roles.length == 0 -%>
   hostgroups all

@@ -11,6 +11,8 @@ execute "aptitude_update" do
   action :nothing
 end
 
+package "curl"
+
 template "sources.list" do
   source "sources.list.erb"
   path "/etc/apt/sources.list"

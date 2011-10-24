@@ -1,7 +1,6 @@
 name "Productionv2"
 description "Production server env"
 cookbook_versions ({
-  "apt" => "0.1"
 })
 default_attributes ({
   "postfix" => {

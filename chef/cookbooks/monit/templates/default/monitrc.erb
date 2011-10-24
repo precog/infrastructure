@@ -92,7 +92,7 @@ set mail-format {
     from: monit@<%= @node[:domain] %>
     subject: <%= @node[:hostname] %> - $SERVICE - $EVENT
     message: Date: $DATE
-Host: <%= @node[:fqdn] %>, <%= @node[:cloud][:public_hostname] %>, <%= @node[:cloud][:local_hostname] %>
+Host: <%= @node[:fqdn] %>, <%= if @node[:cloud] then @node[:cloud][:public_hostname] end %>, <%= if @node[:cloud] then @node[:cloud][:local_hostname] end %>
 Service: $SERVICE
 Description: $DESCRIPTION
 Action: $ACTION

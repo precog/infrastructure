@@ -14,18 +14,24 @@ end
 
 echo "Route53 run starting at `date`" | tee -a <%= node[:ec2][:route53][:log] %>
 
+<% if node[:cloud] then 
+  recordType = "CNAME" %>
 # Use Ohai to get our current public hostname
-PUBHOST=`echo "require 'rubygems'; require 'ohai'; o = Ohai::System.new; o.all_plugins ; puts o[:cloud][:public_hostname]" | ruby`
+PUBHOST=`echo "require 'rubygems'; require 'ohai'; o = Ohai::System.new; o.all_plugins ; puts o[:cloud][:public_hostname]" | ruby`.
 
 if [ -z "${PUBHOST}" ]; then
     echo "  Could not determine current public hostname!" | tee -a <%= node[:ec2][:route53][:log] %>
     exit
 fi
+<% else 
+  recordType = "A" %>
+PUBHOST=`hostname -i`
+<% end %>
 
 # Handle the primary names
 if ! <%= route53bin %> --file /root/.route53 -l reportgrid.com | egrep "^`hostname -f`" > /dev/null || <%= route53bin %> --file /root/.route53 -l reportgrid.com. | egrep "^`hostname -f`" | grep -v ${PUBHOST} > /dev/null ; then
-    <%= route53bin %> --file /root/.route53 --zone reportgrid.com. --remove --name <%= node[:fqdn] + '.' %> --type CNAME | tee -a <%= node[:ec2][:route53][:log] %>
-    <%= route53bin %> --file /root/.route53 --zone reportgrid.com. --create --name <%= node[:fqdn] + '.' %> --type CNAME --ttl 60 --values "${PUBHOST}." | tee -a <%= node[:ec2][:route53][:log] %>
+    <%= route53bin %> --file /root/.route53 --zone reportgrid.com. --remove --name <%= node[:fqdn] + '.' %> --type <%= recordType %> | tee -a <%= node[:ec2][:route53][:log] %>
+    <%= route53bin %> --file /root/.route53 --zone reportgrid.com. --create --name <%= node[:fqdn] + '.' %> --type <%= recordType %> --ttl 60 --values "${PUBHOST}" | tee -a <%= node[:ec2][:route53][:log] %>
 else
     echo "  Primary <%= node[:fqdn] %> points correctly to ${PUBHOST}" | tee -a <%= node[:ec2][:route53][:log] %>
 fi
