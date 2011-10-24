@@ -11,6 +11,7 @@ define :blueeyes_service, :action=>:create, :port=>8100, :health_path=>nil do
   end
 
   params[:health_path] ||= '/blueeyes/services/%s/%s/health' % [service_name, version]
+  params[:memory] ||= 4096
 
   case params[:action]
   when :delete
@@ -105,7 +106,8 @@ define :blueeyes_service, :action=>:create, :port=>8100, :health_path=>nil do
       variables(
         :service_name => service_name,
         :version      => version,
-        :port         => params[:port]
+        :port         => params[:port],
+        :memory       => params[:memory]
       )
       source "blueeyes_service.default.erb"
       mode "0644"

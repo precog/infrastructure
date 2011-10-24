@@ -1,4 +1,4 @@
-HEAP_OPTS="-Xms4096m -Xmx4096m"
+HEAP_OPTS="-Xms<%= @memory %>m -Xmx<%= @memory %>m"
 GC_OPTS="-XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode"
 GC_LOG_OPTS="-verbose:gc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:/var/log/reportgrid/<%=@service_name %>-<%=@version%>.gc.log"
 JMX_OPTS="-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=<%= @port.to_i + 9 %> -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=<%= @node[:fqdn] %>"
