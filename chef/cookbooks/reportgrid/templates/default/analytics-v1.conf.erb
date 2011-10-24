@@ -30,9 +30,19 @@ services {
         fields = "date time c-ip cs-method cs-uri-stem cs-uri-query sc-status"
       }
 
+      eventsdb {
+        database = "events1"
+        servers = ["<%= @node[:reportgrid][:eventsdb][:hosts].join('", "') %>"]
+      }
+
       mongo {
         database = "analytics1"
         servers = ["<%= @node[:reportgrid][:mongo][:hosts].join('", "') %>"]
+      }
+
+      indexdb {
+        database = "analytics1"
+        servers = ["<%= @node[:reportgrid][:indexdb][:hosts].join('", "') %>"]
       }
 
       jessup {
