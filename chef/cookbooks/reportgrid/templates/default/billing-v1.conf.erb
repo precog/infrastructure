@@ -43,11 +43,30 @@ services {
         privateKey = "zxv9467dx36zkd8y"
       }
 
+#
+# Production braintree config
+#
+#      braintree {
+#          environment = "production"
+#          merchantId = "482p3pckwfzsws4c" 
+#          publicKey = "wxvw6swyqbbsj3t8"
+#          privateKey = "v7pz97nkp9cjhngn"
+#      }
+#
       tokenGenerator {
         rootUrl = "http://api.reportgrid.com/services/analytics/v1/tokens/"
         rootToken = "A3BC1539-E8A9-4207-BB41-3036EC2C6E6D"
       }
-
+#
+# Production token generation
+#
+#  tokenGenerator {
+#        rootUrl = "http://api.reportgrid.com/services/analytics/v1/tokens/"
+#        rootToken = "8E680858-329C-4F31-BEE3-2AD15FB67EED"
+#      }
+#    }
+#  }
+#
     }
   }
 }
