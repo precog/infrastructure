@@ -4,6 +4,8 @@
   ServerAlias <% @params[:server_aliases].each do |a| %><%= "#{a}" %> <% end %>
   RewriteEngine On
 
+  RequestHeader append ReportGridDecrypter "Decrypted at %t"
+
   SSLCertificateFile /etc/apache2/ssl/reportgrid.cert
   SSLCertificateKeyFile /etc/apache2/ssl/reportgrid.key
   SSLEngine on
