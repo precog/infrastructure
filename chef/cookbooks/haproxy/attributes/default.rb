@@ -44,6 +44,11 @@ services = {
 
 default[:haproxy][:frontend] = [{:http => %Q{
   bind *:80
+  
+  # Deny forged decrypt headers for SSL
+  acl has_ssl_header hdr_cnt(reportgriddecrypter) gt 0
+  block if has_ssl_header !LOCALHOST
+ 
   #{services.sort.inject([]) { |memo,obj|
     memo << "acl services_#{obj[0][0]}_#{obj[0][1]} path_reg ^/services/#{obj[0][0]}/#{obj[0][1]}/"
     memo << "use_backend services_#{obj[0][0]}_#{obj[0][1]} if services_#{obj[0][0]}_#{obj[0][1]}"
