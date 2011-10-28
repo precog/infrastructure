@@ -53,8 +53,9 @@ end
 
 bash "git_pull_visualization" do
   code <<-EOH
-cd #{node[:reportgrid][:visualization][:root]} %% \
+cd #{node[:reportgrid][:visualization][:root]} && \
 git checkout #{node[:reportgrid][:visualization][:deploybranch]} && \
+git fetch && \
 git pull
 EOH
   only_if { File.directory?("#{node[:reportgrid][:visualization][:root]}/.git") }
