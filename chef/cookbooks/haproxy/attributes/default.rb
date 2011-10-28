@@ -39,6 +39,10 @@ services = {
   ['jessup', 'v1'] => {
     :servers => (1..12).map { |i| "appserver#{'%02d' % i}.reportgrid.com" },
     :port    => 30030
+  },
+  ['billing', 'v1'] => {
+    :servers => (1..12).map { |i| "appserver#{'%02d' % i}.reportgrid.com" },
+    :port    => 30040
   }
 }
 
@@ -48,6 +52,10 @@ default[:haproxy][:frontend] = [{:http => %Q{
   # Deny forged decrypt headers for SSL
   acl has_ssl_header hdr_cnt(reportgriddecrypter) gt 0
   block if has_ssl_header !LOCALHOST
+
+  # Deny access to billing admin interface entirely
+  acl billing_admin path_beg /services/billing/v1/accounts/assess
+  block if billing_admin
  
   #{services.sort.inject([]) { |memo,obj|
     memo << "acl services_#{obj[0][0]}_#{obj[0][1]} path_reg ^/services/#{obj[0][0]}/#{obj[0][1]}/"
