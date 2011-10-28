@@ -30,43 +30,50 @@ services {
         fields = "date time c-ip cs-method cs-uri-stem cs-uri-query sc-status"
       }
       
+      accounts {
+        credits {
+          developer = 10000
+        }
+      }
+      
       mongo {
         database = "accounts_v1"
         collection = "accounts"
         servers = ["<%= node[:reportgrid][:mongo][:hosts].join('", "') %>"]
       }
-      
-      braintree {
-        environment = "sandbox"
-        merchantId = "zrfxsyvnfvf8x73f" 
-        publicKey = "pyvkc5m7g6bvztfv"
-        privateKey = "zxv9467dx36zkd8y"
-      }
-
+#
+# Sandbox braintree config
+#
+#      braintree {
+#        environment = "sandbox"
+#        merchantId = "zrfxsyvnfvf8x73f" 
+#        publicKey = "pyvkc5m7g6bvztfv"
+#        privateKey = "zxv9467dx36zkd8y"
+#      }
+#
 #
 # Production braintree config
 #
-#      braintree {
-#          environment = "production"
-#          merchantId = "482p3pckwfzsws4c" 
-#          publicKey = "wxvw6swyqbbsj3t8"
-#          privateKey = "v7pz97nkp9cjhngn"
-#      }
+       braintree {
+         environment = "production"
+         merchantId = "482p3pckwfzsws4c" 
+         publicKey = "wxvw6swyqbbsj3t8"
+         privateKey = "v7pz97nkp9cjhngn"
+       }
 #
-      tokenGenerator {
-        rootUrl = "http://api.reportgrid.com/services/analytics/v1/tokens"
-        rootToken = "A3BC1539-E8A9-4207-BB41-3036EC2C6E6D"
-      }
+# Test environment token generation
+#
+#     tokenGenerator {
+#       rootUrl = "http://api.reportgrid.com/services/analytics/v1/tokens"
+#       rootToken = "A3BC1539-E8A9-4207-BB41-3036EC2C6E6D"
+#     }
+
 #
 # Production token generation
 #
-#  tokenGenerator {
-#        rootUrl = "http://api.reportgrid.com/services/analytics/v1/tokens"
-#        rootToken = "8E680858-329C-4F31-BEE3-2AD15FB67EED"
-#      }
-#    }
-#  }
-#
-    }
+      tokenGenerator {
+        rootUrl = "http://api.reportgrid.com/services/analytics/v1/tokens"
+        rootToken = "8E680858-329C-4F31-BEE3-2AD15FB67EED"
+      }
   }
 }
