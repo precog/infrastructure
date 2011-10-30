@@ -1,0 +1,16 @@
+# Event digester service <%= @version %>
+#
+#
+
+description "ReportGrid digester service <%= @version %>"
+
+start on runlevel [2345]
+stop on runlevel [06]
+
+respawn
+
+script
+  ulimit -n 65535
+  if [ -f /etc/default/digester-<%= @version %> ]; then . /etc/default/digester-<%= @version %>; fi
+  su reportgrid -s "/bin/bash" -c "/usr/bin/java $JAVA_OPTS -cp /usr/share/java/<%= @jar_file %> com.reportgrid.analytics.ReaggregationTool --configFile /etc/reportgrid/analytics-<%= @version %>.conf 2>&1 | tee -a /var/log/reportgrid/digester-<%= @version %>.log"
+end script

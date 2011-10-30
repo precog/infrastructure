@@ -14,3 +14,4 @@ blueeyes_service "billing-v1" do
   memory 1024
   jar_file "billing-1.0.0.jar"
 end
+

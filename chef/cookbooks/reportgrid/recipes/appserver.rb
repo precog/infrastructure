@@ -22,11 +22,5 @@ end
 
 blueeyes_service "analytics-v1" do
   port "30020"
-  jar_file "analytics-assembly-1.2.0-SNAPSHOT.jar"
-end
-
-# Separate so we can specify memory needed
-blueeyes_service "billing-v1" do
-  port "30040"
-  memory 1024
+  jar_file "analytics-assembly-1.2.4.jar"
 end
