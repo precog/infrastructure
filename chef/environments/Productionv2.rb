@@ -6,7 +6,7 @@ default_attributes ({
   "postfix" => {
     "root_email" => "operations@reportgrid.com"
   },
-                      "apache" => {
-                        "listen_ports" => [ "20000" ]
-                      }
+  "apache" => {
+    "listen_ports" => [ "20000" ]
+  }
 })
