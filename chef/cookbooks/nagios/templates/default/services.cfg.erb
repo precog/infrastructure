@@ -135,6 +135,20 @@ define service {
     check_command	check_http
 }
 
+define service {
+    use			default-service
+    hostgroup_name	appserver
+    service_description Analytics v0 token enum
+    check_command	check_http_content!api.reportgrid.com!/services/analytics/v0/tokens/?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D![
+}
+
+define service {
+    use			default-service
+    hostgroup_name	appserver
+    service_description Analytics v1 token enum
+    check_command	check_http_content!api.reportgrid.com!/services/analytics/v1/tokens?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D![
+}
+
 # Mongo checks
 define service {
     use                 default-service
