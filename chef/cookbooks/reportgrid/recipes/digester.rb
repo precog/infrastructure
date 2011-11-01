@@ -10,7 +10,7 @@
 template "/etc/init/digester-v1.conf" do
   variables(
     :version => "v1",
-    :jar_file => "analytics-assembly-1.2.4.jar"
+    :jar_file => "analytics-assembly-1.2.6-SNAPSHOT.jar"
   )
   source "digester.init.conf.erb"
   mode "0644"

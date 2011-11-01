@@ -11,7 +11,7 @@ include_recipe "reportgrid::baseenv"
 
 blueeyes_service "billing-v1" do
   port "30040"
-  memory 1024
+  memory 512
   jar_file "billing-assembly-1.0.1.jar"
 end
 
