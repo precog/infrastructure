@@ -1,0 +1,24 @@
+server {
+  port = <%= @port %>
+  sslPort = <%= @port.to_i + 1 %>
+  sslEnable = false
+
+  log {
+    level = "info"
+    console = true
+    filename = "/var/log/reportgrid/<%=@service_name%>-<%=@version%>.server.log"
+    roll = "daily"
+    use_parents = false
+  }
+}
+
+services {
+  vistrack {
+    v1 {
+      mongo {
+        database = "analytics1"
+        servers = ["<%= @node[:reportgrid][:indexdb][:hosts].join('", "') %>"]
+      }
+    }
+  }
+}
