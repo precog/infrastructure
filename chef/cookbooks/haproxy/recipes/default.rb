@@ -2,7 +2,7 @@
 # Cookbook Name:: haproxy
 # Recipe:: default
 #
-# Copyright 2010, ReportGrid
+# Copyright 2010-2011, ReportGrid
 #
 # All rights reserved - Do Not Redistribute
 #
@@ -23,7 +23,41 @@ template "haproxy.default" do
   notifies :restart, resources(:service => "haproxy")
 end
 
+# Setup and generation for haproxy.cfg 
+appservers = search(:node, "(role:appserver OR roles:appserver) AND chef_environment:#{node.chef_environment}").map { |n| n[:fqdn] }
+
+# haproxy should at least reference localhost
+if appservers.length == 0 then
+  appservers = [node[:fqdn]]
+end
+
+services = {
+  ['analytics', 'v0'] => {
+    :servers => appservers,
+    :port    => 30010
+  },
+  ['analytics', 'v1'] => {
+    :servers => appservers,
+    :port    => 30020
+  },
+  ['jessup', 'v1'] => {
+    :servers => appservers,
+    :port    => 30030
+  },
+  ['billing', 'v1'] => {
+    :servers => appservers,
+    :port    => 30040
+  },
+  ['vistrack', 'v1'] => {
+    :servers => appservers,
+    :port    => 30050
+  }
+}
+
 template "haproxy.cfg" do
+  variables(
+    :services => services 
+  )
   source "haproxy.cfg.erb"
   path "/etc/haproxy/haproxy.cfg"
   mode "0644"

@@ -17,14 +17,39 @@ defaults
   <%= option %>
   <% end -%>
 
+frontend http
+  bind *:80
+  
+  # Deny forged decrypt headers for SSL
+  acl has_ssl_header hdr_cnt(reportgriddecrypter) gt 0
+  block if has_ssl_header !LOCALHOST
 
-<% [:frontend,:backend].each do |type| %>
-<% @node[:haproxy][type].each do |proxy| %>
-<% proxy.each do |name,options| %>
-<%= type %> <%= name %>
-  <%= options %>
+  # Deny access to billing admin interface entirely
+  acl billing_admin path_beg /services/billing/v1/accounts/assess
+  block if billing_admin
+ 
+<% @services.each do |service| %>
+    <%= "acl services_#{service[0][0]}_#{service[0][1]} path_reg ^/(blueeyes/|)services/#{service[0][0]}/#{service[0][1]}/" %>
+    <%= "use_backend services_#{service[0][0]}_#{service[0][1]} if services_#{service[0][0]}_#{service[0][1]}"  %>
+<% end %>
+
+  default_backend website
+
+
+<% @services.sort.each do |service,params| %>
+backend services_<%= "#{service[0]}_#{service[1]}" %>
+  reqrep ^([^\ ]*)\ /services/[[:alnum:]-]+/[[:alnum:]-]+/(.*) \1\ /\2
+  reqadd X-Service-URL-Root: /services/<%= "#{service[0]}/#{service[1]}" %>
+  option httpchk GET /blueeyes/services/<%= "#{service[0]}/#{service[1]}/health" %>
+  <% params[:servers].sort.each do |server| 
+       if server == @node[:fqdn] then %>
+  server <%= server %> <%= "#{server}:#{params[:port]}" %> check inter 5000 rise 2 fall 2
+  <%   else %>
+  server <%= server %> <%= "#{server}:80" %> check inter 5000 rise 2 fall 2 backup
+  <%   end %>
+  <% end %>
+
 <% end -%>
 
-
-<% end -%>
-<% end -%>
+backend website
+  server www.reportgrid.com www.reportgrid.com:80
