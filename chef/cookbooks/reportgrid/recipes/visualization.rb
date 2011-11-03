@@ -12,6 +12,8 @@ include_recipe "apache2"
 include_recipe "apache2::mod_php5"
 include_recipe "phantomjs"
 
+package "wkhtmltopdf"
+
 directory "visualization_root" do
   path "/opt/reportgrid/visualization"
   recursive true
