@@ -1,3 +1,5 @@
+# ; -*-ruby-*-
+
 default_run_options[:pty] = true
 #default_run_options[:max_hosts] = 1
 
@@ -5,10 +7,11 @@ set :user, "ubuntu"
 ssh_options[:keys] = [File.join(File.dirname(__FILE__),  'ec2', 'ec2-keypair.pem')]
 
 role :none
-role :appserver, *(1..12).map { |i| "appserver#{'%02d' % i}.reportgrid.com" }
-role :mongodb, *(1..6).map { |i| "mongodb#{'%02d' % i}.reportgrid.com" }
+role :appserver, *(1..6).map { |i| "appserver#{'%02d' % i}.reportgrid.com" }
+role :mongodb, *(13..21).map { |i| "mongodb#{'%02d' % i}.reportgrid.com" }
 role :mongodb_config, *(1..3).map { |i| "mongodb-config#{'%02d' % i}.reportgrid.com" }
-
+role :mongoevents, *(1..3).map { |i| "mongoevents#{'%02d' % i}.reportgrid.com" }
+role :devapp, *(1..2).map { |i| "devapp#{'%02d' % i}.reportgrid.com" }
 #
 # Monit
 #
@@ -37,7 +40,7 @@ end
 
 desc "Reload Mongos"
 task :restart_mongos, :roles => :appserver, :max_hosts => 1 do
-  run "#{sudo} /etc/init.d/mongos restart"
+  run "#{sudo} restart mongos"
 end
 
 desc "Reload Analytics-v0"
@@ -50,9 +53,19 @@ task :analytics_restart_v1, :roles => :appserver, :max_hosts => 1 do
   run "#{sudo} service analytics-v1 restart"
 end
 
+desc "Reload Billing-v1"
+task :billing_restart_v1, :roles => :appserver, :max_hosts => 1 do
+  run "#{sudo} service billing-v1 restart"
+end
+
 desc "Reload MongoDB"
 task :mongodb_restart, :roles => :mongodb, :max_hosts => 1 do
   run "#{sudo} service mongodb restart"
+end
+
+desc "Restart vistrack-v1"
+task :restart_vistrack_v1, :roles => :appserver, :max_hosts => 2 do
+  run "#{sudo} restart vistrack-v1"
 end
 
 #
@@ -64,7 +77,17 @@ task :chef_client do
 end
 
 desc "Run Chef on app servers"
-task :chef_client_app, :roles => :appserver do
+task :chef_client_app, :roles => :appserver, :max_hosts => 2 do
+  run "#{sudo} chef-client"
+end
+
+desc "Run Chef on dev app servers"
+task :chef_client_dev, :roles => :devapp do
+  run "#{sudo} chef-client"
+end
+
+desc "Run Chef on mongo servers"
+task :chef_client_mongo, :roles => [:mongoevents, :mongodb, :mongodb_config] do
   run "#{sudo} chef-client"
 end
 
@@ -127,4 +150,46 @@ task :rackspace_setup do
        chmod 700 ~ubuntu/.ssh"
   upload("ec2/ec2_keypair_authorized_keys", "/home/ubuntu/.ssh/authorized_keys", :via => :scp)
   run "chown ubuntu:ubuntu ~ubuntu/.ssh/authorized_keys"
+end
+
+#
+# Fix mongo db/log links
+#
+desc "Fix mongo db/log locations"
+task :fix_mongo_locs do
+  run <<-EOH
+#{sudo} test -d /srv/mongodb/db &&
+#{sudo} test -d /srv/mongodb/logs &&
+#{sudo} test ! -L /var/lib/mongodb &&
+#{sudo} test ! -L /var/log/mongodb &&
+#{sudo} /etc/init.d/monit stop &&
+#{sudo} /etc/init.d/chef-client stop &&
+#{sudo} stop mongodb &&
+#{sudo} mv /var/lib/mongodb/* /srv/mongodb/db/ &&
+#{sudo} mv /var/log/mongodb/* /srv/mongodb/logs/ &&
+#{sudo} rmdir /var/lib/mongodb &&
+#{sudo} rmdir /var/log/mongodb &&
+#{sudo} ln -s /srv/mongodb/db /var/lib/mongodb &&
+#{sudo} ln -s /srv/mongodb/logs /var/log/mongodb &&
+#{sudo} start mongodb &&
+#{sudo} /etc/init.d/chef-client start &&
+#{sudo} /etc/init.d/monit start
+EOH
+end
+
+# Properly set Adaptec RAID controller params
+desc "Set 5405z performance param"
+task :set_adaptec_perf do
+run "#{sudo} /usr/StorMan/arcconf SETPERFORM 1 2"
+end
+
+# Remove extraneous packages from softlayer servers
+desc "Remove SoftLayer junk"
+task :remove_softlayer_junk do
+run <<-EOH
+#{sudo} stop mysql &&
+#{sudo} /etc/init.d/bind9 stop &&
+#{sudo} /etc/init.d/apache2 stop &&
+#{sudo} aptitude purge -y mysql-server apache2 bind9
+EOH
 end
