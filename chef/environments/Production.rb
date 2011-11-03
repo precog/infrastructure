@@ -1,7 +1,7 @@
 name "Production"
 description "Production server env"
 cookbook_versions ({
-                     
+  "iptables" => "0.0.1"
 })
 default_attributes ({
   "postfix" => {

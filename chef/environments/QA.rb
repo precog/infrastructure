@@ -1,5 +1,5 @@
-name "Test"
-description "Test Environment"
+name "QA"
+description "QA Environment"
 cookbook_versions ({
 })
 default_attributes ({
@@ -13,13 +13,13 @@ default_attributes ({
 override_attributes ({
   "reportgrid" => {
     "eventsdb" => {
-      "hosts" => [ "devmongo01.reportgrid.com:27017" ]
+      "hosts" => [ "localhost:27017" ]
     },
     "indexdb" => {
-      "hosts" => [ "devmongo01.reportgrid.com:27017" ]
+      "hosts" => [ "localhost:27017" ]
     },
     "mongo" => {
-      "hosts" => [ "devmongo01.reportgrid.com:27017" ]
+      "hosts" => [ "localhost:27017" ]
     }
   }
 })
