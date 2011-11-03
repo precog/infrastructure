@@ -66,6 +66,11 @@ define :blueeyes_service, :action=>:create, :port=>8100, :health_path=>nil, :mem
 
   else # on service creation, etc.
 
+    execute "reload_upstart" do
+      action :nothing
+      command "initctl reload-configuration"
+    end
+
     template "/etc/init/#{params[:name]}.conf" do
       variables(
         :service_name => service_name,
@@ -74,6 +79,7 @@ define :blueeyes_service, :action=>:create, :port=>8100, :health_path=>nil, :mem
       )
       source "blueeyes_service.init.conf.erb"
       mode "0644"
+      notifies :run, "execute[reload_upstart]", :immediately
     end
 
     link params[:name] do
