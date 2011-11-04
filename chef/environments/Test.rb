@@ -21,5 +21,8 @@ override_attributes ({
     "mongo" => {
       "hosts" => [ "devmongo01.reportgrid.com:27017" ]
     }
+  },
+  "mongodb" => {
+    "mongos_enabled" => "no"
   }
 })

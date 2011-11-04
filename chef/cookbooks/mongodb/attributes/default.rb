@@ -9,6 +9,8 @@ default[:mongodb][:port][:shard]      = 27018
 default[:mongodb][:port][:mongos]     = 27017
 default[:mongodb][:port][:standalone] = 27017
 
+default[:mongodb][:mongos_enabled] = "yes"
+
 if hostname =~ /^rg.*/
   default[:mongodb][:config_servers] = [
     'rgmconf-013.reportgrid.com:27019',
