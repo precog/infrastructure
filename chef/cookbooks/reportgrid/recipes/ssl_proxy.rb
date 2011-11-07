@@ -17,6 +17,11 @@ cookbook_file "/etc/apache2/ssl/reportgrid.cert" do
   mode "444"
 end
 
+cookbook_file "/etc/apache2/ssl/reportgrid.ca.cert" do
+  owner "www-data"
+  mode "444"
+end
+
 cookbook_file "/etc/apache2/ssl/reportgrid.key" do
   owner "www-data"
   mode "400"
