@@ -24,5 +24,10 @@ override_attributes ({
   },
   "mongodb" => {
     "mongos_enabled" => "no"
+  },
+  "deployer" => {
+    "notified" => "derek@reportgrid.com",
+    "server" => "http://devmongo01.reportgrid.com:29999/",
+    "key" => "feedfacedeadbeef"
   }
 })

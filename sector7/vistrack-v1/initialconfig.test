@@ -1,0 +1,5 @@
+postinstall=postinstall.sh
+conf=vistrack-v1.conf.test
+default=vistrack-v1.default
+init=vistrack-v1.init.conf
+/etc/monit/conf.d/vistrack-v1.monit=vistrack-v1.monit

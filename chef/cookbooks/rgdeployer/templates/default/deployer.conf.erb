@@ -1,0 +1,8 @@
+basedir: /opt/reportgrid/deployer/base
+notified: <%= @node[:deployer][:notified] %>
+server_url: <%= @node[:deployer][:server] %>
+server_key: <%= @node[:deployer][:key] %>
+only_stable: <%= @node[:deployer][:only_stable] %>
+s3cfg: /root/.s3cfg
+logfile: /var/log/reportgrid/deployer/deployer.log
+debug: true
