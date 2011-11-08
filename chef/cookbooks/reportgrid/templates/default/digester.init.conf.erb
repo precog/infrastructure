@@ -12,5 +12,5 @@ respawn
 script
   ulimit -n 65535
   if [ -f /etc/default/digester-<%= @version %> ]; then . /etc/default/digester-<%= @version %>; fi
-  su reportgrid -s "/bin/bash" -c "/usr/bin/java $JAVA_OPTS -cp /usr/share/java/<%= @jar_file %> com.reportgrid.analytics.ReaggregationTool --configFile /etc/reportgrid/analytics-<%= @version %>.conf 2>&1 | tee -a /var/log/reportgrid/digester-<%= @version %>.log"
+  su reportgrid -s "/bin/bash" -c "/usr/bin/java $JAVA_OPTS -cp /usr/share/java/<%= @jar_file %> com.reportgrid.analytics.ReaggregationTool --configFile /etc/reportgrid/analytics-<%= @version %>.conf --batchSize 500 --maxRecords 50000 --pause 10 2>&1 | tee -a /var/log/reportgrid/digester-<%= @version %>.log"
 end script
