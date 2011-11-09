@@ -1,9 +1,8 @@
 /var/log/haproxy.log {
-    rotate 7
-    daily
+    rotate 8
+    weekly
     missingok
     notifempty
-    delaycompress
     compress
     postrotate
         reload rsyslog >/dev/null 2>&1 || true

@@ -19,6 +19,11 @@ defaults
 
 frontend http
   bind *:80
+
+  # Enable request logging (with X-Forwarded-For)
+  option httplog
+  capture request header X-Forwarded-For len 15
+  log /dev/log daemon
   
   # Deny forged decrypt headers for SSL
   acl has_ssl_header hdr_cnt(reportgriddecrypter) gt 0
