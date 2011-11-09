@@ -14,3 +14,9 @@ For example, create `roles/base_example.rb`:
 Then upload it to the Chef Server:
     
     knife role from file roles/base_example.rb
+
+
+!!!! IMPORTANT !!!!
+ 
+Some of our recipes key off of role names in search, so make sure that any new roles/changes don't 
+cause problems. 

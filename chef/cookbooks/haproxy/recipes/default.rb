@@ -24,7 +24,7 @@ template "haproxy.default" do
 end
 
 # Setup and generation for haproxy.cfg 
-appservers = search(:node, "(role:appserver OR roles:appserver) AND chef_environment:#{node.chef_environment}").map { |n| n[:fqdn] }
+appservers = search(:node, "(role:appserver* OR roles:appserver*) AND chef_environment:#{node.chef_environment}").map { |n| n[:fqdn] }
 
 # haproxy should at least reference localhost
 if appservers.length == 0 then
