@@ -1,0 +1,5 @@
+conf=analytics-v1.conf
+default=analytics-v1.default
+init=analytics-v1.init
+/etc/monit/conf.d/analytics-v1.monit=analytics-v1.monit
+postinstall=postinstall.sh
