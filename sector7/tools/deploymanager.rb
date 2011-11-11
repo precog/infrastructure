@@ -124,8 +124,8 @@ case command.downcase
 
   when "listconfigs" then
   
-  if ARGV.length != 1 then
-    puts "Usage: listConfigs <service name>"
+  if ARGV.length < 1 or ARGV.length > 2 then
+    puts "Usage: listConfigs <service name> [detail|latest]"
   else
     Net::HTTP.start(server_url.host, server_url.port) do |http|
       http.request_get("/inventory/config/#{ARGV[0]}", headers) do |response|
@@ -135,16 +135,31 @@ case command.downcase
           configs = JSON.parse(response.read_body).map {|s| ServiceEntry.from_json(s) }
           puts "Configs: "
 
-          configs.sort{|a,b| a.serial <=> b.serial }.reverse.each do |config|
+          configs = configs.sort{|a,b| a.serial <=> b.serial }.reverse
+
+          if ARGV[1] == "latest" and configs.length > 0 then configs = [configs[0]] end
+                      
+          configs.each do |config|
             tag_string = if config.tag != nil then
                            "(tag #{config.tag})"
                          else
                            ""
                          end
 
-            puts "  #{config.name}-#{config.serial} #{tag_string} :"
-            JSON.pretty_generate(config.to_hash).lines.each do |line|
-              puts "    #{line}"
+            puts "  #{config.name}-#{config.serial} #{tag_string} : stable=#{config.stable}, rejected=#{config.rejected}, deployed=#{config.deployed}, deploying=#{config.deploying}, failed=#{config.failed}"
+
+            if ARGV.length == 2 then
+              config.hooks.each do |k,v|
+                sym = if v.symlink then " => #{v.symlink}" end
+                puts "    #{k} = #{v.source}#{sym}"
+              end
+
+              puts "    Files:"
+              config.files.sort{|a,b| a.source <=> b.source}.each do |file|
+                sym = if file.symlink then " => #{file.symlink}" end
+                puts "      #{file.source}#{sym}"
+              end
+              puts ""
             end
           end
         end
@@ -193,7 +208,7 @@ Usage: addConfig <service name> <args>
 Where <args> are one or more of:
 
 tag=<tag name> - specify a tag for this config
-stable=<stable value> specify true or false to mark the config as stable
+stable=<stable value> specify true or false to mark the config as stable (defaults to true)
 
 Hooks:
 preinstall=<source file|remove>  
@@ -218,7 +233,7 @@ EOH
     Net::HTTP.start(server_url.host, server_url.port) do |http|
       http.request_get("/inventory/config/#{ARGV[0]}", headers) do |response|
         if not response.is_a? Net::HTTPOK then
-          puts "Error adding config: #{response.read_body}"
+          puts "Error adding config: #{ARGV[0]} is not a service"
           exit(-2)
         end
       end
@@ -233,16 +248,23 @@ EOH
 
     tag = nil
 
-    if ARGV.length > 0 and ARGV[0].start_with?("load=") then
-      key, loadFile = ARGV[0].split('=')
+    # Expand any load params to their contents
+    params = ARGV.map { |arg|
+      if arg.start_with?("load=") then
+        key, loadFile = ARGV[0].split('=')
 
-      params = File.open(loadFile) do |input|
-        input.lines.map{|l| l.strip}
+        params = File.open(File.expand_path(loadFile)) do |input|
+          input.lines.map{|l| l.strip}
+        end
+      else
+        arg
       end
-    else
-      params = ARGV
-    end
+    }.flatten
 
+    if params.length == 0 then
+      puts "Parameters are required for adding a config"
+    end
+    
     params.each do |arg|
       key, value = arg.split('=')
 
@@ -278,6 +300,11 @@ EOH
           config["files"] << file_for(service_name, source, key, mode, true, s3_root)
         end
       end
+    end
+
+    # Always set to true unless otherwise requested
+    if not config.has_key?("stable") then
+      config["stable"] = true
     end
 
     # Upload files and transform results

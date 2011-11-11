@@ -7,7 +7,7 @@ require 'rubygems'
 require 'json'
 
 class ServiceEntry
-  attr_reader :name, :tag, :serial, :stable, :files, :hooks, :deployed, :deploying
+  attr_reader :name, :tag, :serial, :stable, :rejected, :files, :hooks, :deployed, :deploying, :failed
 
   def to_s
     "#{name}.#{serial}"
@@ -52,20 +52,22 @@ class ServiceEntry
     hooks["postremove"]
   end
 
-  def initialize(name, tag, serial, stable, files, hooks, deployed, deploying)
+  def initialize(name, tag, serial, stable, rejected, files, hooks, deployed, deploying, failed)
     @name = name
     @tag = tag
     @serial = serial
     @stable = stable
+    @rejected = rejected
     @files = files
     @hooks = hooks
     @deployed = deployed
     @deploying = deploying
+    @failed = failed
   end
 
   def to_hash
-    data = { "name" => @name, "tag" => @tag, "serial" => @serial, "stable" => @stable,
-      "deployedCount" => @deployed, "deployingCount" => @deploying, "files" => @files.map { |f| f.to_hash } }
+    data = { "name" => @name, "tag" => @tag, "serial" => @serial, "stable" => @stable, "rejected" => @rejected,
+      "deployedCount" => @deployed, "deployingCount" => @deploying, "failedCount" => @failed, "files" => @files.map { |f| f.to_hash } }
     @hooks.each { |h,v| data[h] = v.to_hash }
     data
   end
@@ -91,14 +93,17 @@ class ServiceEntry
 
     # Set defaults
     if not data.has_key?("stable") then data["stable"] = false end
+    if not data.has_key?("rejected") then data["rejected"] = false end
+
     data["deployedCount"] ||= 0
     data["deployingCount"] ||= 0
+    data["failedCount"] ||= 0
     
     hooks = ["preinstall", "postinstall", "preremove", "postremove"].map { |h|
       [h,if data[h] then FileEntry.new(data[h]) else nil end]
     }.select { |h| h[1] != nil }
 
-    return ServiceEntry.new(data["name"], data["tag"], data["serial"], data["stable"], data["files"].map {|f| FileEntry.new(f) }, Hash[*hooks.flatten], data["deployedCount"], data["deployingCount"])
+    return ServiceEntry.new(data["name"], data["tag"], data["serial"], data["stable"], data["rejected"], data["files"].map {|f| FileEntry.new(f) }, Hash[*hooks.flatten], data["deployedCount"], data["deployingCount"], data["failedCount"])
   end
 
   def self.from_file (filename)

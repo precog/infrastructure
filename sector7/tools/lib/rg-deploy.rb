@@ -171,6 +171,12 @@ class Deployer
       result = `#{@s3cmdline} get #{entry.source} #{target} 2>&1`
 
       if $? != 0 then
+        # Remove the empty target file
+        begin
+          File.delete(target)
+        rescue
+        end
+
         raise DownloadFailure.new(entry.source), result
       end
     end
