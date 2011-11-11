@@ -2,7 +2,7 @@
 # Cookbook Name:: rgdeployer
 # Recipe:: default
 #
-# Copyright 2011, YOUR_COMPANY_NAME
+# Copyright 2011, ReportGrid, Inc.
 #
 # All rights reserved - Do Not Redistribute
 #
@@ -64,5 +64,7 @@ service "deployer" do
   action [:enable, :start]
 end
 
-
-
+template "/etc/logrotate.d/deployer" do
+  source "logrotate.conf.erb"
+  mode "644"
+end

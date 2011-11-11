@@ -1,0 +1,11 @@
+/var/log/reportgrid/deployer/*.server.log {
+  daily
+  rotate 14
+  dateext
+  compress
+  missingok
+  notifempty
+  postrotate
+    restart deployer-v1
+  endscript
+}

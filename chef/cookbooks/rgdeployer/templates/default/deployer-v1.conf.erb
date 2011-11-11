@@ -1,0 +1,33 @@
+server {
+  port = 29999
+  sslEnable = false
+
+  log {
+    level = "info"
+    console = true
+    use_parents = false
+    filename = "/var/log/reportgrid/deployer/deployer.server.log"
+  }
+}
+
+services {
+  deployer {
+    v1 {
+      authtoken = "<%= @node[:deployer][:key] %>"
+
+      deployer = "com.reportgrid.sector7.inventory.strategy.OneAtATime"
+
+      log {
+        level = "debug"
+        console = true
+        use_parents = false
+        filename = "/var/log/reportgrid/deployer/deployer.server.log"
+      }
+
+      inventorydb {
+        database = "deployment"
+        servers = [<%= @node[:deployer][:mongo].map {|h| "\"#{h}\"" }.join(",") %>]
+      }
+    }
+  }
+}

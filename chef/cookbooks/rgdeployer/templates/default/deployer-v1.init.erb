@@ -1,0 +1,7 @@
+# Sector7 deployment server service
+start on runlevel [2345]
+stop on runlevel [06]
+
+respawn
+
+exec java -jar /opt/reportgrid/deployservice/<%= @jar_file %> --configFile /etc/reportgrid/deployer-v1.conf

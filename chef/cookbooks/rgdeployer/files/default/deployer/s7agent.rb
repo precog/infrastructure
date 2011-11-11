@@ -54,7 +54,12 @@ if not server_url or not server_key then
 end
 
 if not s3cfg then
-  log.error("Missing s3cmd configuration")
+  log.error("Missing s3cmd configuration (s3cfg parameter)")
+  exit(-3)
+end
+
+if not File.readable?(s3cfg) then
+  log.error("Can't load s3cmd configuration from #{s3cfg}")
   exit(-3)
 end
 
@@ -108,11 +113,11 @@ while (true)
 
                 if upgrade_succeeded then
                   log.info("Upgraded succeeded on #{service}")
-                  http.post("/inventory/deploy/success/#{service.name}/#{service.serial}", "", headers)
+                  http.post("/inventory/deploy/success/#{service.name}/#{service.serial}", "\"#{hostname}\"", headers)
                 else
                   formatted_message = messages.join("\n")
                   log.error("Upgrade failed on #{service}:\n#{formatted_message}")
-                  http.post("/inventory/deploy/failure/#{service.name}/#{service.serial}", "", headers)
+                  http.post("/inventory/deploy/failure/#{service.name}/#{service.serial}", "\"#{hostname}\"", headers)
                   
                   begin
                     Mail.deliver do
@@ -126,7 +131,7 @@ while (true)
                   end
                 end
               rescue DownloadFailure => e
-                log.error("Download failure for #{service.name}, skipping service : #{e.message}")
+                log.error("Download failure for #{service.name} source #{e.source}: #{e.message}")
               end
             end
           else
