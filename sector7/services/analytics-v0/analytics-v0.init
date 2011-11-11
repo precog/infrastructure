@@ -1,0 +1,24 @@
+# analytics-v0 - ReportGrid analytics service (v0)
+#
+#
+
+description "analytics-v0 - ReportGrid analytics service (v0)"
+
+start on runlevel [2345]
+stop on runlevel [06]
+
+respawn
+
+pre-start script
+  [ -d /var/run/reportgrid ] || install -m 755 -o reportgrid -g reportgrid -d /var/run/reportgrid
+end script
+
+script
+  ulimit -n 65535
+  if [ -f /etc/default/analytics-v0 ]; then . /etc/default/analytics-v0; fi
+  su reportgrid -s "/bin/bash" -c "/usr/bin/java $JAVA_OPTS -jar /usr/share/java/analytics-v0.jar --configFile /etc/reportgrid/analytics-v0.conf"
+end script
+
+post-start script
+  echo `status analytics-v0 | egrep -o '[0-9]+$' | head -n1` > /var/run/reportgrid/analytics-v0.pid
+end script
