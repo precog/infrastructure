@@ -88,6 +88,10 @@ Mail.defaults do
                            :enable_starttls_auto => false  }
 end
 
+# To avoid chef immediately restarting us from having an impact
+log.info("Pausing for one minute on startup")
+sleep 60
+
 while (true)
   begin
     log.info("Performing inventory scan")
@@ -108,7 +112,7 @@ while (true)
 
             needs_upgrade.each do |service|
               begin
-                log.debug("Upgrading #{service.name}")
+                log.info("Upgrading #{service.name}")
                 upgrade_succeeded, messages = deployer.upgrade(service)
 
                 if upgrade_succeeded then
