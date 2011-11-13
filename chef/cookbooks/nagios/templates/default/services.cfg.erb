@@ -130,23 +130,45 @@ define service {
 # Appserver checks
 define service {
     use			default-service
-    hostgroup_name	appserver
+    hostgroup_name	appserverV2
     service_description AppServer Connectivity
     check_command	check_http
 }
 
 define service {
     use			default-service
-    hostgroup_name	appserver
+    hostgroup_name	appserverV2
     service_description Analytics v0 token enum
-    check_command	check_http_content!api.reportgrid.com!/services/analytics/v0/tokens/?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D![
+    check_command	check_http_content!api.reportgrid.com!30010!/tokens/?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D![
 }
 
 define service {
     use			default-service
-    hostgroup_name	appserver
+    hostgroup_name	appserverV2
     service_description Analytics v1 token enum
-    check_command	check_http_content!api.reportgrid.com!/services/analytics/v1/tokens?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D![
+    check_command	check_http_content!api.reportgrid.com!30020!/tokens?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D![
+}
+
+define service {
+    use                 default-service
+    hostgroup_name      appserverV2
+    service_description Analytics v1 error counts
+    check_command	check_rg_service!/blueeyes/services/analytics/v1/health!errors!10!20
+}
+
+define service {
+    use                 default-service
+    hostgroup_name      appserverV2
+    service_description Analytics v1 response times
+    check_command	check_rg_service!/blueeyes/services/analytics/v1/health!response!100!250
+}
+
+# devops checks
+define service {
+    use                 default-service
+    hostgroup_name	monitoring
+    service_description	Deployer service endpoint
+    check_command	check_http_content!devops1.reportgrid.com!29999!/blueeyes/services/deployer/v1/health!service
 }
 
 # Mongo checks
@@ -182,19 +204,22 @@ define service {
     use                 default-service
     hostgroup_name          mongodb-replset-server
     service_description     Mongo Lock Percentage
-    check_command           check_mongodb!lock!27018!5!10
+#    check_command           check_mongodb!lock!27018!5!10
+    check_command           check_mongodb!lock!27018!10!20
 }
 
 define service {
     use                 default-service
     hostgroup_name          mongodb-replset-server
     service_description     Mongo Flush Average
-    check_command           check_mongodb!flushing!27018!500!1000
+#    check_command           check_mongodb!flushing!27018!500!1000
+    check_command           check_mongodb!flushing!27018!1000!2000
 }
 
 define service {
       use                     default-service
       hostgroup_name          mongodb-replset-server
       service_description     MongoDB Index Miss Ratio
-      check_command           check_mongodb!index_miss_ratio!27018!.005!.01
+#      check_command           check_mongodb!index_miss_ratio!27018!.005!.01
+      check_command           check_mongodb!index_miss_ratio!27018!.03!.06
 }

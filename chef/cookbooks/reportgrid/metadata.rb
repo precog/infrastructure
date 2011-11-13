@@ -3,7 +3,7 @@ maintainer_email "operations@reportgrid.com"
 license          "All rights reserved"
 description      "Installs/Configures reportgrid"
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.rdoc'))
-version          "0.2.8"
+version          "0.2.9"
 depends          "apache2"
 depends          "java"
 depends          "phantomjs"

@@ -1,0 +1,89 @@
+#!/usr/bin/env ruby
+#
+# Copyright 2011, ReportGrid, Inc.
+#
+# ; -*-ruby-*-
+#
+#
+#%# family=auto
+#%# capabilities=autoconf
+
+
+require 'net/http'
+require 'uri'
+
+require 'rubygems'
+require 'json'
+
+# Collect what values we can from localhost
+url = URI.parse("http://localhost/")
+
+if ARGV.length == 1 and ARGV[0] == "config" then
+  puts <<-EOH
+graph_title <%= "#{@service_name}-#{@service_version} timing stats" %>
+graph_vlabel ms
+graph_args --base 1000 -l 0
+graph_scale no
+graph_category reportgrid
+GET_minimumTime.label GET min
+GET_maximumTime.label GET max
+GET_averageTime.label GET avg
+POST_minimumTime.label POST min
+POST_maximumTime.label POST max
+POST_averageTime.label POST avg
+GET_minimumTime.type GAUGE
+GET_maximumTime.type GAUGE
+GET_averageTime.type GAUGE
+POST_minimumTime.type GAUGE
+POST_maximumTime.type GAUGE
+POST_averageTime.type GAUGE
+EOH
+exit
+elsif ARGV.length == 1 and ARGV[0] == "autoconf" then
+  # check whether the service is available
+  Net::HTTP.start(url.host, url.port) do |http|
+    http.request_get("/blueeyes/services/<%= @service_name %>/<%= @service_version %>/health") do |response|
+      if response.is_a? Net::HTTPOK then
+        puts "yes"
+      else
+        puts "no [<%= @service_name %>-<%= @service_version %> is not responding]"
+      end
+    end
+  end
+  exit
+elsif ARGV.length != 0 then
+  $stderr.puts("Invalid arguments specified")
+  exit(1)
+end
+
+# Utility method for fetching nested hash values safely
+def safe_get (d, *keys)
+  begin
+    s = d
+    keys.each {|k| s = s[k]}
+    yield s
+  rescue NoMethodError => e
+  end
+end
+
+Net::HTTP.start(url.host, url.port) do |http|
+  http.request_get("/blueeyes/services/<%= @service_name %>/<%= @service_version %>/health") do |response|
+    if response.is_a? Net::HTTPNotFound then
+      # Service must not be running. Don't report anything
+    elsif not response.is_a? Net::HTTPOK then
+      $stderr.put("Error collecting stats: #{response.read_body}")
+    else
+      begin
+        data = JSON.parse(response.read_body)
+        
+        ["GET", "POST"].each do |verb|
+          ["averageTime", "minimumTime", "maximumTime"].each do |var|
+            safe_get(data,"requests",verb,"timing",var,"5min x 1") {|v| puts "#{verb}_#{var}.value #{v}" }
+          end
+        end
+      rescue => e
+        $stderr.puts("Error parsing response: #{e.message}")
+      end
+    end
+  end
+end

@@ -144,7 +144,7 @@ define command {
 
 define command {
   command_name    check_http_content
-  command_line    $USER1$/check_http -I $HOSTADDRESS$ -H $ARG1$ -u $ARG2$ -s $ARG3$
+  command_line    $USER1$/check_http -I $HOSTADDRESS$ -H $ARG1$ -p $ARG2$ -u $ARG3$ -s $ARG4$
 }
 
 define command {
@@ -344,4 +344,10 @@ define command {
 define command {
     command_name    check_mongodb_database
     command_line    $USER1$/check_mongodb.py -H $HOSTADDRESS$ -A $ARG1$ -P $ARG2$ -W $ARG3$ -C $ARG4$ -d $ARG5$
+}
+
+# ReportGrid checks
+define command {
+    command_name    check_rg_service
+    command_line    $USER1$/check_rg_service.rb $HOSTADDRESS$ $ARG1$ $ARG2$ $ARG3$ $ARG4$
 }
