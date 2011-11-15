@@ -128,6 +128,19 @@ case command.downcase
     puts "Usage: listConfigs <service name> [detail|latest]"
   else
     Net::HTTP.start(server_url.host, server_url.port) do |http|
+      # Fetch the list of hosts, too
+      hosts = {}
+
+      http.request_get("/inventory/host/", headers) do |response|
+        if not response.is_a? Net::HTTPOK then
+          puts "Failed to get hosts: #{response.read_body} (#{response.message})"
+        else
+          hosts = JSON.parse(response.read_body).map{ |entry|
+            [entry["hostname"], Hash[*entry["currentVersions"].map{|v| [v["name"],v["serial"]]}.flatten]]
+          }
+        end
+      end
+
       http.request_get("/inventory/config/#{ARGV[0]}", headers) do |response|
         if not response.is_a? Net::HTTPOK then
           puts "Failed to get configs: #{response.read_body} (#{response.message})"
@@ -159,6 +172,20 @@ case command.downcase
                 sym = if file.symlink then " => #{file.symlink}" end
                 puts "      #{file.source}#{sym}"
               end
+
+              running_hosts = hosts.map{ |hostname,current|
+                if current[ARGV[0]] == config.serial then
+                  [hostname]
+                else
+                  []
+                end
+              }.flatten
+
+              if running_hosts.length > 0 then
+                puts "    Running hosts:"
+                puts running_hosts.sort{|a,b| a <=> b}.map{|h| "      #{h}\n" }
+              end
+
               puts ""
             end
           end
