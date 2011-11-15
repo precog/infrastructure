@@ -1,6 +1,6 @@
-<%= @node[:mongodb][:data_mount_point] %>/logs/ {
+<%= @node[:mongodb][:data_mount_point] %>/logs/*.log {
   weekly
-  rotate 4
+  rotate 12
   missingok
   notifempty
   compress
