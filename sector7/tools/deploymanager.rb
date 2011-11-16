@@ -5,6 +5,7 @@
 require 'net/http'
 require 'uri'
 require 'yaml'
+require 'logger'
 
 require 'rubygems'
 require 'json'
@@ -13,56 +14,9 @@ require 'json'
 $:.push(File.expand_path(File.dirname(__FILE__)) + "/lib")
 require 'rg-service'
 require 'rg-util'
+require 'rg-web'
 
-def file_for (service, source, symlink, mode, alias_ok, root)
-  source = File.expand_path(source)
-  if not File.readable?(source) then
-    puts "Can't read #{source}!"
-    exit(-2)
-  end
-
-  # Simple sanity check on mode to add a leading zero
-  if mode then mode = sprintf("0%3o", mode.oct) end
-
-  # Convert source into an S3 URL
-  url = "#{root}#{service}/#{source.split('/').last}"
-
-  # First, check if the file exists
-  `s3cmd info #{url} > /dev/null 2>&1`
-
-  if $? == 0 then
-    # file exists, but if it's a symlink we can make an alias
-    if symlink or alias_ok then
-      puts "Aliasing existing URL : #{url}"
-      url = "#{url}-#{Time.now.strftime('%Y%m%d%H%M%S')}"
-    else
-      puts "Can't replace existing file: #{url}"
-      exit(-2)
-    end
-  end
-
-  { "source" => source, "symlink" => symlink, "mode" => mode, "url" => url }.delete_if {|k,v| v == nil}
-end
-
-def upload (entry)
-  source = entry["source"]
-  url = entry["url"]
-
-  # Upload the file
-  upload_result = `s3cmd put #{source} #{url}`
-
-  if $? != 0 then
-    put "Error uploading #{source}: #{upload_result}"
-    exit(-2)
-  end
-
-  entry["source"] = url
-  entry.delete("url")
-
-  puts "Uploaded #{source} => #{url}"
-
-  entry
-end
+load "#{File.expand_path(File.dirname(__FILE__))}/helpers.rb"
 
 if ARGV.length < 2 then
   puts "Usage: #{$0} <config file> <command> [<command args>]"
@@ -88,8 +42,12 @@ config = YAML::load_file(configFile)
 end
 
 server_url = URI.parse(config["server_url"])
-headers = { "Content-Type" => "application/json", "Authtoken" => config["server_key"] }
 s3_root = config["s3_root"]
+log = Logger.new(STDOUT)
+log.level = Logger::INFO
+
+service = DeployerService.new(server_url, config["server_key"], log)
+uploader = Uploader.new("~/.s3cfg", log)
 
 # validate s3_root before we go trying to mod anything
 if not s3_root.end_with?("/") then
@@ -109,17 +67,7 @@ case command.downcase
   if ARGV.length != 1 then
     puts "Usage: addService <service name>"
   else
-    service = JSON.generate({"name" => ARGV[0]})
-
-    Net::HTTP.start(server_url.host, server_url.port) do |http|
-      http.request_post("/inventory/service/#{ARGV[0]}", service, headers) do |response|
-        if not response.is_a? Net::HTTPOK then
-          puts "Failed to add service: #{response.read_body} (#{response.message})"
-        else
-          puts "Added service #{ARGV[0]}"
-        end
-      end
-    end
+    service.add_service(ARGV[0])
   end
 
   when "listconfigs" then
@@ -127,69 +75,53 @@ case command.downcase
   if ARGV.length < 1 or ARGV.length > 2 then
     puts "Usage: listConfigs <service name> [detail|latest]"
   else
-    Net::HTTP.start(server_url.host, server_url.port) do |http|
-      # Fetch the list of hosts, too
-      hosts = {}
+    # Fetch the list of hosts, too
+    hosts = service.hosts()
 
-      http.request_get("/inventory/host/", headers) do |response|
-        if not response.is_a? Net::HTTPOK then
-          puts "Failed to get hosts: #{response.read_body} (#{response.message})"
-        else
-          hosts = JSON.parse(response.read_body).map{ |entry|
-            [entry["hostname"], Hash[*entry["currentVersions"].map{|v| [v["name"],v["serial"]]}.flatten]]
-          }
-        end
-      end
+    hosts = hosts.map{ |entry|
+      [entry["hostname"], Hash[*entry["currentVersions"].map{|v| [v["name"],v["serial"]]}.flatten]]
+    }
 
-      http.request_get("/inventory/config/#{ARGV[0]}", headers) do |response|
-        if not response.is_a? Net::HTTPOK then
-          puts "Failed to get configs: #{response.read_body} (#{response.message})"
-        else
-          configs = JSON.parse(response.read_body).map {|s| ServiceEntry.from_json(s) }
-          puts "Configs: "
+    configs = service.configs(ARGV[0]).sort{|a,b| a.serial <=> b.serial }.reverse
+    puts "Configs: "
 
-          configs = configs.sort{|a,b| a.serial <=> b.serial }.reverse
-
-          if ARGV[1] == "latest" and configs.length > 0 then configs = [configs[0]] end
+    if ARGV[1] == "latest" and configs.length > 0 then configs = [configs[0]] end
                       
-          configs.each do |config|
-            tag_string = if config.tag != nil then
-                           "(tag #{config.tag})"
-                         else
-                           ""
-                         end
+    configs.each do |config|
+      tag_string = if config.tag != nil then
+                     "(tag #{config.tag})"
+                   else
+                     ""
+                   end
 
-            puts "  #{config.name}-#{config.serial} #{tag_string} : stable=#{config.stable}, rejected=#{config.rejected}, deployed=#{config.deployed}, deploying=#{config.deploying}, failed=#{config.failed}"
-
-            if ARGV.length == 2 then
-              config.hooks.each do |k,v|
-                sym = if v.symlink then " => #{v.symlink}" end
-                puts "    #{k} = #{v.source}#{sym}"
-              end
-
-              puts "    Files:"
-              config.files.sort{|a,b| a.source <=> b.source}.each do |file|
-                sym = if file.symlink then " => #{file.symlink}" end
-                puts "      #{file.source}#{sym}"
-              end
-
-              running_hosts = hosts.map{ |hostname,current|
-                if current[ARGV[0]] == config.serial then
-                  [hostname]
-                else
-                  []
-                end
-              }.flatten
-
-              if running_hosts.length > 0 then
-                puts "    Running hosts:"
-                puts running_hosts.sort{|a,b| a <=> b}.map{|h| "      #{h}\n" }
-              end
-
-              puts ""
-            end
-          end
+      puts "  #{config.name}-#{config.serial} #{tag_string} : stable=#{config.stable}, rejected=#{config.rejected}, deployed=#{config.deployed}, deploying=#{config.deploying}, failed=#{config.failed}"
+      
+      if ARGV.length == 2 then
+        config.hooks.each do |k,v|
+          sym = if v.symlink then " => #{v.symlink}" end
+          puts "    #{k} = #{v.source}#{sym}"
         end
+        
+        puts "    Files:"
+        config.files.sort{|a,b| a.source <=> b.source}.each do |file|
+          sym = if file.symlink then " => #{file.symlink}" end
+          puts "      #{file.source}#{sym}"
+        end
+        
+        running_hosts = hosts.map{ |hostname,current|
+          if current[ARGV[0]] == config.serial then
+            [hostname]
+          else
+            []
+          end
+        }.flatten
+        
+        if running_hosts.length > 0 then
+          puts "    Running hosts:"
+          puts running_hosts.sort{|a,b| a <=> b}.map{|h| "      #{h}\n" }
+        end
+        
+        puts ""
       end
     end
   end
@@ -200,7 +132,7 @@ case command.downcase
     puts "Usage: releaseConfig <service> <config serial>"
   else
     Net::HTTP.start(server_url.host, server_url.port) do |http|
-      http.request_post("/inventory/config/#{ARGV[0]}/#{ARGV[1]}", '{"stable" : true }', headers) do |response|
+      http.request_post("/inventory/config/#{ARGV[0]}/#{ARGV[1]}", '{"stable" : true }', service.headers) do |response|
         if not response.is_a? Net::HTTPOK then
           puts "Failed to get configs: #{response.read_body} (#{response.message})"
         else
@@ -216,7 +148,7 @@ case command.downcase
     puts "Usage: deleteConfig <service> <config serial>"
   else
     Net::HTTP.start(server_url.host, server_url.port) do |http|
-      http.delete("/inventory/config/#{ARGV[0]}/#{ARGV[1]}", headers) do |response|
+      http.delete("/inventory/config/#{ARGV[0]}/#{ARGV[1]}", service.headers) do |response|
         if not response.is_a? Net::HTTPOK then
           puts "Failed to delete config: #{response.read_body} (#{response.message})"
         else
@@ -258,7 +190,7 @@ EOH
   else
     # Verify that this is really a service
     Net::HTTP.start(server_url.host, server_url.port) do |http|
-      http.request_get("/inventory/config/#{ARGV[0]}", headers) do |response|
+      http.request_get("/inventory/config/#{ARGV[0]}", service.headers) do |response|
         if not response.is_a? Net::HTTPOK then
           puts "Error adding config: #{ARGV[0]} is not a service"
           exit(-2)
@@ -304,27 +236,27 @@ EOH
         # this is a simple file
         source, mode = key.split(",")
 
-        config["files"] << file_for(service_name,source, nil, mode, false, s3_root)
+        config["files"] << uploader.file_for(service_name,source, nil, mode, false, s3_root)
       else
         # Either a symlinked file, tag, or hook. 
         source, mode = value.split(",")
 
         if hooknames.has_key?(key) then
-          hooks[key] = file_for(service_name, source, nil, mode, true, s3_root)
+          hooks[key] = uploader.file_for(service_name, source, nil, mode, true, s3_root)
         elsif key == "tag"
           config["tag"] = value
         elsif key == "stable"
           config["stable"] = (value.downcase == "true")
         elsif key == "default"
-          config["files"] << file_for(service_name, source, "/etc/default/#{service_name}", "644", true, s3_root)
+          config["files"] << uploader.file_for(service_name, source, "/etc/default/#{service_name}", "644", true, s3_root)
         elsif key == "init"
-          config["files"] << file_for(service_name, source, "/etc/init/#{service_name}.conf", "644", true, s3_root)
+          config["files"] << uploader.file_for(service_name, source, "/etc/init/#{service_name}.conf", "644", true, s3_root)
         elsif key == "conf"
-          config["files"] << file_for(service_name, source, "/etc/reportgrid/#{service_name}.conf", "644", true, s3_root)
+          config["files"] << uploader.file_for(service_name, source, "/etc/reportgrid/#{service_name}.conf", "644", true, s3_root)
         elsif key == "jar"
-          config["files"] << file_for(service_name, source, "/usr/share/java/#{service_name}.jar", "644", true, s3_root)
+          config["files"] << uploader.file_for(service_name, source, "/usr/share/java/#{service_name}.jar", "644", true, s3_root)
         else
-          config["files"] << file_for(service_name, source, key, mode, true, s3_root)
+          config["files"] << uploader.file_for(service_name, source, key, mode, true, s3_root)
         end
       end
     end
@@ -334,21 +266,74 @@ EOH
       config["stable"] = true
     end
 
+    # Compare our new config to the latest config
+    current = service.configs(service_name).sort{|a,b| a.serial <=> b.serial }.reverse[0]
+
+    if current != nil then
+      hooksMatch = ["preinstall", "postinstall", "preremove", "postremove"].all? { |hook|
+        if hooks[hook] == nil then
+          # We're not modifying the existing hook, so this is fine
+          true
+        else
+          if current.hooks[hook] == nil then
+            # We have a hook and the current config doesn't, so we're new
+            false
+          else
+            # Compare hook files based on hash only for now (symlinks really aren't used in hooks)
+            if Util.valid_hash(hooks[hook]["source"], current.hooks[hook].source, "~/.s3cfg", log) then
+              log.info("The new #{hook} hook matches the current hook script")
+              true
+            else
+              false
+            end
+          end
+        end
+      }
+
+      filesMatch = config["files"].all? {|file|
+        # We prefer matching a file based on symlink rather than URL
+        currentFile = if file["symlink"] != nil then
+                        current.files.find{|f| file["symlink"] == f.symlink}
+                      else
+                        current.files.find{|f| file["url"] == f.source }
+                      end
+
+        if currentFile == nil
+          # Couldn't locate a matching file, so this must be new
+          false
+        else
+          # We either matched on symlink or url, so just make sure that we have the same file
+          if Util.valid_hash(file["source"],currentFile.source,"~/.s3cfg", log) and file["mode"] == currentFile.mode then
+            log.info("#{file["source"]} matches existing #{currentFile.source}")
+            true
+          else
+            false
+          end
+        end
+      }
+                        
+    end
+
+    if hooksMatch and filesMatch then
+      log.info("Skipping new configuration identical to current configuration")
+      exit
+    end
+
+    exit
+
     # Upload files and transform results
     puts "Uploading files"
-    hooks = hooks.map { |k,v| [k,upload(v)] }
-    config["files"] = config["files"].map { |f| upload(f) }
+    hooks = hooks.map { |k,v| [k,uploader.upload(v)] }
+    config["files"] = config["files"].map { |f| uploader.upload(f) }
 
     hooks.each do |key,value| config[key] = value end
 
     puts "\n\n#{ JSON.pretty_generate(config) }\n\n"
 
-    service = JSON.generate(config)
-
-    
+    serviceObj = JSON.generate(config)
 
     Net::HTTP.start(server_url.host, server_url.port) do |http|
-      http.request_post("/inventory/config/#{service_name}", service, headers) do |response|
+      http.request_post("/inventory/config/#{service_name}", serviceObj, service.headers) do |response|
         if not response.is_a? Net::HTTPOK then
           puts "Failed to add service: #{response.read_body} (#{response.message})"
         else
