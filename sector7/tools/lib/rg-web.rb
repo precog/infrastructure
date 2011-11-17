@@ -69,4 +69,14 @@ class DeployerService
     end
   end
 
+  def delete_config(service,serial)
+    Net::HTTP.start(@server_url.host, @server_url.port) do |http|
+      http.delete("/inventory/config/#{service}/#{serial}") do |response|
+        if not response.is_a? Net:HTTPOK then
+          raise "Error deleting config: #{response.read_body}"
+        end
+      end
+    end
+  end
+
 end
