@@ -36,7 +36,7 @@ begin
   Net::HTTP.start(url.host, url.port) do |http|
     http.request_get(path) do |response|
       if not response.is_a? Net::HTTPOK then
-        $stderr.put("TIMING UNKNOWN:Error collecting stats: #{response.read_body}")
+        $stderr.put("UNKNOWN:Error collecting stats: #{response.read_body}")
       else
         begin
           data = JSON.parse(response.read_body)
@@ -54,45 +54,49 @@ begin
             end.reduce(:+)
 
             if result > critical.to_i then
-              puts "TIMING CRITICAL:Total of #{error_value} errors on service"
+              puts "CRITICAL:Total of #{error_value} errors on service"
+              exit(2)
             elsif result > warn.to_i then
-              puts "TIMING WARNING:Total of #{error_value} errors on service"
+              puts "WARNING:Total of #{error_value} errors on service"
+              exit(1)
             else
               puts "OK:Total of #{error_value} errors on service"
             end
           when "response"
             times = ["GET", "POST"].map do |verb|
-              puts "Checking #{verb}"
+              #puts "Checking #{verb}"
               result = safe_get(data,"requests",verb,"timing","averageTime","5min x 1",0) {|d| d.flatten }
-              puts "Result for #{verb} = #{result}"
+              #puts "Result for #{verb} = #{result}"
               [verb,if result.length == 1 then result[0] else nil end]
             end.select {|r| r[1] != nil }
 
             if times.length == 2 then
-              puts "Both vals"
+              #puts "Both vals"
               max = times.sort{|a,b| a[1] <=> b[1]}[-1]
             elsif times.length == 1 then
-              puts "Single val: #{times}"
+              #puts "Single val: #{times}"
               max = times[0]
             end
 
-            puts "Max = #{max[0]}, #{max[1]}"
+            #puts "Max = #{max[0]}, #{max[1]}"
 
             if max[1] > critical.to_f then
-              puts "TIMING CRITICAL:#{max[0]} response average is #{max[1]}"
+              puts "CRITICAL:#{max[0]} response average is #{max[1]}"
+              exit(2)
             elsif max[1] > warn.to_f then
-              puts "TIMING WARNING:#{max[0]} response average is #{max[1]}"
+              puts "WARNING:#{max[0]} response average is #{max[1]}"
+              exit(1)
             else
               puts "OK:#{max[0]} response average is #{max[1]}"
             end
           end
         rescue => e
-          $stderr.puts("TIMING UNKNOWN:Error parsing response: #{e.message}")
+          $stderr.puts("UNKNOWN:Error parsing response: #{e.message}")
         end
       end
     end
   end
 rescue => e
-  $stderr.puts("TIMING UNKNOWN:Error processing poll: #{e.message}")
+  $stderr.puts("UNKNOWN:Error processing poll: #{e.message}")
   exit(3)
 end
