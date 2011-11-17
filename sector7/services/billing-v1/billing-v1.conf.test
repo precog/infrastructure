@@ -33,6 +33,7 @@ services {
       accounts {
         credits {
           developer = 10000
+          mixpanel = 100000
         }
       }
       
