@@ -160,7 +160,7 @@ define service {
     use                 default-service
     hostgroup_name      appserverV2
     service_description Analytics v1 response times
-    check_command	check_rg_service!/blueeyes/services/analytics/v1/health!response!100!250
+    check_command	check_rg_service!/blueeyes/services/analytics/v1/health!response!500!1000
 }
 
 define service {
@@ -174,7 +174,7 @@ define service {
     use                 default-service
     hostgroup_name      appserverV2
     service_description Billing v1 response times
-    check_command	check_rg_service!/blueeyes/services/billing/v1/health!response!100!250
+    check_command	check_rg_service!/blueeyes/services/billing/v1/health!response!500!1000
 }
 
 # devops checks
