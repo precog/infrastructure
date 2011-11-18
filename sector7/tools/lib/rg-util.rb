@@ -29,7 +29,7 @@ class Util
   end
 
   def self.s3_file_exists (url, s3cfg, log)
-    `s3cmd info #{url} > /dev/null 2>&1`
+    `s3cmd ls #{url} | grep #{url} > /dev/null 2>&1`
 
     return $? == 0
   end

@@ -224,6 +224,7 @@ EOH
 
       if params.length == 0 then
         puts "Parameters are required for adding a config"
+        exit
       end
 
       params.each do |arg|
@@ -321,6 +322,7 @@ EOH
         exit
       end
 
+      exit
       # Upload files and transform results
       log.info("Uploading files")
       hooks = hooks.map { |k,v| [k,uploader.upload(v)] }
