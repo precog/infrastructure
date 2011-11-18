@@ -322,7 +322,6 @@ EOH
         exit
       end
 
-      exit
       # Upload files and transform results
       log.info("Uploading files")
       hooks = hooks.map { |k,v| [k,uploader.upload(v)] }
@@ -340,7 +339,7 @@ EOH
             puts "Failed to add service: #{response.read_body} (#{response.message})"
           else
             result = JSON.parse(response.read_body)
-            puts "Added config for service #{service_name} :#{result["serial"]}"
+            puts "Added config for service #{service_name}\nserial=#{result["serial"]}"
           end
         end
       end
