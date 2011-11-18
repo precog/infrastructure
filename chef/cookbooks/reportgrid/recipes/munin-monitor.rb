@@ -9,3 +9,5 @@
 include_recipe "munin::client"
 
 service_monitor "analytics-v1"
+
+service_monitor "billing-v1"
