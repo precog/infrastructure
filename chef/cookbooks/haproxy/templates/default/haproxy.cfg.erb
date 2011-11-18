@@ -34,9 +34,13 @@ frontend http
   block if billing_admin
  
 <% @services.each do |service| %>
-    <%= "acl services_#{service[0][0]}_#{service[0][1]} path_reg ^/(blueeyes/|)services/#{service[0][0]}/#{service[0][1]}/" %>
-    <%= "use_backend services_#{service[0][0]}_#{service[0][1]} if services_#{service[0][0]}_#{service[0][1]}"  %>
+  <%= "acl services_#{service[0][0]}_#{service[0][1]} path_reg ^/(blueeyes/|)services/#{service[0][0]}/#{service[0][1]}/" %>
+  <%= "use_backend services_#{service[0][0]}_#{service[0][1]} if services_#{service[0][0]}_#{service[0][1]}"  %>
 <% end %>
+
+  acl web_request path_reg ^/(sign-up|control-panel).html
+  acl secure_request hdr(Host) -i secure.reportgrid.com
+  use_backend secure_web_rewrite if web_request or secure_request or LOCALHOST
 
   default_backend website
 
@@ -55,6 +59,10 @@ backend services_<%= "#{service[0]}_#{service[1]}" %>
   <% end %>
 
 <% end -%>
+
+backend secure_web_rewrite
+  reqirep ^Host:\ .* Host:\ www.reportgrid.com
+  server www.reportgrid.com www.reportgrid.com:80
 
 backend website
   server www.reportgrid.com www.reportgrid.com:80
