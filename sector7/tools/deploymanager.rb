@@ -273,27 +273,27 @@ EOH
       current = service.configs(service_name).sort{|a,b| a.serial <=> b.serial }.reverse[0]
 
       if current != nil then
-        hooksMatch = ["preinstall", "postinstall", "preremove", "postremove"].all? { |hook|
+        newHooks = ["preinstall", "postinstall", "preremove", "postremove"].map { |hook|
           if hooks[hook] == nil then
             # We're not modifying the existing hook, so this is fine
-            true
+            []
           else
             if current.hooks[hook] == nil then
               # We have a hook and the current config doesn't, so we're new
-              false
+              [hook, hooks[hook]]
             else
               # Compare hook files based on hash only for now (symlinks really aren't used in hooks)
               if Util.valid_hash(hooks[hook]["source"], current.hooks[hook].source, "~/.s3cfg", log) then
                 log.info("The new #{hook} hook matches the current hook script")
-                true
+                []
               else
-                false
+                [{ hook => hooks[hook] }]
               end
             end
           end
-        }
+        }.flatten
 
-        filesMatch = config["files"].all? {|file|
+        newFiles = config["files"].map {|file|
           # We prefer matching a file based on symlink rather than URL
           currentFile = if file["symlink"] != nil then
                           current.files.find{|f| file["symlink"] == f.symlink}
@@ -303,19 +303,24 @@ EOH
 
           if currentFile == nil
             # Couldn't locate a matching file, so this must be new
-            false
+            [file]
           else
             # We either matched on symlink or url, so just make sure that we have the same file
             if Util.valid_hash(file["source"],currentFile.source,"~/.s3cfg", log) and file["mode"] == currentFile.mode then
               log.info("#{file["source"]} matches existing #{currentFile.source}")
-              true
+              []
             else
-              false
+              [file]
             end
           end
-        }
-        
+        }.flatten
       end
+
+      # Convert newHooks into a map
+      newHooks = Hash[*newHooks]
+
+      hooksMatch = newHooks.length == 0
+      filesMatch = newFiles.length == 0
 
       if hooksMatch and filesMatch then
         log.info("Skipping new configuration identical to current configuration")
@@ -323,11 +328,15 @@ EOH
       end
 
       # Upload files and transform results
-      log.info("Uploading files")
-      hooks = hooks.map { |k,v| [k,uploader.upload(v)] }
-      config["files"] = config["files"].map { |f| uploader.upload(f) }
+      log.info("Uploading hooks")
+      if not hooksMatch then
+        hooks = newHooks.map { |k,v| [k,uploader.upload(v)] }
+        # Place the updated hooks into the config object
+        hooks.each do |key,value| config[key] = value end
+      end
 
-      hooks.each do |key,value| config[key] = value end
+      log.info("Uploading files")
+      config["files"] = newFiles.map { |f| uploader.upload(f) }
 
       puts "\n\n#{ JSON.pretty_generate(config) }\n\n"
 
