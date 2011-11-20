@@ -103,18 +103,18 @@ begin
           end
           
           if config.deployed.size > 0 then
-            puts "    Deployed to:"
-            config.deployed.each {|d| puts "      #{d}" }
+            puts "    Deployed on:"
+            config.deployed.sort{|a,b| a <=> b}.each {|d| puts "      #{d}" }
           end
 
           if config.deploying.size > 0 then
-            puts "    Deploying to:"
-            config.deploying.each {|d| puts "      #{d}" }
+            puts "    Deploying on:"
+            config.deploying.sort{|a,b| a <=> b}.each {|d| puts "      #{d}" }
           end
 
           if config.failed.size > 0 then
             puts "    Failed on:"
-            config.failed.each {|d| puts "      #{d}" }
+            config.failed.sort{|a,b| a <=> b}.each {|d| puts "      #{d}" }
           end
 
           puts ""
