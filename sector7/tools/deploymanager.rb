@@ -76,13 +76,6 @@ begin
     if ARGV.length < 1 or ARGV.length > 2 then
       puts "Usage: listConfigs <service name> [detail|latest]"
     else
-      # Fetch the list of hosts, too
-      hosts = service.hosts()
-
-      hosts = hosts.map{ |entry|
-        [entry["hostname"], Hash[*entry["currentVersions"].map{|v| [v["name"],v["serial"]]}.flatten]]
-      }
-
       configs = service.configs(ARGV[0]).sort{|a,b| a.serial <=> b.serial }.reverse
       puts "Configs: "
 
@@ -95,7 +88,7 @@ begin
                        ""
                      end
 
-        puts "  #{config.name}-#{config.serial} #{tag_string} : stable=#{config.stable}, rejected=#{config.rejected}, deployed=#{config.deployed}, deploying=#{config.deploying}, failed=#{config.failed}"
+        puts "  #{config.name}-#{config.serial} #{tag_string} : stable=#{config.stable}, rejected=#{config.rejected}, deployed=#{config.deployed.size}, deploying=#{config.deploying.size}, failed=#{config.failed.size}"
         
         if ARGV.length == 2 then
           config.hooks.each do |k,v|
@@ -109,19 +102,21 @@ begin
             puts "      #{file.source}#{sym}"
           end
           
-          running_hosts = hosts.map{ |hostname,current|
-            if current[ARGV[0]] == config.serial then
-              [hostname]
-            else
-              []
-            end
-          }.flatten
-          
-          if running_hosts.length > 0 then
-            puts "    Running hosts:"
-            puts running_hosts.sort{|a,b| a <=> b}.map{|h| "      #{h}\n" }
+          if config.deployed.size > 0 then
+            puts "    Deployed to:"
+            config.deployed.each {|d| puts "      #{d}" }
           end
-          
+
+          if config.deploying.size > 0 then
+            puts "    Deploying to:"
+            config.deploying.each {|d| puts "      #{d}" }
+          end
+
+          if config.failed.size > 0 then
+            puts "    Failed on:"
+            config.failed.each {|d| puts "      #{d}" }
+          end
+
           puts ""
         end
       end

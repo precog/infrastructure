@@ -9,7 +9,7 @@
 include_recipe "java"
 include_recipe "reportgrid::baseenv"
 
-jar_file = "sector7-assembly-0.1.3.jar"
+jar_file = "deployment-assembly-0.2.0.jar"
 
 directory "/opt/reportgrid/deployservice" do
   owner "reportgrid"
