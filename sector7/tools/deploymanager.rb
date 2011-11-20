@@ -76,6 +76,11 @@ begin
     if ARGV.length < 1 or ARGV.length > 2 then
       puts "Usage: listConfigs <service name> [detail|latest]"
     else
+      # Fetch the list of hosts, too, so that we can report on current status
+      hosts = service.hosts().map{ |entry|
+        [entry["hostname"], Hash[*entry["currentVersions"].map{|v| [v["name"],v["serial"]]}.flatten]]
+      }
+
       configs = service.configs(ARGV[0]).sort{|a,b| a.serial <=> b.serial }.reverse
       puts "Configs: "
 
@@ -103,18 +108,31 @@ begin
           end
           
           if config.deployed.size > 0 then
-            puts "    Deployed on:"
+            puts "    Successfully deployed on:"
             config.deployed.sort{|a,b| a <=> b}.each {|d| puts "      #{d}" }
           end
 
           if config.deploying.size > 0 then
-            puts "    Deploying on:"
+            puts "    Currently deploying on:"
             config.deploying.sort{|a,b| a <=> b}.each {|d| puts "      #{d}" }
           end
 
           if config.failed.size > 0 then
-            puts "    Failed on:"
+            puts "    Deployment failed on:"
             config.failed.sort{|a,b| a <=> b}.each {|d| puts "      #{d}" }
+          end
+
+          running_hosts = hosts.map{ |hostname,current|
+            if current[ARGV[0]] == config.serial then
+              [hostname]
+            else
+              []
+            end
+          }.flatten
+          
+          if running_hosts.length > 0 then
+            puts "    Currently running on:"
+            puts running_hosts.sort{|a,b| a <=> b}.map{|h| "      #{h}\n" }
           end
 
           puts ""
