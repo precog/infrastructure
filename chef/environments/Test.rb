@@ -20,7 +20,12 @@ override_attributes ({
     },
     "mongo" => {
       "hosts" => [ "devmongo01.reportgrid.com:27017" ]
-    }
+    },
+    "tokens" => {
+      "test" => {
+        "rollup" => "5"
+      }
+    }                    
   },
   "mongodb" => {
     "mongos_enabled" => "no"
@@ -28,6 +33,7 @@ override_attributes ({
   "deployer" => {
     "notified" => "derek@reportgrid.com",
     "server" => "http://devmongo01.reportgrid.com:29999/",
-    "key" => "feedfacedeadbeef"
+    "key" => "feedfacedeadbeef",
+    "agent_options" => "debug: true"
   }
 })
