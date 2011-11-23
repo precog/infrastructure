@@ -11,15 +11,13 @@ default_attributes ({
   }
 })
 override_attributes ({
-  "reportgrid" => {
-    "eventsdb" => {
-      "hosts" => [ "localhost:27017" ]
-    },
-    "indexdb" => {
-      "hosts" => [ "localhost:27017" ]
-    },
-    "mongo" => {
-      "hosts" => [ "localhost:27017" ]
-    }
+  "mongodb" => {
+    "mongos_enabled" => "no"
+  },
+  "deployer" => {
+    "notified" => "derek@reportgrid.com",
+    "server" => "http://devci01.reportgrid.com:29999/",
+    "key" => "fd9erer9345vn911az0",
+    "agent_options" => "debug: true"
   }
 })
