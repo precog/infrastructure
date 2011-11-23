@@ -10,12 +10,22 @@
 /sbin/iptables -A INPUT -i lo -j ACCEPT
 
 # Allow other RG servers
-<% @rgservers.each do |n| %>
-/sbin/iptables -A RGSERVERS -s <%= if n[:cloud] then n[:cloud][:public_ipv4] else n[:ipaddress] end %> -j ACCEPT
-<% end %>
+<% @rgservers.each do |n| 
+   ipaddr = if n[:cloud] then n[:cloud][:public_ipv4] else n[:ipaddress] end 
+     if ipaddr and ipaddr.length > 0 then %>
+/sbin/iptables -A RGSERVERS -s <%= ipaddr %> -j ACCEPT
+<%   end 
+   end %>
 
 # No one else!
 /sbin/iptables -A RGSERVERS -j REJECT
 
+# Protect mongo ports
 /sbin/iptables -A INPUT -p tcp --dport 27017:27019 -j RGSERVERS
 /sbin/iptables -A INPUT -p tcp --dport 28017:28019 -j RGSERVERS
+
+# Protect raw app service ports
+/sbin/iptables -A INPUT -p tcp --dport 30000:30100 -j RGSERVERS
+
+# Protect RMI port for JMeter
+/sbin/iptables -A INPUT -p tcp --dport 1099 -j RGSERVERS
