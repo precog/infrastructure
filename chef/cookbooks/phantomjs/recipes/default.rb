@@ -12,6 +12,7 @@ include_recipe "xvfb"
 
 package "libqt4-dev"
 package "qt4-qmake"
+package "libpoppler-qt4-3"
 
 # TODO: at some point parameterize the version
 bash "phantomjs_from_source" do
