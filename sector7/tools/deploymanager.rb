@@ -285,49 +285,51 @@ EOH
       # Compare our new config to the latest config
       current = service.configs(service_name).sort{|a,b| a.serial <=> b.serial }.reverse[0]
 
-      if current != nil then
-        newHooks = ["preinstall", "postinstall", "preremove", "postremove"].map { |hook|
-          if hooks[hook] == nil then
-            # We're not modifying the existing hook, so this is fine
-            []
-          else
-            if current.hooks[hook] == nil then
-              # We have a hook and the current config doesn't, so we're new
-              [hook, hooks[hook]]
-            else
-              # Compare hook files based on hash only for now (symlinks really aren't used in hooks)
-              if Util.valid_hash(hooks[hook]["source"], current.hooks[hook].source, "~/.s3cfg", log) then
-                log.info("The new #{hook} hook matches the current hook script")
-                []
-              else
-                [{ hook => hooks[hook] }]
-              end
-            end
-          end
-        }.flatten
+      if current == nil then
+        current = ServiceEntry.new(service_name, "", "", true, false, [], {}, [], [], [])
+      end
 
-        newFiles = config["files"].map {|file|
-          # We prefer matching a file based on symlink rather than URL
-          currentFile = if file["symlink"] != nil then
-                          current.files.find{|f| file["symlink"] == f.symlink}
-                        else
-                          current.files.find{|f| file["url"] == f.source }
-                        end
-
-          if currentFile == nil
-            # Couldn't locate a matching file, so this must be new
-            [file]
+      newHooks = ["preinstall", "postinstall", "preremove", "postremove"].map { |hook|
+        if hooks[hook] == nil then
+          # We're not modifying the existing hook, so this is fine
+          []
+        else
+          if current.hooks[hook] == nil then
+            # We have a hook and the current config doesn't, so we're new
+            [hook, hooks[hook]]
           else
-            # We either matched on symlink or url, so just make sure that we have the same file
-            if Util.valid_hash(file["source"],currentFile.source,"~/.s3cfg", log) and file["mode"] == currentFile.mode then
-              log.info("#{file["source"]} matches existing #{currentFile.source}")
+            # Compare hook files based on hash only for now (symlinks really aren't used in hooks)
+            if Util.valid_hash(hooks[hook]["source"], current.hooks[hook].source, "~/.s3cfg", log) then
+              log.info("The new #{hook} hook matches the current hook script")
               []
             else
-              [file]
+              [{ hook => hooks[hook] }]
             end
           end
-        }.flatten
-      end
+        end
+      }.flatten
+
+      newFiles = config["files"].map {|file|
+        # We prefer matching a file based on symlink rather than URL
+        currentFile = if file["symlink"] != nil then
+                        current.files.find{|f| file["symlink"] == f.symlink}
+                      else
+                        current.files.find{|f| file["url"] == f.source }
+                      end
+
+        if currentFile == nil
+          # Couldn't locate a matching file, so this must be new
+          [file]
+        else
+          # We either matched on symlink or url, so just make sure that we have the same file
+          if Util.valid_hash(file["source"],currentFile.source,"~/.s3cfg", log) and file["mode"] == currentFile.mode then
+            log.info("#{file["source"]} matches existing #{currentFile.source}")
+            []
+          else
+            [file]
+          end
+        end
+      }.flatten
 
       # Convert newHooks into a map
       newHooks = Hash[*newHooks]
