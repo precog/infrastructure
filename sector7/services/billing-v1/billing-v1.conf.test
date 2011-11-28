@@ -42,6 +42,10 @@ services {
         collection = "accounts"
         servers = ["devmongo01.reportgrid.com:27017"]
       }
+      
+      usageService {
+        baseUrl = "http://localhost:80/services/analytics/v1/"
+      }
 #
 # Sandbox braintree config
 #
@@ -77,4 +81,4 @@ services {
 #        rootToken = "8E680858-329C-4F31-BEE3-2AD15FB67EED"
 #      }
   }
-}
+
