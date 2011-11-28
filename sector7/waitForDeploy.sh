@@ -38,6 +38,7 @@ while (( $TOTALTIME < $5 )) ; do
     fi
 
     # Wait and poll
+    echo "Waited $TOTALTIME seconds for deploy"
     TOTALTIME=$(( $TOTALTIME + $SLEEPTIME ))
 
     sleep $SLEEPTIME
