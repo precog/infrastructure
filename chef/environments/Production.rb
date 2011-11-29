@@ -1,6 +1,7 @@
 name "Production"
 description "Production server env"
 cookbook_versions ({
+  "reportgrid" => "< 0.2.12"
 })
 default_attributes ({
   "postfix" => {

@@ -25,7 +25,10 @@ override_attributes ({
       "test" => {
         "rollup" => "5"
       }
-    }                    
+    },
+    "visualization" => {
+      "s3url" => "s3://ops.reportgrid.com/viz-dev/"
+    }
   },
   "mongodb" => {
     "mongos_enabled" => "no"
