@@ -17,12 +17,6 @@ if (rs.status()['myState'] == 1) {
   }
 }
 runProgram("mongodump", "--port", "<%= @node[:mongodb][:port][:shard] %>", "-o", "<%= @node[:ec2][:ephemeral_backups] %>/mongodb/");
-
-/* Snapshot tokens separately */
-timestamp = (new Date).tojson().substring(9,19)
-runProgram("mongodump", "--port", "<%= @node[:mongodb][:port][:shard] %>", "-o", "<%= @node[:ec2][:ephemeral_backups] %>/tokens-" + timestamp + "/", "-d", "analytics1", "-c", "tokens");
-runProgram("mongodump", "--port", "<%= @node[:mongodb][:port][:shard] %>", "-o", "<%= @node[:ec2][:ephemeral_backups] %>/tokens-" + timestamp + "/", "-d", "analytics1", "-c", "deleted_tokens");
-
 <% else -%>
 runProgram("mongodump", "-o", "<%= @node[:ec2][:ephemeral_backups] %>/mongodb/");
 <% end -%>

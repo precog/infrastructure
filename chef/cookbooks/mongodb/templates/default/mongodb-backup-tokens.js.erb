@@ -1,0 +1,3 @@
+timestamp = (new Date).tojson().substring(9,19)
+runProgram("mongodump", "--port", "<%= @port %>", "-o", "<%= @node[:ec2][:ephemeral_backups] %>/mongodb-rotating/tokens-" + timestamp + "/", "-d", "analytics1", "-c", "tokens");
+runProgram("mongodump", "--port", "<%= @port %>", "-o", "<%= @node[:ec2][:ephemeral_backups] %>/mongodb-rotating/tokens-" + timestamp + "/", "-d", "analytics1", "-c", "deleted_tokens");
