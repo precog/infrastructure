@@ -45,4 +45,10 @@ if node[:mongodb][:mongos_enabled] == "yes" then
     mode "0644"
     notifies :restart, resources(:service => "monit")
   end
+
+  template "mongodb.logrotate" do
+    source "mongodb.logrotate.erb"
+    path "/etc/logrotate.d/mongodb"
+    mode "0644"
+  end
 end
