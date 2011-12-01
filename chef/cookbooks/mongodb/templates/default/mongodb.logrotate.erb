@@ -1,4 +1,4 @@
-<%= @node[:mongodb][:data_mount_point] %>/logs/*.log {
+<%= @log_dir %>/*.log {
   weekly
   rotate 12
   missingok

@@ -47,6 +47,9 @@ if node[:mongodb][:mongos_enabled] == "yes" then
   end
 
   template "mongodb.logrotate" do
+    variables(
+      :log_dir => "/var/log/mongodb"
+    )
     source "mongodb.logrotate.erb"
     path "/etc/logrotate.d/mongodb"
     mode "0644"

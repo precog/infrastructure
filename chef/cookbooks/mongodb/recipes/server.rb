@@ -56,6 +56,9 @@ link "mongodb_logs" do
 end
 
 template "mongodb.logrotate" do
+  variables(
+    :log_dir => "#{node[:mongodb][:data_mount_point]}/logs"
+  )
   source "mongodb.logrotate.erb"
   path "/etc/logrotate.d/mongodb"
   mode "0644"
