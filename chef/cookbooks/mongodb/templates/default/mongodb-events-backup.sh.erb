@@ -1,0 +1,19 @@
+#!/bin/bash
+
+set -e 
+
+NAME=events-`date "+%F"`
+TARGET=<%= @node[:ec2][:ephemeral_backups] %>/mongodb-rotating/${NAME}.tar.gz
+
+TMPDIR=/tmp/events-backup-`date "+%F-%H-%M-%S"`
+
+mongodump --port 27018 -d events1 -o ${TMPDIR}/${NAME}
+
+cd $TMPDIR
+
+tar cvzf $TARGET $NAME
+
+s3cmd sync --no-progress --no-delete-removed <%= @node[:ec2][:ephemeral_backups] %>/mongodb-rotating/ s3://ops.reportgrid.com/events/`hostname`/
+
+rm -rf $TMPDIR
+rm $TARGET
