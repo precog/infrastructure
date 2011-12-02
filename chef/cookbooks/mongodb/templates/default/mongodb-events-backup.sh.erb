@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Log to the proper log file
+exec >/var/log/mongodb/mongodb-events-backup-`date "+%F"`.log
+
 set -e 
 
 NAME=events-`date "+%F"`

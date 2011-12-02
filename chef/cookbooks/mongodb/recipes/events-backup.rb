@@ -17,5 +17,5 @@ end
 cron "backup_events" do
   hour "1"
   minute "27"
-  command "/opt/reportgrid/mongodb-events-backup.sh > /var/log/mongodb/mongodb-events-backup-`date '+%F'`.log"
+  command "/opt/reportgrid/mongodb-events-backup.sh 2>&1 | grep -v 'connected to'"
 end
