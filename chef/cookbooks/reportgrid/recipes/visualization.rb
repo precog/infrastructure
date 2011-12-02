@@ -70,7 +70,7 @@ web_app "visualization" do
 #  server_name "api.reportgrid.com"
 #  server_aliases [node['fqdn']]
   server_name node['fqdn']
-  server_aliases []
+  server_aliases ["api.reportgrid.com", "devapi.reportgrid.com"]
   docroot "#{node[:reportgrid][:visualization][:root]}/staticrenderer"
   template "visualization.conf.erb"
 end
