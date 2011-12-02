@@ -12,10 +12,24 @@ include_recipe "apache2"
 include_recipe "apache2::mod_php5"
 include_recipe "phantomjs"
 
-# Grab wkhtmltopdf from S3
-execute "pull-wkhtmltopdf" do
-  command "s3cmd sync --no-progress --no-delete-removed s3://ops.reportgrid.com/bin/wkhtmltopdf-amd64 /usr/local/bin/"
+## Grab wkhtmltopdf from S3
+#execute "pull-wkhtmltopdf" do
+#  command "s3cmd sync --no-progress --no-delete-removed s3://ops.reportgrid.com/bin/wkhtmltopdf-amd64 /usr/local/bin/"
+#end
+
+# Ugly hack to deploy the built binary for wkhtmltopdf
+cookbook_file "/opt/reportgrid/wkhtmltopdf-rc.tgz" do
+  owner "root"
+  group "root"
+  mode "755"
 end
+
+execute "unpack_built_wkhtmltopdf" do
+  only_if "test ! -x /bin/wkhtmltopdf -o /opt/reportgrid/wkhtmltopdf-rc.tgz -nt /bin/wkhtmltopdf"
+  user "root"
+  command "tar xvzf /opt/reportgrid/wkhtmltopdf-rc.tgz && touch /bin/wkhtmltopdf"
+end
+# End ugly hack
 
 directory "visualization_root" do
   path node[:reportgrid][:visualization][:root]
@@ -49,7 +63,7 @@ end
 
 # Pull from s3
 cron "pull_s3_vis" do
-  command "s3cmd -c /root/.s3cfg --no-delete-removed --no-progress sync #{node[:reportgrid][:visualization][:s3url]} #{node[:reportgrid][:visualization][:root]}/ > /dev/null"
+  command "s3cmd -c /root/.s3cfg --no-delete-removed --no-progress sync #{node[:reportgrid][:visualization][:s3url]} #{node[:reportgrid][:visualization][:root]} 2>&1 >/dev/null | grep -v 'is a directory'"
 end
 
 web_app "visualization" do
