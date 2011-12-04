@@ -1,0 +1,3 @@
+Configuration for services has moved to the "services" repo, to accomodate
+automatic deployment. analytics-v0 config is left here since we don't have
+a build for the directly anymore.

@@ -1,5 +1,0 @@
-conf=billing-v1.conf
-default=billing-v1.default
-init=billing-v1.init.conf
-/etc/monit/conf.d/billing-v1.monit=billing-v1.monit
-postinstall=postinstall.sh
