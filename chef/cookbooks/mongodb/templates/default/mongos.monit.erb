@@ -3,3 +3,7 @@ check process mongos with pidfile /var/run/mongodb/mongos.pid
   stop program  = "/usr/sbin/service mongos stop"
   if failed port 27017 with timeout 15 seconds for 3 cycles then restart
   if 3 restarts within 10 cycles then timeout
+
+check file mongos.log with path /var/log/mongodb/mongos.log
+  if match "MongoException$Network" then alert
+

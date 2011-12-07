@@ -1,12 +1,13 @@
 <%= @log_dir %>/*.log {
-  weekly
-  rotate 12
+  #weekly
+  size 100M
+  rotate 10
   missingok
   notifempty
   compress
   sharedscripts
   copytruncate
-  delaycompress
+  nodelaycompress
   postrotate
     for daemon in mongod mongos
     do
