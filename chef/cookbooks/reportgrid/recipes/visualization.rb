@@ -58,12 +58,12 @@ cron "purge_visualization_cache" do
   minute "55"
   # Purge items older than 30 days
   # TODO: parameterize this
-  command "find #{cachedir} -ctime +1 -delete > /dev/null"
+  command "find #{cachedir} -ctime +1 -type f -delete > /dev/null"
 end
 
 # Pull from s3
 cron "pull_s3_vis" do
-  command "s3cmd -c /root/.s3cfg --no-delete-removed --no-progress sync #{node[:reportgrid][:visualization][:s3url]} #{node[:reportgrid][:visualization][:root]} 2>&1 >/dev/null | grep -v 'is a directory'"
+  command "s3cmd -c /root/.s3cfg --no-delete-removed --no-progress sync #{node[:reportgrid][:visualization][:s3url]} #{node[:reportgrid][:visualization][:root]} 2>&1 >/dev/null | egrep -v 'is a directory|WARNING'"
 end
 
 web_app "visualization" do
