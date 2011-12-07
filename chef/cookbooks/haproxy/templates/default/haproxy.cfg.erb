@@ -57,7 +57,7 @@ backend services_<%= "#{service[0]}_#{service[1]}" %>
        if server == @node[:fqdn] then %>
   server <%= server %> <%= "#{server}:#{params[:port]}" %> check inter 5000 rise 2 fall 2
   <%   else %>
-  server <%= server %> <%= "#{server}:80" %> check inter 5000 rise 2 fall 2 backup
+  server <%= server %> <%= "#{server}:#{params[:port]}" %> check inter 5000 rise 2 fall 2 backup
   <%   end %>
   <% end %>
 
