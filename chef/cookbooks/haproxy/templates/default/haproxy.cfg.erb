@@ -41,6 +41,9 @@ frontend http
   acl renderer_request path_reg ^/services/renderer/v1/
   use_backend apache_php if renderer_request
 
+  acl api_request hdr(Host) -i api.reportgrid.com
+  use_backend website if api_request
+
   acl web_request path_reg ^/(sign-up|control-panel).html
   acl secure_request hdr(Host) -i secure.reportgrid.com
   use_backend secure_web_rewrite if web_request or secure_request or LOCALHOST
