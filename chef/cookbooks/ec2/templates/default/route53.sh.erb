@@ -39,7 +39,7 @@ fi
 
 <% node[:ec2][:route53][:aliases].each do |dnsalias| %>
 # Handle alias <%= dnsalias %> to <%= node[:fqdn] %>
-if <%= route53bin %> --file /root/.route53 -l reportgrid.com. | egrep "^<%= dnsalias %>" | grep -v <%= node[:fqdn] %> > /dev/null ; then
+if ! <%= route53bin %> --file /root/.route53 -l reportgrid.com | egrep "^<%= dnsalias %>" > /dev/null || <%= route53bin %> --file /root/.route53 -l reportgrid.com. | egrep "^<%= dnsalias %>" | grep -v <%= node[:fqdn] %> > /dev/null ; then
     <%= route53bin %> --file /root/.route53 --zone reportgrid.com. --remove --name <%= dnsalias + '.' %> --type CNAME | tee -a <%= node[:ec2][:route53][:log] %>
     <%= route53bin %> --file /root/.route53 --zone reportgrid.com. --create --name <%= dnsalias + '.' %> --type CNAME --ttl 60 --values <%= node[:fqdn] + '.' %> | tee -a <%= node[:ec2][:route53][:log] %>
 else
