@@ -4,7 +4,7 @@
 
 description "analytics-v0 - ReportGrid analytics service (v0)"
 
-start on runlevel [2345]
+#start on runlevel [2345]
 stop on runlevel [06]
 
 respawn

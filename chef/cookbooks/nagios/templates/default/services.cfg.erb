@@ -135,12 +135,13 @@ define service {
     check_command	check_http
 }
 
-define service {
-    use			default-service
-    hostgroup_name	appserverV2
-    service_description Analytics v0 token enum
-    check_command	check_http_content!api.reportgrid.com!30010!/tokens/?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D![
-}
+# No longer used!
+#define service {
+#    use			default-service
+#    hostgroup_name	appserverV2
+#    service_description Analytics v0 token enum
+#    check_command	check_http_content!api.reportgrid.com!30010!/tokens/?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D![
+#}
 
 define service {
     use			default-service

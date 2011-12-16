@@ -32,10 +32,6 @@ if appservers.length == 0 then
 end
 
 services = {
-  ['analytics', 'v0'] => {
-    :servers => appservers,
-    :port    => 30010
-  },
   ['analytics', 'v1'] => {
     :servers => appservers,
     :port    => 30020
