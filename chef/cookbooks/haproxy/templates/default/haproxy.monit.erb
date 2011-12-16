@@ -3,3 +3,6 @@ check process haproxy with pidfile /var/run/haproxy.pid
   stop program  = "/usr/sbin/service haproxy stop"
   if failed port 80 protocol http and request '<%= @node[:haproxy][:monitor_uri] %>' with timeout 15 seconds for 3 cycles then restart
   if 3 restarts within 10 cycles then timeout
+
+check file haproxy.log with path /var/log/haproxy.log
+  if match '([[:digit:]]+\/){4}[[:digit:]]+ 405' then alert
