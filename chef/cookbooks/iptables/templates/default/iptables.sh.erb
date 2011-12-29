@@ -29,3 +29,9 @@
 
 # Protect RMI port for JMeter
 /sbin/iptables -A INPUT -p tcp --dport 1099 -j RGSERVERS
+
+# Protect zookeeper
+/sbin/iptables -A INPUT -p tcp --dport 2181 -j RGSERVERS
+
+# Protect kafka
+/sbin/iptables -A INPUT -p tcp --dport 9092 -j RGSERVERS
