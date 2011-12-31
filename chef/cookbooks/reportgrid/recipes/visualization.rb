@@ -63,7 +63,7 @@ end
 
 # Pull from s3
 cron "pull_s3_vis" do
-  command "s3cmd -c /root/.s3cfg --no-delete-removed --no-progress sync #{node[:reportgrid][:visualization][:s3url]} #{node[:reportgrid][:visualization][:root]} 2>&1 >/dev/null | egrep -v 'is a directory|WARNING'"
+  command "s3cmd -c /root/.s3cfg --delete-removed --no-progress sync #{node[:reportgrid][:visualization][:s3url]} #{node[:reportgrid][:visualization][:root]} 2>&1 >/dev/null | egrep -v 'is a directory|WARNING'"
 end
 
 web_app "visualization" do
@@ -71,7 +71,7 @@ web_app "visualization" do
 #  server_aliases [node['fqdn']]
   server_name node['fqdn']
   server_aliases ["api.reportgrid.com", "devapi.reportgrid.com"]
-  docroot "#{node[:reportgrid][:visualization][:root]}/staticrenderer"
+  docroot "#{node[:reportgrid][:visualization][:root]}/services"
   template "visualization.conf.erb"
 end
 

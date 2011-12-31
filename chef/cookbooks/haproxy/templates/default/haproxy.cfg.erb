@@ -38,7 +38,7 @@ frontend http
   <%= "use_backend services_#{service[0][0]}_#{service[0][1]} if services_#{service[0][0]}_#{service[0][1]}"  %>
 <% end %>
 
-  acl renderer_request path_reg ^/services/renderer/v1/
+  acl renderer_request path_reg ^/services/viz/
   use_backend apache_php if renderer_request
 
   acl api_request hdr(Host) -i api.reportgrid.com
@@ -71,7 +71,7 @@ backend secure_web_rewrite
   server www.reportgrid.com www.reportgrid.com:80
 
 backend apache_php
-  reqrep ^([^\ ]*)\ /services/[[:alnum:]-]+/[[:alnum:]-]+/(.*) \1\ /\2
+  reqrep ^([^\ ]*)\ /services/[[:alnum:]-]+/(.*) \1\ /\2
   server localhost_apache localhost:20000
 
 backend website
