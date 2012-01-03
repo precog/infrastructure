@@ -63,7 +63,7 @@ end
 
 # Pull from s3
 cron "pull_s3_vis" do
-  command "s3cmd -c /root/.s3cfg --delete-removed --no-progress sync #{node[:reportgrid][:visualization][:s3url]} #{node[:reportgrid][:visualization][:root]} 2>&1 >/dev/null | egrep -v 'is a directory|WARNING'"
+  command "s3cmd -c /root/.s3cfg --delete-removed --no-progress sync #{node[:reportgrid][:visualization][:s3url]} #{node[:reportgrid][:visualization][:root]} 2>&1 >/dev/null | egrep -v 'is a directory|WARNING'; chmod -R g+w #{node[:reportgrid][:visualization][:root]} && chgrp -R www-data #{node[:reportgrid][:visualization][:root]}"
 end
 
 web_app "visualization" do
