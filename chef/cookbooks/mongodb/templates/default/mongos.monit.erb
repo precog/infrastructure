@@ -6,4 +6,5 @@ check process mongos with pidfile /var/run/mongodb/mongos.pid
 
 check file mongos.log with path /var/log/mongodb/mongos.log
   if match "MongoException$Network" then alert
+  if match "SocketException" then alert
 
