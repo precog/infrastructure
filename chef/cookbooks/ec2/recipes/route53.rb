@@ -22,14 +22,14 @@ template "route53" do
   source "route53.erb"
   path "/root/.route53"
   mode "0600"
-  notifies :run, resources(:execute => "route53.sh")
+  notifies :run, "execute[route53.sh]"
 end
 
 template "route53.sh" do
   source "route53.sh.erb"
   path "/etc/rc.local.d/route53.sh"
   mode "755"
-  notifies :run, resources(:execute => "route53.sh")
+  notifies :run, "execute[route53.sh]"
 end
 
 template "/etc/logrotate.d/route53" do
