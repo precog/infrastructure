@@ -49,7 +49,7 @@ end
 
 cookbook_file "/etc/init/deployer.conf" do
   source "deployer.init.conf"
-  notifies :reload, "service[deployer]"
+  notifies :restart, "service[deployer]"
 end
 
 template "/etc/reportgrid/deployer.conf" do
@@ -62,6 +62,7 @@ end
 service "deployer" do
   provider Chef::Provider::Service::Upstart
   action [:enable, :start]
+  supports :restart => false
 end
 
 template "/etc/logrotate.d/deployer" do
