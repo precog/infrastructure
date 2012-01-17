@@ -7,11 +7,13 @@ set :user, "ubuntu"
 ssh_options[:keys] = [File.join(File.dirname(__FILE__),  'ec2', 'ec2-keypair.pem')]
 
 role :none
-role :appserver, *[1,3,4,5,6].map { |i| "appserver#{'%02d' % i}.reportgrid.com" }
+role :appserver, *[1,2,3,4,5,6].map { |i| "appserver#{'%02d' % i}.reportgrid.com" }
 role :mongodb, *(13..21).map { |i| "mongodb#{'%02d' % i}.reportgrid.com" }
 role :mongodb_config, *(1..3).map { |i| "mongodb-config#{'%02d' % i}.reportgrid.com" }
-role :mongoevents, *(1..3).map { |i| "mongoevents#{'%02d' % i}.reportgrid.com" }
 role :devapp, *(1..2).map { |i| "devapp#{'%02d' % i}.reportgrid.com" }
+
+role :apptest, *(1..28).map { |i| "app#{'%02d' % i}.apptest.reportgrid.com" }
+
 #
 # Monit
 #
@@ -81,13 +83,18 @@ task :chef_client_app, :roles => :appserver, :max_hosts => 2 do
   run "#{sudo} chef-client"
 end
 
+desc "Run Chef on apptest servers"
+task :chef_client_apptest, :roles => :apptest, :max_hosts => 6 do
+  run "#{sudo} chef-client"
+end
+
 desc "Run Chef on dev app servers"
 task :chef_client_dev, :roles => :devapp do
   run "#{sudo} chef-client"
 end
 
 desc "Run Chef on mongo servers"
-task :chef_client_mongo, :roles => [:mongoevents, :mongodb, :mongodb_config] do
+task :chef_client_mongo, :roles => [:mongodb, :mongodb_config] do
   run "#{sudo} chef-client"
 end
 
