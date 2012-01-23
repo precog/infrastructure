@@ -7,4 +7,4 @@ initctl reload-configuration
 /etc/init.d/monit restart
 
 # Stop the service
-stop analytics-v0
+stop analytics-v0 || exit 0 # if it's already stopped or doesn't even exist
