@@ -12,7 +12,7 @@ role :mongodb, *(13..21).map { |i| "mongodb#{'%02d' % i}.reportgrid.com" }
 role :mongodb_config, *(1..3).map { |i| "mongodb-config#{'%02d' % i}.reportgrid.com" }
 role :devapp, *(1..2).map { |i| "devapp#{'%02d' % i}.reportgrid.com" }
 
-role :apptest, *(1..28).map { |i| "app#{'%02d' % i}.apptest.reportgrid.com" }
+role :apptest, *(1..24).map { |i| "app#{'%02d' % i}.apptest.reportgrid.com" }
 
 #
 # Monit
