@@ -12,15 +12,6 @@ default_attributes ({
 })
 override_attributes ({
   "reportgrid" => {
-    "eventsdb" => {
-      "hosts" => [ "devmongo01.reportgrid.com:27017" ]
-    },
-    "indexdb" => {
-      "hosts" => [ "devmongo01.reportgrid.com:27017" ]
-    },
-    "mongo" => {
-      "hosts" => [ "devmongo01.reportgrid.com:27017" ]
-    },
     "tokens" => {
       "test" => {
         "rollup" => "5"
@@ -31,7 +22,12 @@ override_attributes ({
     }
   },
   "mongodb" => {
-    "mongos_enabled" => "no"
+    "mongos_enabled" => "yes",
+    "config_servers" => [
+      "devmongo-config01.reportgrid.com:27019",
+      "devmongo-config02.reportgrid.com:27019",
+      "devmongo-config03.reportgrid.com:27019"
+    ]
   },
   "deployer" => {
     "notified" => "derek@reportgrid.com",
