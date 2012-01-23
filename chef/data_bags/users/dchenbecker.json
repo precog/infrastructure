@@ -1,0 +1,10 @@
+{
+  "id": "dchenbecker",
+  "groups": "sysadmin",
+  "htpasswd": "{SHA}R7VIUMDGzCXLJutl4CJHzKHCvvE=",
+  "openid": "http://dchenbecker.myopenid.com/",
+  "nagios": {
+    "pager": "derek-cell@reportgrid.com",
+    "email": "derek-cell@reportgrid.com"
+  }
+}
