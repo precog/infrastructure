@@ -10,6 +10,9 @@ default[:mongodb][:port][:mongos]     = 27017
 default[:mongodb][:port][:standalone] = 27017
 
 default[:mongodb][:mongos_enabled] = "yes"
+default[:mongodb][:journaling] = "journal = true"
+
+default[:mongodb][:use_fqdn_prefix_for_replset] = false
 
 if hostname =~ /^rg.*/
   default[:mongodb][:config_servers] = [

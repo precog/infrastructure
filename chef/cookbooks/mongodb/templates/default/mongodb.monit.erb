@@ -21,7 +21,7 @@ check process mongodb with pidfile /var/run/mongodb/mongodb.pid
   depends on mongodb_data
   group mongodb
 
-check file mongodb.log with path <%= @node[:mongodb][:data_mount_point] %>/logs/mongodb.log
+check file mongodb.log with path /var/log/mongodb/mongodb.log
   #if match "object too large" then alert
   if match "RS102" then alert
   if match "Assertion" then alert
@@ -29,14 +29,14 @@ check file mongodb.log with path <%= @node[:mongodb][:data_mount_point] %>/logs/
   group mongodb
 
 # FIXME: temporarily disabled
-#check file mongodb-health.log with path <%= @node[:mongodb][:data_mount_point] %>/logs/mongodb-health.log
+#check file mongodb-health.log with path /var/log/mongodb/mongodb-health.log
 #  if timestamp > 20 minutes then alert
 #  if match "ERROR" then alert
 #  depends on mongodb
 #  group mongodb
 
-<% if File.exists?("#{@node[:mongodb][:data_mount_point]}/logs/mongodb-backup.log") %>
-check file mongodb-backup.log with path <%= @node[:mongodb][:data_mount_point] %>/logs/mongodb-backup.log
+<% if File.exists?("/var/log/mongodb/mongodb-backup.log") %>
+check file mongodb-backup.log with path /var/log/mongodb/mongodb-backup.log
   if timestamp > 1440 minutes then alert
   depends on mongodb
   group mongodb

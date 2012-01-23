@@ -102,11 +102,16 @@ port = <%= @node[:mongodb][:port][:standalone] %>
 #opIdMem = <bytes>
 
 <% if @node[:recipes].include?('mongodb::replset-server') -%>
+<%   if @node[:mongodb][:use_fqdn_prefix_for_replset] -%>
+replSet = <%= @node[:hostname].match(/(\w+\d+)-/)[1] %>
+<%   else -%>
 replSet = <%= if @node[:mongodb][:replsetname] then @node[:mongodb][:replsetname] else (@node[:hostname].match(/[0-9]+/)[0].to_f/3).ceil end %>
+<%   end -%>
 <% end -%>
 
 # Enable REST interface
 rest = true
 
-# Enable journaling
-journal = true
+# Set journaling
+<%= @node[:mongodb][:journaling] %>
+

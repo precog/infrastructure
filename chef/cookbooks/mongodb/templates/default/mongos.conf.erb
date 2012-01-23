@@ -8,8 +8,6 @@ verbose = true
 
 port = <%= @node[:mongodb][:port][:mongos] %>
 
-# FIXME: The first line gets the list of servers from chef's search()
-#configdb = <%= @config_servers.join(',') %>
 configdb = <%= @node[:mongodb][:config_servers].join(',') %>
 
 pidfilepath = /var/run/mongodb/mongos.pid
