@@ -141,7 +141,6 @@ begin
     end
 
   when "rejectconfig" then
-    
     if ARGV.length != 2 then
       puts "Usage: rejectconfig <service> <config serial>"
     else
@@ -156,8 +155,22 @@ begin
       end
     end
 
-  when "deleteconfig" then
+  when "unrejectconfig" then
+    if ARGV.length != 2 then
+      puts "Usage: unrejectconfig <service> <config serial>"
+    else
+      Net::HTTP.start(server_url.host, server_url.port) do |http|
+        http.request_post("/inventory/config/#{ARGV[0]}/#{ARGV[1]}", '{"rejected" : false }', service.headers) do |response|
+          if not response.is_a? Net::HTTPOK then
+            puts "Failed to get configs: #{response.read_body} (#{response.message})"
+          else
+            puts "Unrejected #{ARGV[0]}-#{ARGV[1]}"
+          end
+        end
+      end
+    end
 
+  when "deleteconfig" then
     if ARGV.length != 2 then
       puts "Usage: deleteConfig <service> <config serial>"
     else
