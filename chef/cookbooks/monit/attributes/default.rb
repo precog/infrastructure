@@ -1,5 +1,6 @@
 default[:monit][:startup] = "1"
 default[:monit][:alert_recipients] = [ "root@localhost" ]
+default[:monit][:extra_filesystems] = []
 
 # FIXME: http://tickets.opscode.com/browse/CHEF-1688
 set_unless[:environment] = "production"
