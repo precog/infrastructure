@@ -63,8 +63,8 @@ end
 
 # Pull from s3
 cron "pull_s3_vis" do
-  minute "*"
-  command "mkdir -p /tmp/visualizationstage && s3cmd -c /root/.s3cfg --no-progress sync #{node[:reportgrid][:visualization][:s3url]} /tmp/visualizationstage 2>&1 >/dev/null | egrep -v 'is a directory|WARNING'; chmod -R g+w /tmp/visualizationstage && chgrp -R www-data /tmp/visualizationstage && rsync -aq --delete --delay-updates /tmp/visualizationstage/services #{node[:reportgrid][:visualization][:root]}"
+  minute "*/3"
+  command "mkdir -p /tmp/visualizationstage && s3cmd -c /root/.s3cfg --delete-removed --no-progress sync #{node[:reportgrid][:visualization][:s3url]} /tmp/visualizationstage 2>&1 >/dev/null | egrep -v 'is a directory|WARNING'; chmod -R g+w /tmp/visualizationstage && chgrp -R www-data /tmp/visualizationstage && rsync -aq --delete --delay-updates /tmp/visualizationstage/services #{node[:reportgrid][:visualization][:root]}"
 end
 
 web_app "visualization" do
