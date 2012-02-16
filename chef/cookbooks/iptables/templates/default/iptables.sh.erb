@@ -34,4 +34,5 @@
 /sbin/iptables -A INPUT -p tcp --dport 2181 -j RGSERVERS
 
 # Protect kafka
+/sbin/iptables -A INPUT -p tcp --dport 9082 -j RGSERVERS
 /sbin/iptables -A INPUT -p tcp --dport 9092 -j RGSERVERS
