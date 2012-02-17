@@ -7,7 +7,7 @@
   
   <Directory <%= @params[:docroot] %>>
     Options FollowSymLinks
-    AllowOverride Limit
+    AllowOverride Limit FileInfo
     Order allow,deny
     Allow from all
 

@@ -29,6 +29,12 @@ execute "unpack_built_wkhtmltopdf" do
   user "root"
   command "tar xvzf /opt/reportgrid/wkhtmltopdf-rc.tgz && touch /bin/wkhtmltopdf"
 end
+
+cookbook_file "/bin/wkhtmltoimage" do
+  owner "root"
+  group "root"
+  mode "755"
+end
 # End ugly hack
 
 directory "visualization_root" do
@@ -76,3 +82,19 @@ web_app "visualization" do
   template "visualization.conf.erb"
 end
 
+# To allow for mongo PHP driver install:
+package "php5-dev"
+package "php-pear"
+
+execute "install_php_mongo" do
+  not_if "pecl list | grep mongo"
+  user "root"
+  command "pecl install mongo"
+end
+
+cookbook_file "/etc/php5/conf.d/mongo_php.ini" do
+  owner "root"
+  group "root"
+  mode "644"
+  notifies :restart, "service[apache2]"
+end
