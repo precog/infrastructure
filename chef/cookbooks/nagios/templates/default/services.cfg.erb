@@ -238,3 +238,95 @@ define service {
 #      check_command           check_mongodb!index_miss_ratio!27018!.005!.01
       check_command           check_mongodb!index_miss_ratio!27018!.03!.06
 }
+
+# Quirrel checks
+
+define service {
+       use                    default-service
+       hostgroup_name         quirrel-shard
+       service_description    Quirrel shard01 simple math query
+       check_command          check_quirrel!30070!"shard01 simple math"!"total := 2 + 1%3Btotal * 3"!250!500
+}
+
+define service {
+       use                    default-service
+       hostgroup_name         quirrel-shard
+       service_description    Quirrel shard02 simple math query
+       check_command          check_quirrel!30072!"shard02 simple math"!"total := 2 + 1%3Btotal * 3"!250!500
+}
+
+define service {
+       use                    default-service
+       hostgroup_name         quirrel-shard
+       service_description    Quirrel shard03 simple math query
+       check_command          check_quirrel!30074!"shard03 simple math"!"total := 2 + 1%3Btotal * 3"!250!500
+}
+
+define service {
+       use                    default-service
+       hostgroup_name         quirrel-shard
+       service_description    Quirrel shard04 simple math query
+       check_command          check_quirrel!30076!"shard04 simple math"!"total := 2 + 1%3Btotal * 3"!250!500
+}
+
+# Mean value query
+define service {
+       use                    default-service
+       hostgroup_name         quirrel-shard
+       service_description    Quirrel shard01 mean value query
+       check_command          check_quirrel!30070!"shard01 mean value"!"mean(load(//payments).amount)"!250!500 
+}
+
+define service {
+       use                    default-service
+       hostgroup_name         quirrel-shard
+       service_description    Quirrel shard02 mean value query
+       check_command          check_quirrel!30072!"shard02 mean value"!"mean(load(//payments).amount)"!250!500 
+}
+
+define service {
+       use                    default-service
+       hostgroup_name         quirrel-shard
+       service_description    Quirrel shard03 mean value query
+       check_command          check_quirrel!30074!"shard03 mean value"!"mean(load(//payments).amount)"!250!500 
+}
+
+define service {
+       use                    default-service
+       hostgroup_name         quirrel-shard
+       service_description    Quirrel shard04 mean value query
+       check_command          check_quirrel!30076!"shard04 mean value"!"mean(load(//payments).amount)"!250!500 
+}
+
+# Complex query
+define service {
+       use                    default-service
+       hostgroup_name         quirrel-shard
+       normal_check_interval  600
+       service_description    Quirrel shard01 complex query
+       check_command          check_quirrel!30070!"shard01 complex"!"customers := load(//customers)%3Borders := load(//orders)%3BfractionForUser(%27userId) :=%3B  customers%27 := customers where customers.userId = %27userId%3B  orders%27 := orders where orders.userId = %27userId%3B  customers%27 ~ orders%27%3B  orders.total / customers.income%3BfractionForUser"!10000!15000 
+}
+
+define service {
+       use                    default-service
+       hostgroup_name         quirrel-shard
+       normal_check_interval  600
+       service_description    Quirrel shard02 complex query
+       check_command          check_quirrel!30072!"shard02 complex"!"customers := load(//customers)%3Borders := load(//orders)%3BfractionForUser(%27userId) :=%3B  customers%27 := customers where customers.userId = %27userId%3B  orders%27 := orders where orders.userId = %27userId%3B  customers%27 ~ orders%27%3B  orders.total / customers.income%3BfractionForUser"!10000!15000 
+}
+
+define service {
+       use                    default-service
+       hostgroup_name         quirrel-shard
+       normal_check_interval  600
+       service_description    Quirrel shard03 complex query
+       check_command          check_quirrel!30074!"shard03 complex"!"customers := load(//customers)%3Borders := load(//orders)%3BfractionForUser(%27userId) :=%3B  customers%27 := customers where customers.userId = %27userId%3B  orders%27 := orders where orders.userId = %27userId%3B  customers%27 ~ orders%27%3B  orders.total / customers.income%3BfractionForUser"!10000!15000 
+}
+
+define service {
+       use                    default-service
+       hostgroup_name         quirrel-shard
+       normal_check_interval  600
+       service_description    Quirrel shard04 complex query
+       check_command          check_quirrel!30076!"shard04 complex"!"customers := load(//customers)%3Borders := load(//orders)%3BfractionForUser(%27userId) :=%3B  customers%27 := customers where customers.userId = %27userId%3B  orders%27 := orders where orders.userId = %27userId%3B  customers%27 ~ orders%27%3B  orders.total / customers.income%3BfractionForUser"!10000!15000 
+}
