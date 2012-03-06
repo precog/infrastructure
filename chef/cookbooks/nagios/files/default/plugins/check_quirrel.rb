@@ -37,7 +37,7 @@ begin
         $stderr.puts("UNKNOWN:Error collecting stats: #{response.read_body}")
       else
         begin
-          message = "Response time for #{name} is #{duration}ms. Returned: \"#{response.body[0, 100]}...\""
+          message = "Results in #{duration}ms|duration=#{duration}ms"
           if duration > critical.to_f then
             puts "CRITICAL:#{message}"
             exit(2)

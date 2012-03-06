@@ -334,6 +334,10 @@ define command {
 #        command_line /usr/lib/nagios/plugins/process_perfdata.pl -d HOSTPERFDATA
 #}
 
+define command {
+    command_name  process-service-perfdata-for-nagiosgraph
+    command_line  /usr/lib/nagiosgraph/insert.pl
+}
 
 #Mongo checks
 define command {
