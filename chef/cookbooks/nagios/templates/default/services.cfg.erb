@@ -268,7 +268,7 @@ define service {
 define service {
        use                    default-service
        hostgroup_name         quirrel-shard
-       normal_check_interval  60
+       normal_check_interval  300
        process_perf_data      1
        active_checks_enabled  <%= enabled %>
        service_description    Quirrel <%= name %> complex query
