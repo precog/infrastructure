@@ -25,10 +25,13 @@
 /sbin/iptables -A INPUT -p tcp --dport 28017:28019 -j RGSERVERS
 
 # Protect raw app service ports
-/sbin/iptables -A INPUT -p tcp --dport 30000:30100 -j RGSERVERS
+/sbin/iptables -A INPUT -p tcp --dport 30000:30200 -j RGSERVERS
 
 # Protect RMI port for JMeter
 /sbin/iptables -A INPUT -p tcp --dport 1099 -j RGSERVERS
+
+# Protect Munin port
+/sbin/iptables -A INPUT -p tcp --dport 4949 -j RGSERVERS
 
 # Protect zookeeper
 /sbin/iptables -A INPUT -p tcp --dport 2181 -j RGSERVERS
