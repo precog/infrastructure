@@ -1,1 +1,1 @@
-default[:chef][:chef_server_url] = "https://api.opscode.com/organizations/reportgrid"
+default[:chef][:chef_server_url] = "http://devops01.reportgrid.com:4000/"

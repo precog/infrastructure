@@ -1,7 +1,7 @@
 name "Production"
 description "Production server env"
 cookbook_versions ({
-  "mongodb" => "< 0.2.9" # holds back mongo journaling parameterization and others
+  "java" => "< 0.4"
 })
 default_attributes ({
   "postfix" => {
