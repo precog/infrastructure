@@ -23,6 +23,7 @@ frontend http
   # Enable request logging (with X-Forwarded-For)
   option httplog
   capture request header X-Forwarded-For len 15
+  capture request header Referer
   log /dev/log daemon
   
   # Deny forged decrypt headers for SSL
@@ -56,8 +57,8 @@ backend services_<%= "#{service[0]}_#{service[1]}" %>
   reqrep ^([^\ ]*)\ /services/[[:alnum:]-]+/[[:alnum:]-]+/(.*) \1\ /\2
   reqadd X-Service-URL-Root: /services/<%= "#{service[0]}/#{service[1]}" %>
   option httpchk GET /blueeyes/services/<%= "#{service[0]}/#{service[1]}/health" %>
-  <% params[:servers].sort.each do |server| 
-       if server == @node[:fqdn] then %>
+  <% params[:servers].each do |server| 
+       if !server.nil? && server == @node[:fqdn] then %>
   server <%= server %> <%= "#{server}:#{params[:port]}" %> check inter 5000 rise 2 fall 2
   <%   else %>
   server <%= server %> <%= "#{server}:#{params[:port]}" %> check inter 5000 rise 2 fall 2 backup
