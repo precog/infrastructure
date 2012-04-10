@@ -240,7 +240,7 @@ define service {
 }
 
 # Quirrel checks
-<% shard_config = [["shard01", 30070, 1], ["shard02", 30072, 1], ["shard03", 30074, 1], ["shard04", 30076, 1]] # [name, port, enable] %>
+<% shard_config = [["shard01", 30070, 1], ["shard02", 30072, 1]] # [name, port, enable] %>
 
 <% shard_config.each { |name,port,enabled| %>
 
