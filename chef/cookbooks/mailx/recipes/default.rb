@@ -7,5 +7,7 @@
 # All rights reserved - Do Not Redistribute
 #
 package "mailx" do
-  package_name "bsd-mailx"
+  if node['platform'] != 'centos' then
+    package_name "bsd-mailx"
+  end
 end

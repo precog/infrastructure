@@ -11,15 +11,25 @@ package "irb" do
 end
 
 package "ruby-dev" do
-  package_name "ruby-dev"
+  if node['platform'] == 'centos' then
+    package_name "ruby-devel"
+  else
+    package_name "ruby-dev"
+  end
 end
 
 package "rubygems" do
-  package_name "rake"
+  if node['platform'] == 'centos' then
+    package_name "rubygem-rake"
+  else
+    package_name "rake"
+  end
 end
 
-gem_package "rubygems-update" do
-  package_name "rubygems-update"
+if node['platform'] == 'centos' then
+  gem_package "rubygems-update" do
+    package_name "rubygems-update"
+  end
 end
 
 #package "rake" do

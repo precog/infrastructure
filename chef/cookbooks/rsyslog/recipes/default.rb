@@ -18,7 +18,9 @@ end
 
 directory node[:rsyslog][:work_dir] do
   path node[:rsyslog][:work_dir]
-  owner "syslog"
+  if node['platform'] != 'centos' then
+    owner "syslog"
+  end
 end
 
 template "rsyslog.conf" do

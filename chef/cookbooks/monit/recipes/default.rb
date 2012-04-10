@@ -22,9 +22,19 @@ template "monit" do
   notifies :restart, resources(:service => "monit")
 end
 
+directory "/etc/monit/conf.d" do
+  owner "root"
+  mode "0755"
+  recursive true
+end
+
 template "monitrc" do
   source "monitrc.erb"
-  path "/etc/monit/monitrc"
+  if node['platform'] == 'centos' then
+    path "/etc/monit.conf"
+  else
+    path "/etc/monit/monitrc"
+  end
   mode "0600"
   notifies :restart, resources(:service => "monit")
 end
