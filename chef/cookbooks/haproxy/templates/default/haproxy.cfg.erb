@@ -23,7 +23,7 @@ frontend http
   # Enable request logging (with X-Forwarded-For)
   option httplog
   capture request header X-Forwarded-For len 15
-  capture request header Referer
+  capture request header Referer len 50
   log /dev/log daemon
   
   # Deny forged decrypt headers for SSL
