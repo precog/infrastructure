@@ -1,0 +1,1571 @@
+{
+  "normal": {
+    "tags": [
+
+    ],
+    "apache": {
+      "group": "www-data",
+      "cache_dir": "/var/cache/apache2",
+      "lib_dir": "/usr/lib/apache2",
+      "dir": "/etc/apache2",
+      "binary": "/usr/sbin/apache2",
+      "user": "www-data",
+      "pid_file": "/var/run/apache2.pid",
+      "log_dir": "/var/log/apache2",
+      "icondir": "/usr/share/apache2/icons"
+    },
+    "environment": "production"
+  },
+  "name": "appserver03.reportgrid.com",
+  "override": {
+  },
+  "default": {
+    "mongodb": {
+      "data_mount_point": "/srv/mongodb",
+      "data_device": "/dev/sdh",
+      "port": {
+        "config": 27019,
+        "standalone": 27017,
+        "mongos": 27017,
+        "shard": 27018
+      },
+      "config_servers": [
+        "mongodb-config01.reportgrid.com:27019",
+        "mongodb-config02.reportgrid.com:27019",
+        "mongodb-config03.reportgrid.com:27019"
+      ],
+      "mongos_enabled": "yes",
+      "use_fqdn_prefix_for_replset": false,
+      "package": "mongodb-10gen"
+    },
+    "rsyslog": {
+      "work_dir": "/var/spool/rsyslog"
+    },
+    "munin": {
+      "docroot": "/var/www/munin",
+      "server_role": "monitoring"
+    },
+    "deployer": {
+      "mongodb": "deployment",
+      "mongo": [
+        "localhost:27017"
+      ],
+      "notified": "operations@reportgrid.com",
+      "server": "http://devops01.reportgrid.com:29999/",
+      "agent_options": [
+
+      ],
+      "only_stable": "true",
+      "key": "d88fje9irjspskrewrf9r"
+    },
+    "monit": {
+      "startup": "1",
+      "extra_filesystems": [
+
+      ],
+      "alert_recipients": [
+        "root@localhost"
+      ],
+      "critical_alert_recipients": [
+
+      ]
+    },
+    "reportgrid": {
+      "mongo": {
+        "hosts": [
+          "localhost:27017"
+        ]
+      },
+      "indexdb": {
+        "hosts": [
+          "localhost:27017"
+        ]
+      },
+      "eventsdb": {
+        "hosts": [
+          "mongoevents01.reportgrid.com:27018",
+          "mongoevents02.reportgrid.com:27018"
+        ]
+      },
+      "tokens": {
+        "test": {
+          "rollup": "0"
+        }
+      },
+      "visualization": {
+        "s3url": "s3://ops.reportgrid.com/viz-prod/",
+        "root": "/opt/reportgrid/visualization"
+      },
+      "source": {
+        "root": "/root/reportgrid"
+      }
+    },
+    "java": {
+      "jar_home": "/usr/share/java",
+      "home": "/usr/lib/jvm/java-6-sun"
+    },
+    "chef": {
+      "chef_server_url": "https://api.opscode.com/organizations/reportgrid"
+    },
+    "apache": {
+      "traceenable": "On",
+      "allowed_openids": [
+
+      ],
+      "timeout": 300,
+      "keepaliverequests": 100,
+      "contact": "operations@reportgrid.com",
+      "prefork": {
+        "maxspareservers": 32,
+        "minspareservers": 16,
+        "serverlimit": 400,
+        "startservers": 16,
+        "maxclients": 400,
+        "maxrequestsperchild": 10000
+      },
+      "servertokens": "Prod",
+      "listen_ports": [
+        "20000"
+      ],
+      "keepalivetimeout": 5,
+      "serversignature": "On",
+      "worker": {
+        "maxsparethreads": 192,
+        "startservers": 4,
+        "maxclients": 1024,
+        "minsparethreads": 64,
+        "maxrequestsperchild": 0,
+        "threadsperchild": 64
+      },
+      "keepalive": "On"
+    },
+    "ec2": {
+      "access_key": "AKIAIQVREYXKPKIKCBEA",
+      "ephemeral_backups": "/mnt/backups",
+      "secret_key": "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",
+      "route53": {
+        "log": "/var/log/route53.log",
+        "aliases": [
+
+        ]
+      }
+    },
+    "ntp": {
+      "servers": [
+        "0.north-america.pool.ntp.org",
+        "1.north-america.pool.ntp.org",
+        "2.north-america.pool.ntp.org",
+        "3.north-america.pool.ntp.org"
+      ]
+    },
+    "haproxy": {
+      "log_level": "notice",
+      "enabled": "1",
+      "defaults": [
+        "balance roundrobin",
+        "log global",
+        "maxconn 19500",
+        "mode http",
+        "monitor-uri /haproxy/health",
+        "option allbackups",
+        "option abortonclose",
+        "option dontlognull",
+        "option httpclose",
+        "option httplog",
+        "option forwardfor",
+        "stats enable",
+        "stats hide-version",
+        "stats refresh 2s",
+        "stats uri /haproxy/stats",
+        "timeout client 120s",
+        "timeout connect 120s",
+        "timeout http-request 5s",
+        "timeout server 120s"
+      ],
+      "monitor_uri": "/haproxy/health"
+    },
+    "postfix": {
+      "root_email": "operations@reportgrid.com",
+      "smtp_generic_maps": [
+        "/(.+)@(.+)\\.reportgrid\\.com/ $2.$1@ec2.reportgrid.com"
+      ],
+      "smtp_sasl_password_maps": [
+        "smtp.sendgrid.net operations@reportgrid.com:seGrid8"
+      ],
+      "relayhost": "[smtp.sendgrid.net]:587"
+    }
+  },
+  "json_class": "Chef::Node",
+  "automatic": {
+    "keys": {
+      "ssh": {
+        "host_dsa_public": "AAAAB3NzaC1kc3MAAACBAM2XwR9KUo6VtkJPmH9Gm0/D9wQFzvMzQTyyRc4dncqtnCgdBW+agbBMiVwl62bL91p/K6A+n1V7pIp4+ncCHZghVIzJ7g04XxKCpiAoWKii9AGxI8rg5pPqK99pZoxol46Mi+8Tq707asSEqlaVWsbkXsg7tySS4DR+oe1JKyP7AAAAFQCI/VI3OoOdIKM5VKx5noBDZYiavQAAAIALWzVgXVt1pisKTG3IqrBnNO+nGHRr9Bd73bvp1OWkUn0i4qxv26zG181rptzEVMftNDYxt6U1fVK1mGgkY3IQuz+KQ75/EZ2hx6vELU3aQL6/yXAd89aDg7WxVA5/36wvUprg35HUH1yOx2ecaQ2q1S3+fcdDX7MK6CqYGHxgpQAAAIBsNJAbQZadFOGthwo4Aq9sO/TWzdRVoXvC2UdQXnnrG44DlURmOaD5MU3XxKKfoQANnSmVbqh7zPM7tf7KjBhNOg28H/lUlXNz7rf+3RlHQCwG9scfagBRDa5pZ/IlQEZwm68QPyR65ZoVlDuFVstQmgHDca2ioPDIsmU/jNomIw==",
+        "host_rsa_public": "AAAAB3NzaC1yc2EAAAABIwAAAQEArC+1D6p1y4+67hPimNvR47SIScAq0OFasTbzwvPTGjN+6YZJUk7g0hg+5ZqJPnGp+3VNYgPsH/ML6Aynjb8RkInEuBUds4otb23b51Z6Hp++Laoh5r/epEX6Egc/YUuMUpFFEZNWD7Iz0MUWNdcrYiqB68spL4yvToMEONTd6B1r4v2bhOteENDeM4qABnJUFIKC+cj7pUxO72xJ4NIQf2+6tnUjAy6OcJFNAugNYJXqB6D7gXviIIgWAtmz+BXq4o4R9xVedeVY4QI2O8gjrPBFEmaRyKjWQvf1Fp7amOL3uyMpJZLsadPgDNXntz7Amr+rinR5CJcmcpAY4hNfgw=="
+      }
+    },
+    "kernel": {
+      "modules": {
+        "async_tx": {
+          "size": "2374",
+          "refcount": "5"
+        },
+        "raid6_pq": {
+          "size": "79671",
+          "refcount": "2"
+        },
+        "raid10": {
+          "size": "21348",
+          "refcount": "0"
+        },
+        "async_raid6_recov": {
+          "size": "1768",
+          "refcount": "1"
+        },
+        "raid456": {
+          "size": "54228",
+          "refcount": "0"
+        },
+        "xor": {
+          "size": "4829",
+          "refcount": "1"
+        },
+        "md_mod": {
+          "size": "94934",
+          "refcount": "6"
+        },
+        "raid0": {
+          "size": "6500",
+          "refcount": "0"
+        },
+        "async_xor": {
+          "size": "1980",
+          "refcount": "2"
+        },
+        "async_memcpy": {
+          "size": "1137",
+          "refcount": "1"
+        },
+        "raid1": {
+          "size": "22402",
+          "refcount": "0"
+        },
+        "linear": {
+          "size": "3950",
+          "refcount": "0"
+        },
+        "multipath": {
+          "size": "6973",
+          "refcount": "0"
+        },
+        "async_pq": {
+          "size": "2677",
+          "refcount": "1"
+        },
+        "ipv6": {
+          "size": "294517",
+          "refcount": "953"
+        }
+      },
+      "name": "Linux",
+      "machine": "x86_64",
+      "os": "GNU/Linux",
+      "version": "#40-Ubuntu SMP Wed Nov 16 14:36:38 UTC 2011",
+      "release": "2.6.32-340-ec2"
+    },
+    "dmi": {
+      "dmidecode_version": "2.9"
+    },
+    "platform_version": "10.04",
+    "fqdn": "appserver03.reportgrid.com",
+    "command": {
+      "ps": "ps -ef"
+    },
+    "filesystem": {
+      "/dev/sda1": {
+        "kb_size": "15481840",
+        "kb_available": "5465012",
+        "mount": "/",
+        "percent_used": "63%",
+        "kb_used": "9230396"
+      },
+      "none": {
+        "kb_size": "3943856",
+        "kb_available": "3943856",
+        "mount_options": [
+          "rw",
+          "nosuid",
+          "mode=0755"
+        ],
+        "mount": "/lib/init/rw",
+        "fs_type": "tmpfs",
+        "percent_used": "0%",
+        "kb_used": "0"
+      },
+      "proc": {
+        "mount_options": [
+          "rw",
+          "noexec",
+          "nosuid",
+          "nodev"
+        ],
+        "mount": "/proc",
+        "fs_type": "proc"
+      },
+      "rootfs": {
+        "mount_options": [
+          "rw"
+        ],
+        "mount": "/",
+        "fs_type": "rootfs"
+      },
+      "/dev/disk/by-uuid/ca1a0ae0-00a7-4b76-8cb7-e385d7b0f96b": {
+        "mount_options": [
+          "rw",
+          "relatime",
+          "errors=continue",
+          "data=writeback"
+        ],
+        "mount": "/",
+        "fs_type": "ext3"
+      },
+      "/dev/sdb": {
+        "kb_size": "433455904",
+        "kb_available": "411234584",
+        "mount_options": [
+          "rw"
+        ],
+        "mount": "/mnt",
+        "fs_type": "ext3",
+        "percent_used": "1%",
+        "kb_used": "203016"
+      }
+    },
+    "ipaddress": "10.124.174.239",
+    "counters": {
+      "network": {
+        "interfaces": {
+          "eql": {
+            "tx": {
+              "packets": "0",
+              "bytes": "0",
+              "collisions": "0",
+              "errors": "0",
+              "carrier": "0",
+              "queuelen": "5",
+              "overrun": "0",
+              "drop": "0"
+            },
+            "rx": {
+              "packets": "0",
+              "bytes": "0",
+              "errors": "0",
+              "overrun": "0",
+              "drop": "0",
+              "frame": "0"
+            }
+          },
+          "ifb0": {
+            "tx": {
+              "packets": "0",
+              "bytes": "0",
+              "collisions": "0",
+              "errors": "0",
+              "carrier": "0",
+              "queuelen": "32",
+              "overrun": "0",
+              "drop": "0"
+            },
+            "rx": {
+              "packets": "0",
+              "bytes": "0",
+              "errors": "0",
+              "overrun": "0",
+              "drop": "0",
+              "frame": "0"
+            }
+          },
+          "ifb1": {
+            "tx": {
+              "packets": "0",
+              "bytes": "0",
+              "collisions": "0",
+              "errors": "0",
+              "carrier": "0",
+              "queuelen": "32",
+              "overrun": "0",
+              "drop": "0"
+            },
+            "rx": {
+              "packets": "0",
+              "bytes": "0",
+              "errors": "0",
+              "overrun": "0",
+              "drop": "0",
+              "frame": "0"
+            }
+          },
+          "eth0": {
+            "tx": {
+              "packets": "1239972490",
+              "bytes": "177736265997",
+              "collisions": "0",
+              "errors": "0",
+              "carrier": "0",
+              "queuelen": "1000",
+              "overrun": "0",
+              "drop": "0"
+            },
+            "rx": {
+              "packets": "1240211624",
+              "bytes": "674713778481",
+              "errors": "0",
+              "overrun": "0",
+              "drop": "0",
+              "frame": "0"
+            }
+          },
+          "lo": {
+            "tx": {
+              "packets": "262905242",
+              "bytes": "140252691964",
+              "collisions": "0",
+              "errors": "0",
+              "carrier": "0",
+              "queuelen": "0",
+              "overrun": "0",
+              "drop": "0"
+            },
+            "rx": {
+              "packets": "262905242",
+              "bytes": "140252691964",
+              "errors": "0",
+              "overrun": "0",
+              "drop": "0",
+              "frame": "0"
+            }
+          },
+          "dummy0": {
+            "tx": {
+              "packets": "0",
+              "bytes": "0",
+              "collisions": "0",
+              "errors": "0",
+              "carrier": "0",
+              "queuelen": "0",
+              "overrun": "0",
+              "drop": "0"
+            },
+            "rx": {
+              "packets": "0",
+              "bytes": "0",
+              "errors": "0",
+              "overrun": "0",
+              "drop": "0",
+              "frame": "0"
+            }
+          }
+        }
+      }
+    },
+    "idletime_seconds": 18786773,
+    "memory": {
+      "dirty": "1368kB",
+      "buffers": "288356kB",
+      "page_tables": "0kB",
+      "vmalloc_used": "6280kB",
+      "slab_unreclaim": "26176kB",
+      "vmalloc_chunk": "34359730524kB",
+      "total": "7887712kB",
+      "inactive": "914520kB",
+      "slab": "161300kB",
+      "nfs_unstable": "0kB",
+      "vmalloc_total": "34359738367kB",
+      "free": "1243996kB",
+      "anon_pages": "4092016kB",
+      "swap": {
+        "total": "0kB",
+        "free": "0kB",
+        "cached": "0kB"
+      },
+      "writeback": "0kB",
+      "cached": "1794364kB",
+      "commit_limit": "3943856kB",
+      "mapped": "39756kB",
+      "active": "5260300kB",
+      "bounce": "0kB",
+      "slab_reclaimable": "135124kB",
+      "committed_as": "7025720kB"
+    },
+    "domain": "reportgrid.com",
+    "os": "linux",
+    "network": {
+      "default_interface": "eth0",
+      "interfaces": {
+        "eql": {
+          "mtu": "576",
+          "encapsulation": "Serial"
+        },
+        "ifb0": {
+          "number": "0",
+          "flags": [
+            "BROADCAST",
+            "NOARP"
+          ],
+          "addresses": {
+            "76:3f:10:13:28:ec": {
+              "family": "lladdr"
+            }
+          },
+          "mtu": "1500",
+          "type": "ifb",
+          "encapsulation": "Ethernet"
+        },
+        "ifb1": {
+          "number": "1",
+          "flags": [
+            "BROADCAST",
+            "NOARP"
+          ],
+          "addresses": {
+            "66:b4:bd:20:78:7b": {
+              "family": "lladdr"
+            }
+          },
+          "mtu": "1500",
+          "type": "ifb",
+          "encapsulation": "Ethernet"
+        },
+        "eth0": {
+          "number": "0",
+          "flags": [
+            "UP",
+            "BROADCAST",
+            "RUNNING",
+            "MULTICAST"
+          ],
+          "addresses": {
+            "10.124.174.239": {
+              "netmask": "255.255.254.0",
+              "broadcast": "10.124.175.255",
+              "family": "inet"
+            },
+            "fe80::1031:38ff:fe0d:cd01": {
+              "scope": "Link",
+              "prefixlen": "64",
+              "family": "inet6"
+            },
+            "12:31:38:0d:cd:01": {
+              "family": "lladdr"
+            }
+          },
+          "mtu": "1500",
+          "type": "eth",
+          "encapsulation": "Ethernet",
+          "arp": {
+            "10.124.174.1": "fe:ff:ff:ff:ff:ff"
+          }
+        },
+        "lo": {
+          "flags": [
+            "UP",
+            "LOOPBACK",
+            "RUNNING"
+          ],
+          "addresses": {
+            "::1": {
+              "scope": "Node",
+              "prefixlen": "128",
+              "family": "inet6"
+            },
+            "127.0.0.1": {
+              "netmask": "255.0.0.0",
+              "family": "inet"
+            }
+          },
+          "mtu": "16436",
+          "encapsulation": "Loopback"
+        },
+        "dummy0": {
+          "number": "0",
+          "flags": [
+            "BROADCAST",
+            "NOARP"
+          ],
+          "addresses": {
+            "82:9d:30:32:74:f5": {
+              "family": "lladdr"
+            }
+          },
+          "mtu": "1500",
+          "type": "dummy",
+          "encapsulation": "Ethernet"
+        }
+      },
+      "default_gateway": "10.124.174.1"
+    },
+    "lsb": {
+      "codename": "lucid",
+      "id": "Ubuntu",
+      "description": "Ubuntu 10.04.3 LTS",
+      "release": "10.04"
+    },
+    "virtualization": {
+      "system": "xen",
+      "role": "guest"
+    },
+    "idletime": "217 days 10 hours 32 minutes 53 seconds",
+    "ohai_time": 1334000898.75351,
+    "chef_packages": {
+      "ohai": {
+        "ohai_root": "/usr/lib/ruby/1.8/ohai",
+        "version": "0.6.10"
+      },
+      "chef": {
+        "version": "0.10.4",
+        "chef_root": "/usr/lib/ruby/vendor_ruby"
+      }
+    },
+    "current_user": null,
+    "recipes": [
+      "ubuntu_user",
+      "sudo",
+      "rc-local",
+      "hosts",
+      "at",
+      "ruby",
+      "python",
+      "monit",
+      "ec2::route53",
+      "postfix",
+      "rsyslog",
+      "mailx",
+      "munin::client",
+      "apt",
+      "chef::client",
+      "ntp",
+      "htop",
+      "iotop",
+      "sysstat",
+      "pam",
+      "java",
+      "mongodb::mongos",
+      "reportgrid::ssl_proxy",
+      "haproxy",
+      "rgdeployer",
+      "s3tools",
+      "reportgrid::appserver_log_backup",
+      "reportgrid::utils",
+      "munin::extraplugins",
+      "reportgrid::munin-monitor",
+      "reportgrid::billing_cron",
+      "reportgrid::visualization"
+    ],
+    "os_version": "2.6.32-340-ec2",
+    "languages": {
+      "php": {
+        "version": "5.3.2-1ubuntu4.14",
+        "builddate": "(cli) (built: Feb"
+      },
+      "java": {
+        "hotspot": {
+          "name": "Java HotSpot(TM) 64-Bit Server VM",
+          "build": "20.1-b02, mixed mode"
+        },
+        "runtime": {
+          "name": "Java(TM) SE Runtime Environment",
+          "build": "1.6.0_26-b03"
+        },
+        "version": "1.6.0_26"
+      },
+      "python": {
+        "version": "2.6.5",
+        "builddate": "Apr 16 2010, 13:57:41"
+      },
+      "perl": {
+        "version": "5.10.1",
+        "archname": "x86_64-linux-gnu-thread-multi"
+      },
+      "ruby": {
+        "target_os": "linux",
+        "bin_dir": "/usr/bin",
+        "target_vendor": "pc",
+        "host_vendor": "pc",
+        "gem_bin": "/usr/bin/gem1.8",
+        "ruby_bin": "/usr/bin/ruby1.8",
+        "target_cpu": "x86_64",
+        "version": "1.8.7",
+        "host_os": "linux-gnu",
+        "host_cpu": "x86_64",
+        "release_date": "2010-01-10",
+        "target": "x86_64-pc-linux-gnu",
+        "host": "x86_64-pc-linux-gnu",
+        "gems_dir": "/var/lib/gems/1.8",
+        "platform": "x86_64-linux"
+      }
+    },
+    "cpu": {
+      "real": 2,
+      "total": 2,
+      "0": {
+        "cores": "1",
+        "model": "26",
+        "flags": [
+          "fpu",
+          "de",
+          "tsc",
+          "msr",
+          "pae",
+          "cx8",
+          "apic",
+          "sep",
+          "cmov",
+          "pat",
+          "clflush",
+          "acpi",
+          "mmx",
+          "fxsr",
+          "sse",
+          "sse2",
+          "ss",
+          "ht",
+          "syscall",
+          "nx",
+          "lm",
+          "constant_tsc",
+          "rep_good",
+          "nonstop_tsc",
+          "aperfmperf",
+          "pni",
+          "ssse3",
+          "cx16",
+          "sse4_1",
+          "sse4_2",
+          "popcnt",
+          "hypervisor",
+          "lahf_lm"
+        ],
+        "model_name": "Intel(R) Xeon(R) CPU           E5507  @ 2.27GHz",
+        "core_id": "0",
+        "family": "6",
+        "physical_id": "0",
+        "vendor_id": "GenuineIntel",
+        "mhz": "2266.746",
+        "cache_size": "4096 KB",
+        "stepping": "5"
+      },
+      "1": {
+        "cores": "1",
+        "model": "26",
+        "flags": [
+          "fpu",
+          "de",
+          "tsc",
+          "msr",
+          "pae",
+          "cx8",
+          "apic",
+          "sep",
+          "cmov",
+          "pat",
+          "clflush",
+          "acpi",
+          "mmx",
+          "fxsr",
+          "sse",
+          "sse2",
+          "ss",
+          "ht",
+          "syscall",
+          "nx",
+          "lm",
+          "constant_tsc",
+          "rep_good",
+          "nonstop_tsc",
+          "aperfmperf",
+          "pni",
+          "ssse3",
+          "cx16",
+          "sse4_1",
+          "sse4_2",
+          "popcnt",
+          "hypervisor",
+          "lahf_lm"
+        ],
+        "model_name": "Intel(R) Xeon(R) CPU           E5507  @ 2.27GHz",
+        "core_id": "0",
+        "family": "6",
+        "physical_id": "1",
+        "vendor_id": "GenuineIntel",
+        "mhz": "2266.746",
+        "cache_size": "4096 KB",
+        "stepping": "5"
+      }
+    },
+    "hostname": "appserver03",
+    "uptime": "119 days 13 hours 53 minutes 40 seconds",
+    "etc": {
+      "group": {
+        "sd-agent": {
+          "gid": 112,
+          "members": [
+
+          ]
+        },
+        "mongodb": {
+          "gid": 118,
+          "members": [
+            "mongodb"
+          ]
+        },
+        "audio": {
+          "gid": 29,
+          "members": [
+            "ubuntu"
+          ]
+        },
+        "utmp": {
+          "gid": 43,
+          "members": [
+
+          ]
+        },
+        "uucp": {
+          "gid": 10,
+          "members": [
+
+          ]
+        },
+        "dip": {
+          "gid": 30,
+          "members": [
+            "ubuntu"
+          ]
+        },
+        "syslog": {
+          "gid": 103,
+          "members": [
+
+          ]
+        },
+        "list": {
+          "gid": 38,
+          "members": [
+
+          ]
+        },
+        "nogroup": {
+          "gid": 65534,
+          "members": [
+
+          ]
+        },
+        "games": {
+          "gid": 60,
+          "members": [
+
+          ]
+        },
+        "kmem": {
+          "gid": 15,
+          "members": [
+
+          ]
+        },
+        "shadow": {
+          "gid": 42,
+          "members": [
+
+          ]
+        },
+        "munin": {
+          "gid": 120,
+          "members": [
+
+          ]
+        },
+        "sys": {
+          "gid": 3,
+          "members": [
+
+          ]
+        },
+        "sudo": {
+          "gid": 27,
+          "members": [
+
+          ]
+        },
+        "tty": {
+          "gid": 5,
+          "members": [
+
+          ]
+        },
+        "admin": {
+          "gid": 110,
+          "members": [
+            "ubuntu"
+          ]
+        },
+        "reportgrid": {
+          "gid": 999,
+          "members": [
+
+          ]
+        },
+        "backup": {
+          "gid": 34,
+          "members": [
+
+          ]
+        },
+        "www-data": {
+          "gid": 33,
+          "members": [
+
+          ]
+        },
+        "libuuid": {
+          "gid": 101,
+          "members": [
+
+          ]
+        },
+        "staff": {
+          "gid": 50,
+          "members": [
+
+          ]
+        },
+        "man": {
+          "gid": 12,
+          "members": [
+
+          ]
+        },
+        "lp": {
+          "gid": 7,
+          "members": [
+
+          ]
+        },
+        "avahi": {
+          "gid": 117,
+          "members": [
+
+          ]
+        },
+        "netdev": {
+          "gid": 111,
+          "members": [
+
+          ]
+        },
+        "irc": {
+          "gid": 39,
+          "members": [
+
+          ]
+        },
+        "src": {
+          "gid": 40,
+          "members": [
+
+          ]
+        },
+        "tape": {
+          "gid": 26,
+          "members": [
+
+          ]
+        },
+        "haldaemon": {
+          "gid": 108,
+          "members": [
+
+          ]
+        },
+        "messagebus": {
+          "gid": 107,
+          "members": [
+
+          ]
+        },
+        "mail": {
+          "gid": 8,
+          "members": [
+
+          ]
+        },
+        "proxy": {
+          "gid": 13,
+          "members": [
+
+          ]
+        },
+        "landscape": {
+          "gid": 109,
+          "members": [
+
+          ]
+        },
+        "fuse": {
+          "gid": 104,
+          "members": [
+
+          ]
+        },
+        "cdrom": {
+          "gid": 24,
+          "members": [
+            "ubuntu"
+          ]
+        },
+        "operator": {
+          "gid": 37,
+          "members": [
+
+          ]
+        },
+        "root": {
+          "gid": 0,
+          "members": [
+
+          ]
+        },
+        "postdrop": {
+          "gid": 116,
+          "members": [
+
+          ]
+        },
+        "fax": {
+          "gid": 21,
+          "members": [
+
+          ]
+        },
+        "plugdev": {
+          "gid": 46,
+          "members": [
+            "ubuntu"
+          ]
+        },
+        "sasl": {
+          "gid": 45,
+          "members": [
+
+          ]
+        },
+        "bin": {
+          "gid": 2,
+          "members": [
+
+          ]
+        },
+        "video": {
+          "gid": 44,
+          "members": [
+            "ubuntu"
+          ]
+        },
+        "users": {
+          "gid": 100,
+          "members": [
+
+          ]
+        },
+        "news": {
+          "gid": 9,
+          "members": [
+
+          ]
+        },
+        "ssh": {
+          "gid": 106,
+          "members": [
+
+          ]
+        },
+        "daemon": {
+          "gid": 1,
+          "members": [
+
+          ]
+        },
+        "disk": {
+          "gid": 6,
+          "members": [
+
+          ]
+        },
+        "floppy": {
+          "gid": 25,
+          "members": [
+            "ubuntu"
+          ]
+        },
+        "ubuntu": {
+          "gid": 1000,
+          "members": [
+
+          ]
+        },
+        "crontab": {
+          "gid": 102,
+          "members": [
+
+          ]
+        },
+        "voice": {
+          "gid": 22,
+          "members": [
+
+          ]
+        },
+        "ssl-cert": {
+          "gid": 114,
+          "members": [
+
+          ]
+        },
+        "gnats": {
+          "gid": 41,
+          "members": [
+
+          ]
+        },
+        "mlocate": {
+          "gid": 105,
+          "members": [
+
+          ]
+        },
+        "ntp": {
+          "gid": 113,
+          "members": [
+
+          ]
+        },
+        "haproxy": {
+          "gid": 119,
+          "members": [
+
+          ]
+        },
+        "adm": {
+          "gid": 4,
+          "members": [
+            "ubuntu"
+          ]
+        },
+        "postfix": {
+          "gid": 115,
+          "members": [
+
+          ]
+        },
+        "dialout": {
+          "gid": 20,
+          "members": [
+            "ubuntu"
+          ]
+        }
+      },
+      "passwd": {
+        "sd-agent": {
+          "gecos": "Server Density Agent User,,,",
+          "dir": "/usr/bin/sd-agent/",
+          "gid": 112,
+          "uid": 106,
+          "shell": "/bin/bash"
+        },
+        "mongodb": {
+          "gecos": "",
+          "dir": "/home/mongodb",
+          "gid": 65534,
+          "uid": 110,
+          "shell": "/bin/false"
+        },
+        "uucp": {
+          "gecos": "uucp",
+          "dir": "/var/spool/uucp",
+          "gid": 10,
+          "uid": 10,
+          "shell": "/bin/sh"
+        },
+        "syslog": {
+          "gecos": "",
+          "dir": "/home/syslog",
+          "gid": 103,
+          "uid": 101,
+          "shell": "/bin/false"
+        },
+        "list": {
+          "gecos": "Mailing List Manager",
+          "dir": "/var/list",
+          "gid": 38,
+          "uid": 38,
+          "shell": "/bin/sh"
+        },
+        "games": {
+          "gecos": "games",
+          "dir": "/usr/games",
+          "gid": 60,
+          "uid": 5,
+          "shell": "/bin/sh"
+        },
+        "munin": {
+          "gecos": "",
+          "dir": "/var/lib/munin",
+          "gid": 120,
+          "uid": 112,
+          "shell": "/bin/false"
+        },
+        "sys": {
+          "gecos": "sys",
+          "dir": "/dev",
+          "gid": 3,
+          "uid": 3,
+          "shell": "/bin/sh"
+        },
+        "nobody": {
+          "gecos": "nobody",
+          "dir": "/nonexistent",
+          "gid": 65534,
+          "uid": 65534,
+          "shell": "/bin/sh"
+        },
+        "reportgrid": {
+          "gecos": "ReportGrid service account",
+          "dir": "/var/log/reportgrid",
+          "gid": 999,
+          "uid": 999,
+          "shell": "/bin/false"
+        },
+        "backup": {
+          "gecos": "backup",
+          "dir": "/var/backups",
+          "gid": 34,
+          "uid": 34,
+          "shell": "/bin/sh"
+        },
+        "www-data": {
+          "gecos": "www-data",
+          "dir": "/var/www",
+          "gid": 33,
+          "uid": 33,
+          "shell": "/bin/sh"
+        },
+        "libuuid": {
+          "gecos": "",
+          "dir": "/var/lib/libuuid",
+          "gid": 101,
+          "uid": 100,
+          "shell": "/bin/sh"
+        },
+        "man": {
+          "gecos": "man",
+          "dir": "/var/cache/man",
+          "gid": 12,
+          "uid": 6,
+          "shell": "/bin/sh"
+        },
+        "lp": {
+          "gecos": "lp",
+          "dir": "/var/spool/lpd",
+          "gid": 7,
+          "uid": 7,
+          "shell": "/bin/sh"
+        },
+        "avahi": {
+          "gecos": "Avahi mDNS daemon,,,",
+          "dir": "/var/run/avahi-daemon",
+          "gid": 117,
+          "uid": 109,
+          "shell": "/bin/false"
+        },
+        "irc": {
+          "gecos": "ircd",
+          "dir": "/var/run/ircd",
+          "gid": 39,
+          "uid": 39,
+          "shell": "/bin/sh"
+        },
+        "haldaemon": {
+          "gecos": "Hardware abstraction layer,,,",
+          "dir": "/var/run/hald",
+          "gid": 108,
+          "uid": 103,
+          "shell": "/bin/false"
+        },
+        "messagebus": {
+          "gecos": "",
+          "dir": "/var/run/dbus",
+          "gid": 107,
+          "uid": 102,
+          "shell": "/bin/false"
+        },
+        "mail": {
+          "gecos": "mail",
+          "dir": "/var/mail",
+          "gid": 8,
+          "uid": 8,
+          "shell": "/bin/sh"
+        },
+        "proxy": {
+          "gecos": "proxy",
+          "dir": "/bin",
+          "gid": 13,
+          "uid": 13,
+          "shell": "/bin/sh"
+        },
+        "sync": {
+          "gecos": "sync",
+          "dir": "/bin",
+          "gid": 65534,
+          "uid": 4,
+          "shell": "/bin/sync"
+        },
+        "landscape": {
+          "gecos": "",
+          "dir": "/var/lib/landscape",
+          "gid": 109,
+          "uid": 105,
+          "shell": "/bin/false"
+        },
+        "sshd": {
+          "gecos": "",
+          "dir": "/var/run/sshd",
+          "gid": 65534,
+          "uid": 104,
+          "shell": "/usr/sbin/nologin"
+        },
+        "root": {
+          "gecos": "root",
+          "dir": "/root",
+          "gid": 0,
+          "uid": 0,
+          "shell": "/bin/bash"
+        },
+        "bin": {
+          "gecos": "bin",
+          "dir": "/bin",
+          "gid": 2,
+          "uid": 2,
+          "shell": "/bin/sh"
+        },
+        "news": {
+          "gecos": "news",
+          "dir": "/var/spool/news",
+          "gid": 9,
+          "uid": 9,
+          "shell": "/bin/sh"
+        },
+        "daemon": {
+          "gecos": "daemon",
+          "dir": "/usr/sbin",
+          "gid": 1,
+          "uid": 1,
+          "shell": "/bin/sh"
+        },
+        "ubuntu": {
+          "gecos": "Ubuntu,,,",
+          "dir": "/home/ubuntu",
+          "gid": 1000,
+          "uid": 1000,
+          "shell": "/bin/bash"
+        },
+        "gnats": {
+          "gecos": "Gnats Bug-Reporting System (admin)",
+          "dir": "/var/lib/gnats",
+          "gid": 41,
+          "uid": 41,
+          "shell": "/bin/sh"
+        },
+        "ntp": {
+          "gecos": "",
+          "dir": "/home/ntp",
+          "gid": 113,
+          "uid": 107,
+          "shell": "/bin/false"
+        },
+        "haproxy": {
+          "gecos": "",
+          "dir": "/home/haproxy",
+          "gid": 119,
+          "uid": 111,
+          "shell": "/bin/false"
+        },
+        "postfix": {
+          "gecos": "",
+          "dir": "/var/spool/postfix",
+          "gid": 115,
+          "uid": 108,
+          "shell": "/bin/false"
+        }
+      }
+    },
+    "ec2": {
+      "placement_availability_zone": "us-east-1c",
+      "public_hostname": "ec2-107-20-131-255.compute-1.amazonaws.com",
+      "block_device_mapping_root": "/dev/sda1",
+      "public_keys_0_openssh_key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDnvEcy4ZvP9qpnZli6b9LI2Zw+ajU8G5nGABMkQMBmIN4BduqVS5aUQM4KpxH4zZhTlCWB0LTvQUkaFt7GVZEjaQ6686a808wVE46OZUbYFyhVqN7iruOtMbKD9cQCJPgwITsxcfZ2fkubgnfQXVaYA9H/IEUjPk2EYrINHvSaQDEuIKELzk9xJiJT+3w9GRgrpmimSvB7+xRacOatEJX5OqSZfJoQLUahfS7O/aT5WEUx5ap9UlIY+xauY6F4qcw2HpQJw3TRlU9fqFxXGSE69RmRM/UsKuwmQJPSuyEjG5iyShjy0Oila6k+YkRMCBMNpcr2afSkqfNhj+ViMdGp ec2-keypair\n",
+      "profile": "default-paravirtual",
+      "instance_id": "i-79fb2817",
+      "instance_type": "m1.large",
+      "block_device_mapping_ephemeral0": "/dev/sdb",
+      "local_ipv4": "10.124.174.239",
+      "local_hostname": "ip-10-124-174-239.ec2.internal",
+      "kernel_id": "aki-427d952b",
+      "public_ipv4": "107.20.131.255",
+      "reservation_id": "r-292ba145",
+      "hostname": "ip-10-124-174-239.ec2.internal",
+      "ami_id": "ami-4a0df923",
+      "ami_launch_index": "0",
+      "security_groups": [
+        "appserver"
+      ],
+      "ami_manifest_path": "(unknown)",
+      "userdata": null,
+      "block_device_mapping_ami": "/dev/sda1"
+    },
+    "roles": [
+      "vizserver",
+      "appserverV2",
+      "monitored",
+      "base"
+    ],
+    "macaddress": "12:31:38:0d:cd:01",
+    "uptime_seconds": 10331620,
+    "platform": "ubuntu",
+    "cloud": {
+      "public_hostname": "ec2-107-20-131-255.compute-1.amazonaws.com",
+      "public_ips": [
+        "107.20.131.255"
+      ],
+      "private_ips": [
+        "10.124.174.239"
+      ],
+      "local_ipv4": "10.124.174.239",
+      "local_hostname": "ip-10-124-174-239.ec2.internal",
+      "public_ipv4": "107.20.131.255",
+      "provider": "ec2"
+    },
+    "block_device": {
+      "ram0": {
+        "size": "131072",
+        "removable": "0"
+      },
+      "ram13": {
+        "size": "131072",
+        "removable": "0"
+      },
+      "ram1": {
+        "size": "131072",
+        "removable": "0"
+      },
+      "loop0": {
+        "size": "0",
+        "removable": "0"
+      },
+      "ram14": {
+        "size": "131072",
+        "removable": "0"
+      },
+      "sda1": {
+        "size": "104857600",
+        "removable": "0"
+      },
+      "ram2": {
+        "size": "131072",
+        "removable": "0"
+      },
+      "loop1": {
+        "size": "0",
+        "removable": "0"
+      },
+      "ram15": {
+        "size": "131072",
+        "removable": "0"
+      },
+      "ram3": {
+        "size": "131072",
+        "removable": "0"
+      },
+      "loop2": {
+        "size": "0",
+        "removable": "0"
+      },
+      "ram4": {
+        "size": "131072",
+        "removable": "0"
+      },
+      "loop3": {
+        "size": "0",
+        "removable": "0"
+      },
+      "ram5": {
+        "size": "131072",
+        "removable": "0"
+      },
+      "loop4": {
+        "size": "0",
+        "removable": "0"
+      },
+      "sdb": {
+        "size": "880732160",
+        "removable": "0"
+      },
+      "ram6": {
+        "size": "131072",
+        "removable": "0"
+      },
+      "loop5": {
+        "size": "0",
+        "removable": "0"
+      },
+      "ram7": {
+        "size": "131072",
+        "removable": "0"
+      },
+      "loop6": {
+        "size": "0",
+        "removable": "0"
+      },
+      "ram10": {
+        "size": "131072",
+        "removable": "0"
+      },
+      "ram8": {
+        "size": "131072",
+        "removable": "0"
+      },
+      "loop7": {
+        "size": "0",
+        "removable": "0"
+      },
+      "ram11": {
+        "size": "131072",
+        "removable": "0"
+      },
+      "ram9": {
+        "size": "131072",
+        "removable": "0"
+      },
+      "ram12": {
+        "size": "131072",
+        "removable": "0"
+      }
+    }
+  },
+  "chef_environment": "Production",
+  "run_list": [
+    "role[base]",
+    "role[appserverV2]",
+    "role[monitored]",
+    "recipe[reportgrid::billing_cron]",
+    "role[vizserver]"
+  ],
+  "chef_type": "node"
+}

@@ -1,0 +1,2745 @@
+{
+  "normal": {
+    "mongodb": {
+      "package": "mongodb-10gen"
+    },
+    "tags": [
+
+    ],
+    "apache": {
+      "group": "www-data",
+      "cache_dir": "/var/cache/apache2",
+      "lib_dir": "/usr/lib/apache2",
+      "dir": "/etc/apache2",
+      "binary": "/usr/sbin/apache2",
+      "pid_file": "/var/run/apache2.pid",
+      "log_dir": "/var/log/apache2",
+      "icondir": "/usr/share/apache2/icons",
+      "user": "www-data"
+    },
+    "environment": "production"
+  },
+  "name": "mongodb20.reportgrid.com",
+  "override": {
+    "monit": {
+      "extra_filesystems": [
+        "/dev/sda1",
+        "/dev/sdb1"
+      ]
+    }
+  },
+  "default": {
+    "rsyslog": {
+      "work_dir": "/var/spool/rsyslog"
+    },
+    "mongodb": {
+      "data_mount_point": "/srv/mongodb",
+      "data_device": "/dev/sdh",
+      "mongos_enabled": "yes",
+      "config_servers": [
+        "mongodb-config01.reportgrid.com:27019",
+        "mongodb-config02.reportgrid.com:27019",
+        "mongodb-config03.reportgrid.com:27019"
+      ],
+      "port": {
+        "config": 27019,
+        "standalone": 27017,
+        "mongos": 27017,
+        "shard": 27018
+      },
+      "use_fqdn_prefix_for_replset": false,
+      "package": "mongodb-10gen"
+    },
+    "munin": {
+      "docroot": "/var/www/munin",
+      "server_role": "monitoring"
+    },
+    "monit": {
+      "startup": "1",
+      "extra_filesystems": [
+
+      ],
+      "critical_alert_recipients": [
+
+      ],
+      "alert_recipients": [
+        "root@localhost"
+      ]
+    },
+    "reportgrid": {
+      "mongo": {
+        "hosts": [
+          "localhost:27017"
+        ]
+      },
+      "indexdb": {
+        "hosts": [
+          "localhost:27017"
+        ]
+      },
+      "eventsdb": {
+        "hosts": [
+          "mongoevents01.reportgrid.com:27018",
+          "mongoevents02.reportgrid.com:27018"
+        ]
+      },
+      "visualization": {
+        "s3url": "s3://ops.reportgrid.com/viz-prod/",
+        "root": "/opt/reportgrid/visualization"
+      },
+      "tokens": {
+        "test": {
+          "rollup": "0"
+        }
+      },
+      "source": {
+        "root": "/root/reportgrid"
+      }
+    },
+    "java": {
+      "jar_home": "/usr/share/java",
+      "home": "/usr/lib/jvm/java-6-sun"
+    },
+    "chef": {
+      "chef_server_url": "https://api.opscode.com/organizations/reportgrid"
+    },
+    "apache": {
+      "traceenable": "On",
+      "allowed_openids": [
+
+      ],
+      "keepaliverequests": 100,
+      "timeout": 300,
+      "contact": "operations@reportgrid.com",
+      "servertokens": "Prod",
+      "prefork": {
+        "maxspareservers": 32,
+        "minspareservers": 16,
+        "serverlimit": 400,
+        "startservers": 16,
+        "maxclients": 400,
+        "maxrequestsperchild": 10000
+      },
+      "listen_ports": [
+        "20000"
+      ],
+      "keepalivetimeout": 5,
+      "serversignature": "On",
+      "keepalive": "On",
+      "worker": {
+        "maxsparethreads": 192,
+        "startservers": 4,
+        "minsparethreads": 64,
+        "maxclients": 1024,
+        "maxrequestsperchild": 0,
+        "threadsperchild": 64
+      }
+    },
+    "ec2": {
+      "access_key": "AKIAIQVREYXKPKIKCBEA",
+      "ephemeral_backups": "/mnt/backups",
+      "secret_key": "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",
+      "route53": {
+        "log": "/var/log/route53.log",
+        "aliases": [
+
+        ]
+      }
+    },
+    "ntp": {
+      "servers": [
+        "0.north-america.pool.ntp.org",
+        "1.north-america.pool.ntp.org",
+        "2.north-america.pool.ntp.org",
+        "3.north-america.pool.ntp.org"
+      ]
+    },
+    "postfix": {
+      "root_email": "operations@reportgrid.com",
+      "smtp_generic_maps": [
+        "/(.+)@(.+)\\.reportgrid\\.com/ $2.$1@ec2.reportgrid.com"
+      ],
+      "smtp_sasl_password_maps": [
+        "smtp.sendgrid.net operations@reportgrid.com:seGrid8"
+      ],
+      "relayhost": "[smtp.sendgrid.net]:587"
+    }
+  },
+  "json_class": "Chef::Node",
+  "automatic": {
+    "dmi": {
+      "bios": {
+        "address": "0xF0000",
+        "all_records": [
+          {
+            "record_id": "0x0000",
+            "Runtime Size": "64 kB",
+            "size": "0",
+            "Version": "4.6.4",
+            "Characteristics": {
+              "5.25\"/1.2 MB floppy services are supported (int 13h)": null,
+              "Function key-initiated network boot is supported": null,
+              "Serial services are supported (int 14h)": null,
+              "3.5\"/720 KB floppy services are supported (int 13h)": null,
+              "PCI is supported": null,
+              "BIOS boot specification is supported": null,
+              "BIOS ROM is socketed": null,
+              "Boot from CD is supported": null,
+              "Print screen service is supported (int 5h)": null,
+              "BIOS shadowing is allowed": null,
+              "Printer services are supported (int 17h)": null,
+              "Selectable boot is supported": null,
+              "USB legacy is supported": null,
+              "8042 keyboard services are supported (int 9h)": null,
+              "Targeted content distribution is supported": null,
+              "ACPI is supported": null,
+              "3.5\"/2.88 MB floppy services are supported (int 13h)": null,
+              "BIOS is upgradeable": null,
+              "EDD is supported": null
+            },
+            "application_identifier": "BIOS Information",
+            "Address": "0xF0000",
+            "BIOS Revision": "1.11",
+            "Release Date": "04/27/2011",
+            "Vendor": "American Megatrends Inc.",
+            "ROM Size": "8192 kB"
+          }
+        ],
+        "rom_size": "8192 kB",
+        "version": "4.6.4",
+        "bios_revision": "1.11",
+        "vendor": "American Megatrends Inc.",
+        "release_date": "04/27/2011",
+        "runtime_size": "64 kB"
+      },
+      "base_board": {
+        "serial_number": "ZM15S43932",
+        "location_in_chassis": "To be filled by O.E.M.",
+        "asset_tag": "To be filled by O.E.M.",
+        "contained_object_handles": "0",
+        "chassis_handle": "0x0003",
+        "all_records": [
+          {
+            "record_id": "0x0002",
+            "Asset Tag": "To be filled by O.E.M.",
+            "Serial Number": "ZM15S43932",
+            "size": "2",
+            "Location In Chassis": "To be filled by O.E.M.",
+            "Version": "1.01",
+            "Chassis Handle": "0x0003",
+            "Contained Object Handles": "0",
+            "application_identifier": "Base Board Information",
+            "Product Name": "X9SCI/X9SCA",
+            "Manufacturer": "Supermicro",
+            "Features": {
+              "Board is a hosting board": null,
+              "Board is replaceable": null
+            },
+            "Type": "Motherboard"
+          }
+        ],
+        "manufacturer": "Supermicro",
+        "type": "Motherboard",
+        "version": "1.01",
+        "product_name": "X9SCI/X9SCA"
+      },
+      "structures": {
+        "size": "3902",
+        "count": "107"
+      },
+      "system": {
+        "serial_number": "0123456789",
+        "sku_number": "To be filled by O.E.M.",
+        "uuid": "00010203-0405-0607-0809-0A0B0C0D0E0F",
+        "all_records": [
+          {
+            "record_id": "0x0001",
+            "SKU Number": "To be filled by O.E.M.",
+            "Serial Number": "0123456789",
+            "size": "1",
+            "Version": "0123456789",
+            "Wake-up Type": "Power Switch",
+            "application_identifier": "System Information",
+            "UUID": "00010203-0405-0607-0809-0A0B0C0D0E0F",
+            "Product Name": "X9SCI/X9SCA",
+            "Manufacturer": "Supermicro",
+            "Family": "To be filled by O.E.M."
+          }
+        ],
+        "manufacturer": "Supermicro",
+        "version": "0123456789",
+        "family": "To be filled by O.E.M.",
+        "wake_up_type": "Power Switch",
+        "product_name": "X9SCI/X9SCA"
+      },
+      "table_location": "0x000E90A0",
+      "oem_strings": {
+        "input_voltage_probe_handle": "0x004E",
+        "lower_non_recoverable_threshold": "5",
+        "tolerance": "Unknown",
+        "interface_type": "KCS (Keyboard Control Style)",
+        "vendor_syndrome": "Unknown",
+        "hot_replaceable": "No",
+        "number_of_devices": "4",
+        "nv_storage_device": "Not Present",
+        "specification_version": "2.0",
+        "use": "System Memory",
+        "location": "To Be Filled By O.E.M.",
+        "description": "To Be Filled By O.E.M.",
+        "max_power_capacity": "Unknown",
+        "device_address": "Unknown",
+        "cooling_unit_group": "1",
+        "upper_critical_threshold": "4",
+        "status": "Not Present",
+        "option_1": "To Be Filled By O.E.M.",
+        "lower_non_critical_threshold": "1",
+        "upper_non_critical_threshold": "2",
+        "array_handle": "0x0029",
+        "management_device_handle": "0x004A",
+        "set": "None",
+        "i2c_slave_address": "0x00",
+        "physical_device_handle": "0x0035",
+        "lower_critical_threshold": "3",
+        "oem_specific_information": "0x00000000",
+        "nominal_value": "Unknown",
+        "bank_locator": "BANK0",
+        "upper_non_recoverable_threshold": "6",
+        "error_correction_type": "Single-bit ECC",
+        "component_handle": "0x005F",
+        "size": "4096 MB",
+        "model_part_number": "To Be Filled By O.E.M.",
+        "manufacturer": "To Be Filled By O.E.M.",
+        "asset_tag": "To Be Filled By O.E.M.",
+        "type_detail": "Synchronous",
+        "locator": "DIMM_2B",
+        "input_current_probe_handle": "0x0046",
+        "register_spacing": "Successive Byte Boundaries",
+        "revision": "To Be Filled By O.E.M.",
+        "form_factor": "DIMM",
+        "name": "To Be Filled By O.E.M.",
+        "serial_number": "To Be Filled By O.E.M.",
+        "input_voltage_range_switching": "<OUT OF SPEC>",
+        "physical_array_handle": "0x0029",
+        "starting_address": "0x00100000000",
+        "all_records": [
+          {
+            "Input Current Probe Handle": "0x0046",
+            "Bank Locator": "BANK0",
+            "Revision": "To Be Filled By O.E.M.",
+            "Register Spacing": "Successive Byte Boundaries",
+            "Nominal Value": "Unknown",
+            "Cooling Unit Group": "1",
+            "Input Voltage Range Switching": "<OUT OF SPEC>",
+            "Data Width": "64 bits",
+            "Size": "4096 MB",
+            "Component Handle": "0x005F",
+            "Form Factor": "DIMM",
+            "Starting Address": "0x00100000000",
+            "Option 1": "To Be Filled By O.E.M.",
+            "Cooling Device Handle": "0x005A",
+            "Temperature Probe Handle": "0x0057",
+            "Power Unit Group": "1",
+            "Lower Critical Threshold": "3",
+            "OEM-specific Information": "0x00000000",
+            "Partition Width": "0",
+            "Address Type": "I/O Port",
+            "Accuracy": "Unknown",
+            "Name": "To Be Filled By O.E.M.",
+            "Speed": "1333 MHz (0.8 ns)",
+            "Range Size": "4 GB",
+            "Plugged": "Yes",
+            "Model Part Number": "To Be Filled By O.E.M.",
+            "Partition Row Position": "1",
+            "Lower Non-critical Threshold": "1",
+            "Maximum Value": "Unknown",
+            "Upper Non-critical Threshold": "2",
+            "Resolution": "Unknown",
+            "Minimum Value": "Unknown",
+            "Header and Data": {
+              "29 0B 66 00 01 81 01 00 00 03 E2": null
+            },
+            "Use": "System Memory",
+            "Base Address": "0x0000000000000CA2 (I/O)",
+            "Interface Type": "KCS (Keyboard Control Style)",
+            "size": "11",
+            "Error Information Handle": "No Error",
+            "NV Storage Device": "Not Present",
+            "Physical Device Handle": "0x0035",
+            "Hot Replaceable": "No",
+            "Ending Address": "0x001FFFFFFFF",
+            "Error Correction Type": "Single-bit ECC",
+            "Type Detail": "Synchronous",
+            "Set": "None",
+            "Asset Tag": "To Be Filled By O.E.M.",
+            "Type": "<OUT OF SPEC>",
+            "Array Handle": "0x0029",
+            "Management Device Handle": "0x004A",
+            "Vendor Syndrome": "Unknown",
+            "record_id": "0x0027",
+            "Threshold Handle": "0x005A",
+            "String 1": "Intel SandyBridge/Cougar Point",
+            "Nominal Speed": "Unknown Or Non-rotating",
+            "Strings": {
+              " Onboard 1394": null
+            },
+            "Lower Non-recoverable Threshold": "5",
+            "Operation": "Unknown",
+            "Manufacturer": "To Be Filled By O.E.M.",
+            "I2C Slave Address": "0x00",
+            "String 2": "Supermicro motherboard-X9 Series",
+            "Location": "To Be Filled By O.E.M.",
+            "Description": "To Be Filled By O.E.M.",
+            "Total Width": "72 bits",
+            "Part Number": "HMT351U7BFR8C-H9  ",
+            "Max Power Capacity": "Unknown",
+            "Input Voltage Probe Handle": "0x004E",
+            "Memory Array Address": "Unknown",
+            "Number Of Devices": "4",
+            "Tolerance": "Unknown",
+            "Granularity": "Unknown",
+            "Maximum Capacity": "32 GB",
+            "Address": "0x00000000",
+            "Locator": "DIMM_2B",
+            "Device Address": "Unknown",
+            "Specification Version": "2.0",
+            "Memory Array Mapped Address Handle": "0x002B",
+            "Status": "Not Present",
+            "Physical Array Handle": "0x0029",
+            "Upper Critical Threshold": "4",
+            "Upper Non-recoverable Threshold": "6",
+            "Serial Number": "To Be Filled By O.E.M.",
+            "application_identifier": "IPMI Device Information"
+          }
+        ],
+        "string_1": "Intel SandyBridge/Cougar Point",
+        "accuracy": "Unknown",
+        "total_width": "72 bits",
+        "maximum_value": "Unknown",
+        "base_address": "0x0000000000000CA2 (I/O)",
+        "partition_width": "0",
+        "data_width": "64 bits",
+        "string_2": "Supermicro motherboard-X9 Series",
+        "operation": "Unknown",
+        "speed": "1333 MHz (0.8 ns)",
+        "error_information_handle": "No Error",
+        "temperature_probe_handle": "0x0057",
+        "memory_array_address": "Unknown",
+        "ending_address": "0x001FFFFFFFF",
+        "range_size": "4 GB",
+        "minimum_value": "Unknown",
+        "power_unit_group": "1",
+        "plugged": "Yes",
+        "granularity": "Unknown",
+        "nominal_speed": "Unknown Or Non-rotating",
+        "maximum_capacity": "32 GB",
+        "part_number": "HMT351U7BFR8C-H9  ",
+        "address": "0x00000000",
+        "cooling_device_handle": "0x005A",
+        "partition_row_position": "1",
+        "address_type": "I/O Port",
+        "threshold_handle": "0x005A",
+        "resolution": "Unknown",
+        "type": "<OUT OF SPEC>",
+        "memory_array_mapped_address_handle": "0x002B"
+      },
+      "chassis": {
+        "maximum_size": "8192 KB",
+        "serial_number": "0123456789",
+        "current_usage": "In Use",
+        "internal_reference_designator": "J1G6 - AC JACK",
+        "location": "Internal",
+        "socket_designation": "Not Specified",
+        "port_type": "Other",
+        "external_connector_type": "None",
+        "asset_tag": "To Be Filled By O.E.M.",
+        "designation": "SLOT 6",
+        "internal_connector_type": "Other",
+        "lock": "Not Present",
+        "error_correction_type": "Unknown",
+        "installed_sram_type": "Unknown",
+        "oem_information": "0x00000000",
+        "all_records": [
+          {
+            "Installed Size": "8192 KB",
+            "record_id": "0x0003",
+            "Status": "Enabled",
+            "Lock": "Not Present",
+            "Installed SRAM Type": "Unknown",
+            "Socket Designation": "Not Specified",
+            "Asset Tag": "To Be Filled By O.E.M.",
+            "Maximum Size": "8192 KB",
+            "Serial Number": "0123456789",
+            "Thermal State": "Safe",
+            "size": "3",
+            "External Connector Type": "None",
+            "Version": "0123456789",
+            "Supported SRAM Types": {
+              "Unknown": null
+            },
+            "System Type": "Unified",
+            "Port Type": "Other",
+            "Internal Reference Designator": "J1G6 - AC JACK",
+            "Designation": "SLOT 6",
+            "Location": "Internal",
+            "OEM Information": "0x00000000",
+            "Characteristics": {
+              "PME signal is supported": null,
+              "3.3 V is provided": null,
+              "Opening is shared": null
+            },
+            "Contained Elements": "0",
+            "Associativity": "16-way Set-associative",
+            "Configuration": "Enabled, Not Socketed, Level 3",
+            "ID": "2",
+            "Power Supply State": "Safe",
+            "Error Correction Type": "Unknown",
+            "application_identifier": "On Board Device Information",
+            "Internal Connector Type": "Other",
+            "Security Status": "None",
+            "Description": "   To Be Filled By O.E.M.",
+            "Current Usage": "In Use",
+            "Manufacturer": "Supermicro",
+            "Operational Mode": "Varies With Memory Address",
+            "Length": "Long",
+            "Speed": "Unknown",
+            "Boot-up State": "Safe",
+            "Height": "Unspecified",
+            "External Reference Designator": "Not Specified",
+            "Number Of Power Cords": "1",
+            "Type": "Video"
+          }
+        ],
+        "contained_elements": "0",
+        "id": "2",
+        "manufacturer": "Supermicro",
+        "type": "Video",
+        "associativity": "16-way Set-associative",
+        "boot_up_state": "Safe",
+        "external_reference_designator": "Not Specified",
+        "version": "0123456789",
+        "thermal_state": "Safe",
+        "operational_mode": "Varies With Memory Address",
+        "height": "Unspecified",
+        "power_supply_state": "Safe",
+        "speed": "Unknown",
+        "description": "   To Be Filled By O.E.M.",
+        "length": "Long",
+        "installed_size": "8192 KB",
+        "configuration": "Enabled, Not Socketed, Level 3",
+        "number_of_power_cords": "1",
+        "status": "Enabled",
+        "system_type": "Unified",
+        "security_status": "None"
+      },
+      "processor": {
+        "descriptor_14": "Logging disabled",
+        "descriptor_8": "POST error",
+        "data_format_20": "None",
+        "data_format_19": "None",
+        "data_format_2": "None",
+        "descriptor_9": "PCI parity error",
+        "data_format_21": "None",
+        "core_count": "4",
+        "descriptor_15": "System limit exceeded",
+        "data_format_22": "None",
+        "access_method": "Memory-mapped physical 32-bit address",
+        "data_format_3": "None",
+        "descriptor_16": "Asynchronous hardware timer expired",
+        "change_token": "0x00000001",
+        "data_format_4": "None",
+        "descriptor_17": "System configuration information",
+        "data_format_23": "None",
+        "l3_cache_handle": "0x0006",
+        "status": "Valid, Not Full",
+        "family": "Xeon",
+        "access_address": "0xFFC30000",
+        "data_format_5": "None",
+        "current_speed": "3400 MHz",
+        "descriptor_18": "Hard disk information",
+        "data_format_24": "OEM-specific",
+        "data_format_6": "None",
+        "descriptor_20": "Uncorrectable CPU-complex error",
+        "descriptor_19": "System reconfigured",
+        "data_format_25": "OEM-specific",
+        "data_format_7": "None",
+        "descriptor_21": "Log area reset/cleared",
+        "currently_installed_language": "en|US|iso8859-1",
+        "thread_count": "8",
+        "data_format_8": "POST results bitmap",
+        "descriptor_22": "System boot",
+        "data_format_9": "None",
+        "descriptor_23": "End of log",
+        "manufacturer": "Intel",
+        "area_length": "65535 bytes",
+        "asset_tag": "Not Specified",
+        "descriptor_24": "OEM-specific",
+        "external_clock": "100 MHz",
+        "l1_cache_handle": "0x0004",
+        "serial_number": "Not Specified",
+        "voltage": "0.0 V",
+        "descriptor_25": "OEM-specific",
+        "upgrade": "<OUT OF SPEC>",
+        "header_format": "Type 1",
+        "data_format_10": "None",
+        "data_format_11": "None",
+        "header_start_offset": "0x0000",
+        "header_length": "23 bytes",
+        "version": "Intel(R) Xeon(R) CPU E31270 @ 3.40GHz",
+        "all_records": [
+          {
+            "Descriptor 15": "System limit exceeded",
+            "Descriptor 4": "Bus timeout",
+            "Data Format 4": "None",
+            "Data Format 16": "None",
+            "Flags": {
+              "APIC (On-chip APIC hardware supported)": null,
+              "SSE (Streaming SIMD extensions)": null,
+              "PSE-36 (36-bit page size extension)": null,
+              "MCE (Machine check exception)": null,
+              "TM (Thermal monitor supported)": null,
+              "DE (Debugging extension)": null,
+              "SS (Self-snoop)": null,
+              "PBE (Pending break enabled)": null,
+              "SEP (Fast system call)": null,
+              "DS (Debug store)": null,
+              "PAT (Page attribute table)": null,
+              "PGE (Page global enable)": null,
+              "CX8 (CMPXCHG8 instruction supported)": null,
+              "HTT (Hyper-threading technology)": null,
+              "PSE (Page size extension)": null,
+              "TSC (Time stamp counter)": null,
+              "MTRR (Memory type range registers)": null,
+              "PAE (Physical address extension)": null,
+              "ACPI (ACPI supported)": null,
+              "CLFSH (CLFLUSH instruction supported)": null,
+              "FXSR (Fast floating-point save and restore)": null,
+              "SSE2 (Streaming SIMD extensions 2)": null,
+              "MCA (Machine check architecture)": null,
+              "MMX (MMX technology supported)": null,
+              "CMOV (Conditional move instruction supported)": null,
+              "FPU (Floating-point unit on-chip)": null,
+              "MSR (Model specific registers)": null,
+              "VME (Virtual mode extension)": null
+            },
+            "Descriptor 5": "I/O channel block",
+            "Data Format 5": "None",
+            "Header Length": "23 bytes",
+            "Data Format 17": "None",
+            "Socket Designation": "CPU",
+            "Descriptor 16": "Asynchronous hardware timer expired",
+            "Descriptor 6": "Software NMI",
+            "ID": "A7 06 02 00 FF FB EB BF",
+            "Data Format 6": "None",
+            "Data Format 18": "None",
+            "L1 Cache Handle": "0x0004",
+            "Descriptor 17": "System configuration information",
+            "Descriptor 7": "POST memory resize",
+            "Data Format 7": "None",
+            "Data Format 20": "None",
+            "Data Format 19": "None",
+            "Descriptor 18": "Hard disk information",
+            "Descriptor 8": "POST error",
+            "Data Format 21": "None",
+            "Data Format 8": "POST results bitmap",
+            "Descriptor 20": "Uncorrectable CPU-complex error",
+            "Descriptor 19": "System reconfigured",
+            "Descriptor 9": "PCI parity error",
+            "Data Format 9": "None",
+            "Data Format 22": "None",
+            "Descriptor 21": "Log area reset/cleared",
+            "Data Format 23": "None",
+            "Descriptor 22": "System boot",
+            "Header Format": "Type 1",
+            "Data Format 24": "OEM-specific",
+            "Installable Languages": {
+              "en|US|iso8859-1": null
+            },
+            "Descriptor 23": "End of log",
+            "Core Enabled": "4",
+            "size": "4",
+            "Data Start Offset": "0x0017",
+            "Descriptor 24": "OEM-specific",
+            "Upgrade": "<OUT OF SPEC>",
+            "Voltage": "0.0 V",
+            "Area Length": "65535 bytes",
+            "Supported Log Type Descriptors": "25",
+            "Core Count": "4",
+            "Access Address": "0xFFC30000",
+            "Data Format 25": "OEM-specific",
+            "Change Token": "0x00000001",
+            "Descriptor 25": "OEM-specific",
+            "L2 Cache Handle": "0x0005",
+            "Signature": "Type 0, Family 6, Model 42, Stepping 7",
+            "Asset Tag": "Not Specified",
+            "Type": "Central Processor",
+            "Version": "Intel(R) Xeon(R) CPU E31270 @ 3.40GHz",
+            "record_id": "0x006B",
+            "Access Method": "Memory-mapped physical 32-bit address",
+            "Thread Count": "8",
+            "Manufacturer": "Intel",
+            "Header Start Offset": "0x0000",
+            "External Clock": "100 MHz",
+            "Max Speed": "3800 MHz",
+            "Data Format 10": "None",
+            "L3 Cache Handle": "0x0006",
+            "Data Format 11": "None",
+            "Descriptor 10": "PCI system error",
+            "Part Number": "Not Specified",
+            "Descriptor 11": "CPU failure",
+            "Data Format 12": "None",
+            "Data Format 1": "None",
+            "Data Format 2": "None",
+            "Currently Installed Language": "en|US|iso8859-1",
+            "Descriptor 1": "Single-bit ECC memory error",
+            "Characteristics": {
+              "64-bit capable": null
+            },
+            "Descriptor 12": "EISA failsafe timer timeout",
+            "Data Format 13": "None",
+            "Data Format 14": "None",
+            "Status": "Valid, Not Full",
+            "Descriptor 2": "Multi-bit ECC memory error",
+            "Descriptor 13": "Correctable memory log disabled",
+            "Family": "Xeon",
+            "Serial Number": "Not Specified",
+            "Data Format 15": "None",
+            "Data Format 3": "None",
+            "Current Speed": "3400 MHz",
+            "Descriptor 14": "Logging disabled",
+            "application_identifier": "End Of Table",
+            "Descriptor 3": "Parity memory error"
+          }
+        ],
+        "socket_designation": "CPU",
+        "supported_log_type_descriptors": "25",
+        "descriptor_1": "Single-bit ECC memory error",
+        "core_enabled": "4",
+        "data_format_12": "None",
+        "descriptor_2": "Multi-bit ECC memory error",
+        "data_format_13": "None",
+        "descriptor_3": "Parity memory error",
+        "data_format_14": "None",
+        "max_speed": "3800 MHz",
+        "data_format_15": "None",
+        "descriptor_10": "PCI system error",
+        "l2_cache_handle": "0x0005",
+        "data_start_offset": "0x0017",
+        "descriptor_4": "Bus timeout",
+        "data_format_16": "None",
+        "descriptor_5": "I/O channel block",
+        "descriptor_11": "CPU failure",
+        "part_number": "Not Specified",
+        "descriptor_6": "Software NMI",
+        "descriptor_12": "EISA failsafe timer timeout",
+        "data_format_17": "None",
+        "signature": "Type 0, Family 6, Model 42, Stepping 7",
+        "data_format_18": "None",
+        "type": "Central Processor",
+        "descriptor_7": "POST memory resize",
+        "descriptor_13": "Correctable memory log disabled",
+        "data_format_1": "None",
+        "id": "A7 06 02 00 FF FB EB BF"
+      },
+      "dmidecode_version": "2.9",
+      "smbios_version": "2.7"
+    },
+    "kernel": {
+      "machine": "x86_64",
+      "name": "Linux",
+      "modules": {
+        "usbhid": {
+          "size": "41116",
+          "refcount": "0"
+        },
+        "ib_iser": {
+          "size": "31654",
+          "refcount": "0"
+        },
+        "ib_mad": {
+          "size": "41321",
+          "refcount": "2"
+        },
+        "minix": {
+          "size": "29315",
+          "refcount": "0"
+        },
+        "jfs": {
+          "size": "184803",
+          "refcount": "0"
+        },
+        "ib_sa": {
+          "size": "22006",
+          "refcount": "2"
+        },
+        "scsi_transport_iscsi": {
+          "size": "38402",
+          "refcount": "4"
+        },
+        "msdos": {
+          "size": "7936",
+          "refcount": "0"
+        },
+        "ufs": {
+          "size": "73778",
+          "refcount": "0"
+        },
+        "ib_addr": {
+          "size": "6766",
+          "refcount": "1"
+        },
+        "fat": {
+          "size": "55350",
+          "refcount": "2"
+        },
+        "xt_tcpudp": {
+          "size": "2667",
+          "refcount": "8"
+        },
+        "e1000e": {
+          "size": "136301",
+          "refcount": "0"
+        },
+        "hid": {
+          "size": "83888",
+          "refcount": "1"
+        },
+        "reiserfs": {
+          "size": "243856",
+          "refcount": "0"
+        },
+        "libcrc32c": {
+          "size": "1244",
+          "refcount": "1"
+        },
+        "libiscsi_tcp": {
+          "size": "16660",
+          "refcount": "1"
+        },
+        "x_tables": {
+          "size": "22461",
+          "refcount": "3"
+        },
+        "btrfs": {
+          "size": "481166",
+          "refcount": "0"
+        },
+        "lp": {
+          "size": "9336",
+          "refcount": "0"
+        },
+        "aacraid": {
+          "size": "76355",
+          "refcount": "6"
+        },
+        "exportfs": {
+          "size": "4202",
+          "refcount": "1"
+        },
+        "qnx4": {
+          "size": "7736",
+          "refcount": "0"
+        },
+        "zlib_deflate": {
+          "size": "21834",
+          "refcount": "1"
+        },
+        "joydev": {
+          "size": "11104",
+          "refcount": "0"
+        },
+        "xfs": {
+          "size": "540549",
+          "refcount": "0"
+        },
+        "vfat": {
+          "size": "10866",
+          "refcount": "0"
+        },
+        "psmouse": {
+          "size": "65040",
+          "refcount": "0"
+        },
+        "parport": {
+          "size": "37160",
+          "refcount": "1"
+        },
+        "serio_raw": {
+          "size": "4918",
+          "refcount": "0"
+        },
+        "ahci": {
+          "size": "38350",
+          "refcount": "0"
+        },
+        "ib_core": {
+          "size": "64935",
+          "refcount": "6"
+        },
+        "iw_cm": {
+          "size": "9385",
+          "refcount": "1"
+        },
+        "ipmi_msghandler": {
+          "size": "37083",
+          "refcount": "0"
+        },
+        "rdma_cm": {
+          "size": "31062",
+          "refcount": "1"
+        },
+        "iptable_filter": {
+          "size": "2791",
+          "refcount": "1"
+        },
+        "ip_tables": {
+          "size": "18390",
+          "refcount": "1"
+        },
+        "ipt_REJECT": {
+          "size": "2384",
+          "refcount": "1"
+        },
+        "ntfs": {
+          "size": "97808",
+          "refcount": "0"
+        },
+        "hfsplus": {
+          "size": "77801",
+          "refcount": "0"
+        },
+        "crc32c": {
+          "size": "2983",
+          "refcount": "1"
+        },
+        "ib_cm": {
+          "size": "40316",
+          "refcount": "1"
+        },
+        "bonding": {
+          "size": "99561",
+          "refcount": "0"
+        },
+        "iscsi_tcp": {
+          "size": "10188",
+          "refcount": "0"
+        },
+        "hfs": {
+          "size": "47397",
+          "refcount": "0"
+        },
+        "libiscsi": {
+          "size": "44398",
+          "refcount": "3"
+        }
+      },
+      "os": "GNU/Linux",
+      "version": "#83-Ubuntu SMP Wed Jan 4 11:12:07 UTC 2012",
+      "release": "2.6.32-38-generic"
+    },
+    "keys": {
+      "ssh": {
+        "host_dsa_public": "AAAAB3NzaC1kc3MAAACBANExdwDZDDaBN5lTuwEumIdyRsQI1hDeFuV62ig3kCsd+pcoZZys64KwNKwZNdCOjUh8i4UcE71MJNimlNIjtvV/ICREV5+kLb63A8UZXsgvmIvi/iTc1Tcd8nRPuvHZkOzuTt9Vkx21kRWAMOByf1fiAT1M6Sx+dK/QSw094b4tAAAAFQCdxruvI6FOdyn0syvcAUcgySRyTQAAAIADcOABxeet81ZTacKnzVLFogM8MKtchpCTYsnnZmYrJly8Hz2mP14OrS5DQrlXh6hZK3hByxYBluWs0Ic0fgvB+A8+ve5agGzccfmHDE/IaVbXN38d1okwaRGjlIVgyO5JSxaf/spZkFn+19UzAH2NbzhotFh+ye5+sMRb7DL1TgAAAIEArIdz72KQEVKX0WFGZBtCNagL1r5Mxldza8gntjAss4XvXkxXRT70wYdp2K9r3iCTxfOweAafq4nG9L+60zZ2AgHBDPTR4sjqfWLUxDXsuf3cob67OKM3wr7M2tLsYmtFLMU4AHhj1SSZzsp0NUb4lHnyBSb/GUff0ySiHuTE5UY=",
+        "host_rsa_public": "AAAAB3NzaC1yc2EAAAABIwAAAQEAsq3+uskvAN4/GG4ZDa5lsMNvowYecScn7ZWMjYhxGNOgjDhiC7A39Ar7IrHA7JepUOVyuGtfFq4k+3yh0t50VLJKhbQ+KH+76dpjRatofctpFltqPnEOjcXzHm6VwxpEAasYY34iE0o4LcDWR3JvcP/4ZO1u17XeIoxG4+yWPCzufbKdsJzegAgv45teNFJuJhDW5MA4nLkpeeGU+N9cALiWJZhauKd15crI1+WQeTJJ4534p7SAatNQ2slDmPeyKUdBc8wlajEC7NjZTwH0t21kx2IwTQ9CUXj0jTW635nvmnl+MtwUWuTOGLPJ9ffle0iOQ9Ek+ZwpjyeUkWVMEQ=="
+      }
+    },
+    "platform_version": "10.04",
+    "fqdn": "mongodb20.reportgrid.com",
+    "filesystem": {
+      "/dev/sdb1": {
+        "kb_size": "192100972",
+        "kb_available": "101886180",
+        "mount_options": [
+          "rw",
+          "noatime"
+        ],
+        "mount": "/srv",
+        "fs_type": "ext4",
+        "percent_used": "45%",
+        "kb_used": "80456636"
+      },
+      "/dev/sda1": {
+        "kb_size": "92123",
+        "kb_available": "37744",
+        "mount_options": [
+          "rw"
+        ],
+        "mount": "/boot",
+        "fs_type": "ext2",
+        "percent_used": "57%",
+        "kb_used": "49464"
+      },
+      "none": {
+        "kb_size": "478841744",
+        "kb_available": "402574112",
+        "mount_options": [
+          "rw",
+          "relatime"
+        ],
+        "mount": "/var/lib/ureadahead/debugfs",
+        "fs_type": "debugfs",
+        "percent_used": "12%",
+        "kb_used": "51943844"
+      },
+      "proc": {
+        "mount_options": [
+          "rw",
+          "noexec",
+          "nosuid",
+          "nodev"
+        ],
+        "mount": "/proc",
+        "fs_type": "proc"
+      },
+      "/dev/disk/by-uuid/2838c412-f1fb-4802-9e6e-badc234f6205": {
+        "mount_options": [
+          "rw",
+          "relatime",
+          "errors=remount-ro",
+          "barrier=1",
+          "data=ordered"
+        ],
+        "mount": "/",
+        "fs_type": "ext4"
+      },
+      "rootfs": {
+        "mount_options": [
+          "rw"
+        ],
+        "mount": "/",
+        "fs_type": "rootfs"
+      },
+      "/dev/sda6": {
+        "kb_size": "478841744",
+        "kb_available": "402574112",
+        "mount_options": [
+          "rw",
+          "errors=remount-ro"
+        ],
+        "mount": "/",
+        "fs_type": "ext4",
+        "percent_used": "12%",
+        "kb_used": "51943844"
+      }
+    },
+    "command": {
+      "ps": "ps -ef"
+    },
+    "ipaddress": "184.173.187.3",
+    "memory": {
+      "dirty": "120kB",
+      "buffers": "278468kB",
+      "vmalloc_used": "295308kB",
+      "page_tables": "14384kB",
+      "slab_unreclaim": "24060kB",
+      "vmalloc_chunk": "34359435928kB",
+      "slab": "252736kB",
+      "inactive": "3111616kB",
+      "nfs_unstable": "0kB",
+      "total": "8186956kB",
+      "vmalloc_total": "34359738367kB",
+      "free": "1057952kB",
+      "commit_limit": "5092892kB",
+      "cached": "5935968kB",
+      "swap": {
+        "total": "999416kB",
+        "free": "999348kB",
+        "cached": "28kB"
+      },
+      "anon_pages": "451132kB",
+      "writeback": "0kB",
+      "committed_as": "1087560kB",
+      "bounce": "0kB",
+      "slab_reclaimable": "228676kB",
+      "mapped": "3435696kB",
+      "active": "3551692kB"
+    },
+    "counters": {
+      "network": {
+        "interfaces": {
+          "lo": {
+            "tx": {
+              "bytes": "738793666301",
+              "packets": "36563243",
+              "collisions": "0",
+              "carrier": "0",
+              "errors": "0",
+              "queuelen": "0",
+              "overrun": "0",
+              "drop": "0"
+            },
+            "rx": {
+              "bytes": "738793666301",
+              "packets": "36563243",
+              "errors": "0",
+              "overrun": "0",
+              "drop": "0",
+              "frame": "0"
+            }
+          },
+          "eth0": {
+            "tx": {
+              "bytes": "212781939",
+              "packets": "1147057",
+              "collisions": "0",
+              "carrier": "0",
+              "errors": "0",
+              "queuelen": "1000",
+              "overrun": "0",
+              "drop": "0"
+            },
+            "rx": {
+              "bytes": "926497855",
+              "packets": "7173106",
+              "errors": "0",
+              "overrun": "0",
+              "drop": "0",
+              "frame": "0"
+            }
+          },
+          "bond0": {
+            "tx": {
+              "bytes": "212781939",
+              "packets": "1147057",
+              "collisions": "0",
+              "carrier": "0",
+              "errors": "0",
+              "queuelen": "0",
+              "overrun": "0",
+              "drop": "0"
+            },
+            "rx": {
+              "bytes": "926497855",
+              "packets": "7173106",
+              "errors": "0",
+              "overrun": "0",
+              "drop": "0",
+              "frame": "0"
+            }
+          },
+          "eth1": {
+            "tx": {
+              "bytes": "64077391926",
+              "packets": "123518858",
+              "collisions": "0",
+              "carrier": "0",
+              "errors": "0",
+              "queuelen": "1000",
+              "overrun": "0",
+              "drop": "0"
+            },
+            "rx": {
+              "bytes": "49803079284",
+              "packets": "144625231",
+              "errors": "0",
+              "overrun": "0",
+              "drop": "0",
+              "frame": "0"
+            }
+          },
+          "bond1": {
+            "tx": {
+              "bytes": "64077391926",
+              "packets": "123518858",
+              "collisions": "0",
+              "carrier": "0",
+              "errors": "0",
+              "queuelen": "0",
+              "overrun": "0",
+              "drop": "0"
+            },
+            "rx": {
+              "bytes": "49803079284",
+              "packets": "144625231",
+              "errors": "0",
+              "overrun": "0",
+              "drop": "0",
+              "frame": "0"
+            }
+          },
+          "eth2": {
+            "tx": {
+              "bytes": "0",
+              "packets": "0",
+              "collisions": "0",
+              "carrier": "0",
+              "errors": "0",
+              "queuelen": "1000",
+              "overrun": "0",
+              "drop": "0"
+            },
+            "rx": {
+              "bytes": "0",
+              "packets": "0",
+              "errors": "0",
+              "overrun": "0",
+              "drop": "0",
+              "frame": "0"
+            }
+          },
+          "eth3": {
+            "tx": {
+              "bytes": "0",
+              "packets": "0",
+              "collisions": "0",
+              "carrier": "0",
+              "errors": "0",
+              "queuelen": "1000",
+              "overrun": "0",
+              "drop": "0"
+            },
+            "rx": {
+              "bytes": "0",
+              "packets": "0",
+              "errors": "0",
+              "overrun": "0",
+              "drop": "0",
+              "frame": "0"
+            }
+          }
+        }
+      }
+    },
+    "idletime_seconds": 45314496,
+    "domain": "reportgrid.com",
+    "os": "linux",
+    "lsb": {
+      "codename": "lucid",
+      "id": "Ubuntu",
+      "description": "Ubuntu 10.04.3 LTS",
+      "release": "10.04"
+    },
+    "virtualization": {
+    },
+    "idletime": "524 days 11 hours 21 minutes 36 seconds",
+    "network": {
+      "default_interface": "bond1",
+      "interfaces": {
+        "lo": {
+          "flags": [
+            "UP",
+            "LOOPBACK",
+            "RUNNING"
+          ],
+          "addresses": {
+            "::1": {
+              "scope": "Node",
+              "prefixlen": "128",
+              "family": "inet6"
+            },
+            "127.0.0.1": {
+              "netmask": "255.0.0.0",
+              "family": "inet"
+            }
+          },
+          "mtu": "16436",
+          "encapsulation": "Loopback"
+        },
+        "eth0": {
+          "flags": [
+            "UP",
+            "BROADCAST",
+            "RUNNING",
+            "SLAVE",
+            "MULTICAST"
+          ],
+          "number": "0",
+          "addresses": {
+            "00:25:90:27:3f:54": {
+              "family": "lladdr"
+            }
+          },
+          "mtu": "1500",
+          "type": "eth",
+          "encapsulation": "Ethernet"
+        },
+        "bond0": {
+          "flags": [
+            "UP",
+            "BROADCAST",
+            "RUNNING",
+            "MASTER",
+            "MULTICAST"
+          ],
+          "number": "0",
+          "addresses": {
+            "10.56.82.76": {
+              "netmask": "255.255.255.192",
+              "broadcast": "10.56.82.127",
+              "family": "inet"
+            },
+            "00:25:90:27:3f:54": {
+              "family": "lladdr"
+            },
+            "fe80::225:90ff:fe27:3f54": {
+              "scope": "Link",
+              "prefixlen": "64",
+              "family": "inet6"
+            }
+          },
+          "mtu": "1500",
+          "type": "bond",
+          "arp": {
+            "10.56.82.65": "f8:66:f2:6d:5a:80"
+          },
+          "encapsulation": "Ethernet"
+        },
+        "eth1": {
+          "flags": [
+            "UP",
+            "BROADCAST",
+            "RUNNING",
+            "SLAVE",
+            "MULTICAST"
+          ],
+          "number": "1",
+          "addresses": {
+            "00:25:90:27:3f:55": {
+              "family": "lladdr"
+            }
+          },
+          "mtu": "1500",
+          "type": "eth",
+          "encapsulation": "Ethernet"
+        },
+        "bond1": {
+          "flags": [
+            "UP",
+            "BROADCAST",
+            "RUNNING",
+            "MASTER",
+            "MULTICAST"
+          ],
+          "number": "1",
+          "addresses": {
+            "00:25:90:27:3f:55": {
+              "family": "lladdr"
+            },
+            "fe80::225:90ff:fe27:3f55": {
+              "scope": "Link",
+              "prefixlen": "64",
+              "family": "inet6"
+            },
+            "184.173.187.3": {
+              "netmask": "255.255.255.192",
+              "broadcast": "184.173.187.63",
+              "family": "inet"
+            }
+          },
+          "mtu": "1500",
+          "type": "bond",
+          "arp": {
+            "184.173.187.1": "00:08:e3:ff:fd:90",
+            "184.173.187.4": "00:25:90:27:42:99",
+            "184.173.187.5": "06:5f:85:c2:68:1e"
+          },
+          "encapsulation": "Ethernet"
+        },
+        "eth2": {
+          "flags": [
+            "UP",
+            "BROADCAST",
+            "SLAVE",
+            "MULTICAST"
+          ],
+          "number": "2",
+          "addresses": {
+            "00:25:90:27:3f:54": {
+              "family": "lladdr"
+            }
+          },
+          "mtu": "1500",
+          "type": "eth",
+          "encapsulation": "Ethernet"
+        },
+        "eth3": {
+          "flags": [
+            "UP",
+            "BROADCAST",
+            "SLAVE",
+            "MULTICAST"
+          ],
+          "number": "3",
+          "addresses": {
+            "00:25:90:27:3f:55": {
+              "family": "lladdr"
+            }
+          },
+          "mtu": "1500",
+          "type": "eth",
+          "encapsulation": "Ethernet"
+        }
+      },
+      "default_gateway": "184.173.187.1"
+    },
+    "chef_packages": {
+      "ohai": {
+        "ohai_root": "/usr/lib/ruby/1.8/ohai",
+        "version": "0.6.10"
+      },
+      "chef": {
+        "version": "0.10.8",
+        "chef_root": "/usr/lib/ruby/vendor_ruby"
+      }
+    },
+    "current_user": null,
+    "ohai_time": 1334001173.37472,
+    "languages": {
+      "perl": {
+        "version": "5.10.1",
+        "archname": "x86_64-linux-gnu-thread-multi"
+      },
+      "python": {
+        "version": "2.6.5",
+        "builddate": "Apr 16 2010, 13:57:41"
+      },
+      "ruby": {
+        "target_os": "linux",
+        "bin_dir": "/usr/bin",
+        "host_vendor": "pc",
+        "target_vendor": "pc",
+        "gem_bin": "/usr/bin/gem1.8",
+        "target_cpu": "x86_64",
+        "ruby_bin": "/usr/bin/ruby1.8",
+        "version": "1.8.7",
+        "host_os": "linux-gnu",
+        "host": "x86_64-pc-linux-gnu",
+        "release_date": "2010-01-10",
+        "host_cpu": "x86_64",
+        "target": "x86_64-pc-linux-gnu",
+        "gems_dir": "/usr/lib/ruby/gems/1.8",
+        "platform": "x86_64-linux"
+      }
+    },
+    "recipes": [
+      "ubuntu_user",
+      "sudo",
+      "rc-local",
+      "hosts",
+      "at",
+      "ruby",
+      "python",
+      "monit",
+      "ec2::route53",
+      "postfix",
+      "rsyslog",
+      "mailx",
+      "munin::client",
+      "apt",
+      "chef::client",
+      "ntp",
+      "htop",
+      "iotop",
+      "sysstat",
+      "pam",
+      "mongodb::shard-server",
+      "mongodb::replset-server",
+      "munin::extraplugins",
+      "reportgrid::munin-monitor",
+      "iptables"
+    ],
+    "os_version": "2.6.32-38-generic",
+    "cpu": {
+      "6": {
+        "cores": "4",
+        "flags": [
+          "fpu",
+          "vme",
+          "de",
+          "pse",
+          "tsc",
+          "msr",
+          "pae",
+          "mce",
+          "cx8",
+          "apic",
+          "sep",
+          "mtrr",
+          "pge",
+          "mca",
+          "cmov",
+          "pat",
+          "pse36",
+          "clflush",
+          "dts",
+          "acpi",
+          "mmx",
+          "fxsr",
+          "sse",
+          "sse2",
+          "ss",
+          "ht",
+          "tm",
+          "pbe",
+          "syscall",
+          "nx",
+          "rdtscp",
+          "lm",
+          "constant_tsc",
+          "arch_perfmon",
+          "pebs",
+          "bts",
+          "rep_good",
+          "xtopology",
+          "nonstop_tsc",
+          "aperfmperf",
+          "pni",
+          "pclmulqdq",
+          "dtes64",
+          "monitor",
+          "ds_cpl",
+          "vmx",
+          "smx",
+          "est",
+          "tm2",
+          "ssse3",
+          "cx16",
+          "xtpr",
+          "pdcm",
+          "sse4_1",
+          "sse4_2",
+          "x2apic",
+          "popcnt",
+          "xsave",
+          "avx",
+          "lahf_lm",
+          "ida",
+          "arat",
+          "tpr_shadow",
+          "vnmi",
+          "flexpriority",
+          "ept",
+          "vpid"
+        ],
+        "model": "42",
+        "model_name": "Intel(R) Xeon(R) CPU E31270 @ 3.40GHz",
+        "core_id": "2",
+        "family": "6",
+        "physical_id": "0",
+        "mhz": "1600.000",
+        "vendor_id": "GenuineIntel",
+        "cache_size": "8192 KB",
+        "stepping": "7"
+      },
+      "7": {
+        "cores": "4",
+        "flags": [
+          "fpu",
+          "vme",
+          "de",
+          "pse",
+          "tsc",
+          "msr",
+          "pae",
+          "mce",
+          "cx8",
+          "apic",
+          "sep",
+          "mtrr",
+          "pge",
+          "mca",
+          "cmov",
+          "pat",
+          "pse36",
+          "clflush",
+          "dts",
+          "acpi",
+          "mmx",
+          "fxsr",
+          "sse",
+          "sse2",
+          "ss",
+          "ht",
+          "tm",
+          "pbe",
+          "syscall",
+          "nx",
+          "rdtscp",
+          "lm",
+          "constant_tsc",
+          "arch_perfmon",
+          "pebs",
+          "bts",
+          "rep_good",
+          "xtopology",
+          "nonstop_tsc",
+          "aperfmperf",
+          "pni",
+          "pclmulqdq",
+          "dtes64",
+          "monitor",
+          "ds_cpl",
+          "vmx",
+          "smx",
+          "est",
+          "tm2",
+          "ssse3",
+          "cx16",
+          "xtpr",
+          "pdcm",
+          "sse4_1",
+          "sse4_2",
+          "x2apic",
+          "popcnt",
+          "xsave",
+          "avx",
+          "lahf_lm",
+          "ida",
+          "arat",
+          "tpr_shadow",
+          "vnmi",
+          "flexpriority",
+          "ept",
+          "vpid"
+        ],
+        "model": "42",
+        "model_name": "Intel(R) Xeon(R) CPU E31270 @ 3.40GHz",
+        "core_id": "3",
+        "family": "6",
+        "physical_id": "0",
+        "mhz": "1600.000",
+        "vendor_id": "GenuineIntel",
+        "cache_size": "8192 KB",
+        "stepping": "7"
+      },
+      "real": 1,
+      "total": 8,
+      "0": {
+        "cores": "4",
+        "flags": [
+          "fpu",
+          "vme",
+          "de",
+          "pse",
+          "tsc",
+          "msr",
+          "pae",
+          "mce",
+          "cx8",
+          "apic",
+          "sep",
+          "mtrr",
+          "pge",
+          "mca",
+          "cmov",
+          "pat",
+          "pse36",
+          "clflush",
+          "dts",
+          "acpi",
+          "mmx",
+          "fxsr",
+          "sse",
+          "sse2",
+          "ss",
+          "ht",
+          "tm",
+          "pbe",
+          "syscall",
+          "nx",
+          "rdtscp",
+          "lm",
+          "constant_tsc",
+          "arch_perfmon",
+          "pebs",
+          "bts",
+          "rep_good",
+          "xtopology",
+          "nonstop_tsc",
+          "aperfmperf",
+          "pni",
+          "pclmulqdq",
+          "dtes64",
+          "monitor",
+          "ds_cpl",
+          "vmx",
+          "smx",
+          "est",
+          "tm2",
+          "ssse3",
+          "cx16",
+          "xtpr",
+          "pdcm",
+          "sse4_1",
+          "sse4_2",
+          "x2apic",
+          "popcnt",
+          "xsave",
+          "avx",
+          "lahf_lm",
+          "ida",
+          "arat",
+          "tpr_shadow",
+          "vnmi",
+          "flexpriority",
+          "ept",
+          "vpid"
+        ],
+        "model": "42",
+        "model_name": "Intel(R) Xeon(R) CPU E31270 @ 3.40GHz",
+        "core_id": "0",
+        "family": "6",
+        "physical_id": "0",
+        "mhz": "1600.000",
+        "vendor_id": "GenuineIntel",
+        "cache_size": "8192 KB",
+        "stepping": "7"
+      },
+      "1": {
+        "cores": "4",
+        "flags": [
+          "fpu",
+          "vme",
+          "de",
+          "pse",
+          "tsc",
+          "msr",
+          "pae",
+          "mce",
+          "cx8",
+          "apic",
+          "sep",
+          "mtrr",
+          "pge",
+          "mca",
+          "cmov",
+          "pat",
+          "pse36",
+          "clflush",
+          "dts",
+          "acpi",
+          "mmx",
+          "fxsr",
+          "sse",
+          "sse2",
+          "ss",
+          "ht",
+          "tm",
+          "pbe",
+          "syscall",
+          "nx",
+          "rdtscp",
+          "lm",
+          "constant_tsc",
+          "arch_perfmon",
+          "pebs",
+          "bts",
+          "rep_good",
+          "xtopology",
+          "nonstop_tsc",
+          "aperfmperf",
+          "pni",
+          "pclmulqdq",
+          "dtes64",
+          "monitor",
+          "ds_cpl",
+          "vmx",
+          "smx",
+          "est",
+          "tm2",
+          "ssse3",
+          "cx16",
+          "xtpr",
+          "pdcm",
+          "sse4_1",
+          "sse4_2",
+          "x2apic",
+          "popcnt",
+          "xsave",
+          "avx",
+          "lahf_lm",
+          "ida",
+          "arat",
+          "tpr_shadow",
+          "vnmi",
+          "flexpriority",
+          "ept",
+          "vpid"
+        ],
+        "model": "42",
+        "model_name": "Intel(R) Xeon(R) CPU E31270 @ 3.40GHz",
+        "core_id": "1",
+        "family": "6",
+        "physical_id": "0",
+        "mhz": "1600.000",
+        "vendor_id": "GenuineIntel",
+        "cache_size": "8192 KB",
+        "stepping": "7"
+      },
+      "2": {
+        "cores": "4",
+        "flags": [
+          "fpu",
+          "vme",
+          "de",
+          "pse",
+          "tsc",
+          "msr",
+          "pae",
+          "mce",
+          "cx8",
+          "apic",
+          "sep",
+          "mtrr",
+          "pge",
+          "mca",
+          "cmov",
+          "pat",
+          "pse36",
+          "clflush",
+          "dts",
+          "acpi",
+          "mmx",
+          "fxsr",
+          "sse",
+          "sse2",
+          "ss",
+          "ht",
+          "tm",
+          "pbe",
+          "syscall",
+          "nx",
+          "rdtscp",
+          "lm",
+          "constant_tsc",
+          "arch_perfmon",
+          "pebs",
+          "bts",
+          "rep_good",
+          "xtopology",
+          "nonstop_tsc",
+          "aperfmperf",
+          "pni",
+          "pclmulqdq",
+          "dtes64",
+          "monitor",
+          "ds_cpl",
+          "vmx",
+          "smx",
+          "est",
+          "tm2",
+          "ssse3",
+          "cx16",
+          "xtpr",
+          "pdcm",
+          "sse4_1",
+          "sse4_2",
+          "x2apic",
+          "popcnt",
+          "xsave",
+          "avx",
+          "lahf_lm",
+          "ida",
+          "arat",
+          "tpr_shadow",
+          "vnmi",
+          "flexpriority",
+          "ept",
+          "vpid"
+        ],
+        "model": "42",
+        "model_name": "Intel(R) Xeon(R) CPU E31270 @ 3.40GHz",
+        "core_id": "2",
+        "family": "6",
+        "physical_id": "0",
+        "mhz": "3400.000",
+        "vendor_id": "GenuineIntel",
+        "cache_size": "8192 KB",
+        "stepping": "7"
+      },
+      "3": {
+        "cores": "4",
+        "flags": [
+          "fpu",
+          "vme",
+          "de",
+          "pse",
+          "tsc",
+          "msr",
+          "pae",
+          "mce",
+          "cx8",
+          "apic",
+          "sep",
+          "mtrr",
+          "pge",
+          "mca",
+          "cmov",
+          "pat",
+          "pse36",
+          "clflush",
+          "dts",
+          "acpi",
+          "mmx",
+          "fxsr",
+          "sse",
+          "sse2",
+          "ss",
+          "ht",
+          "tm",
+          "pbe",
+          "syscall",
+          "nx",
+          "rdtscp",
+          "lm",
+          "constant_tsc",
+          "arch_perfmon",
+          "pebs",
+          "bts",
+          "rep_good",
+          "xtopology",
+          "nonstop_tsc",
+          "aperfmperf",
+          "pni",
+          "pclmulqdq",
+          "dtes64",
+          "monitor",
+          "ds_cpl",
+          "vmx",
+          "smx",
+          "est",
+          "tm2",
+          "ssse3",
+          "cx16",
+          "xtpr",
+          "pdcm",
+          "sse4_1",
+          "sse4_2",
+          "x2apic",
+          "popcnt",
+          "xsave",
+          "avx",
+          "lahf_lm",
+          "ida",
+          "arat",
+          "tpr_shadow",
+          "vnmi",
+          "flexpriority",
+          "ept",
+          "vpid"
+        ],
+        "model": "42",
+        "model_name": "Intel(R) Xeon(R) CPU E31270 @ 3.40GHz",
+        "core_id": "3",
+        "family": "6",
+        "physical_id": "0",
+        "mhz": "1600.000",
+        "vendor_id": "GenuineIntel",
+        "cache_size": "8192 KB",
+        "stepping": "7"
+      },
+      "4": {
+        "cores": "4",
+        "flags": [
+          "fpu",
+          "vme",
+          "de",
+          "pse",
+          "tsc",
+          "msr",
+          "pae",
+          "mce",
+          "cx8",
+          "apic",
+          "sep",
+          "mtrr",
+          "pge",
+          "mca",
+          "cmov",
+          "pat",
+          "pse36",
+          "clflush",
+          "dts",
+          "acpi",
+          "mmx",
+          "fxsr",
+          "sse",
+          "sse2",
+          "ss",
+          "ht",
+          "tm",
+          "pbe",
+          "syscall",
+          "nx",
+          "rdtscp",
+          "lm",
+          "constant_tsc",
+          "arch_perfmon",
+          "pebs",
+          "bts",
+          "rep_good",
+          "xtopology",
+          "nonstop_tsc",
+          "aperfmperf",
+          "pni",
+          "pclmulqdq",
+          "dtes64",
+          "monitor",
+          "ds_cpl",
+          "vmx",
+          "smx",
+          "est",
+          "tm2",
+          "ssse3",
+          "cx16",
+          "xtpr",
+          "pdcm",
+          "sse4_1",
+          "sse4_2",
+          "x2apic",
+          "popcnt",
+          "xsave",
+          "avx",
+          "lahf_lm",
+          "ida",
+          "arat",
+          "tpr_shadow",
+          "vnmi",
+          "flexpriority",
+          "ept",
+          "vpid"
+        ],
+        "model": "42",
+        "model_name": "Intel(R) Xeon(R) CPU E31270 @ 3.40GHz",
+        "core_id": "0",
+        "family": "6",
+        "physical_id": "0",
+        "mhz": "1600.000",
+        "vendor_id": "GenuineIntel",
+        "cache_size": "8192 KB",
+        "stepping": "7"
+      },
+      "5": {
+        "cores": "4",
+        "flags": [
+          "fpu",
+          "vme",
+          "de",
+          "pse",
+          "tsc",
+          "msr",
+          "pae",
+          "mce",
+          "cx8",
+          "apic",
+          "sep",
+          "mtrr",
+          "pge",
+          "mca",
+          "cmov",
+          "pat",
+          "pse36",
+          "clflush",
+          "dts",
+          "acpi",
+          "mmx",
+          "fxsr",
+          "sse",
+          "sse2",
+          "ss",
+          "ht",
+          "tm",
+          "pbe",
+          "syscall",
+          "nx",
+          "rdtscp",
+          "lm",
+          "constant_tsc",
+          "arch_perfmon",
+          "pebs",
+          "bts",
+          "rep_good",
+          "xtopology",
+          "nonstop_tsc",
+          "aperfmperf",
+          "pni",
+          "pclmulqdq",
+          "dtes64",
+          "monitor",
+          "ds_cpl",
+          "vmx",
+          "smx",
+          "est",
+          "tm2",
+          "ssse3",
+          "cx16",
+          "xtpr",
+          "pdcm",
+          "sse4_1",
+          "sse4_2",
+          "x2apic",
+          "popcnt",
+          "xsave",
+          "avx",
+          "lahf_lm",
+          "ida",
+          "arat",
+          "tpr_shadow",
+          "vnmi",
+          "flexpriority",
+          "ept",
+          "vpid"
+        ],
+        "model": "42",
+        "model_name": "Intel(R) Xeon(R) CPU E31270 @ 3.40GHz",
+        "core_id": "1",
+        "family": "6",
+        "physical_id": "0",
+        "mhz": "1600.000",
+        "vendor_id": "GenuineIntel",
+        "cache_size": "8192 KB",
+        "stepping": "7"
+      }
+    },
+    "hostname": "mongodb20",
+    "uptime": "65 days 04 hours 55 minutes 36 seconds",
+    "roles": [
+      "mongodb-replset-server",
+      "SoftLayer",
+      "mongodb-shard-server",
+      "monitored",
+      "base"
+    ],
+    "etc": {
+      "group": {
+        "audio": {
+          "gid": 29,
+          "members": [
+
+          ]
+        },
+        "utmp": {
+          "gid": 43,
+          "members": [
+
+          ]
+        },
+        "uucp": {
+          "gid": 10,
+          "members": [
+
+          ]
+        },
+        "dip": {
+          "gid": 30,
+          "members": [
+
+          ]
+        },
+        "mongodb": {
+          "gid": 999,
+          "members": [
+            "mongodb"
+          ]
+        },
+        "nogroup": {
+          "gid": 65534,
+          "members": [
+
+          ]
+        },
+        "syslog": {
+          "gid": 103,
+          "members": [
+
+          ]
+        },
+        "list": {
+          "gid": 38,
+          "members": [
+
+          ]
+        },
+        "kmem": {
+          "gid": 15,
+          "members": [
+
+          ]
+        },
+        "games": {
+          "gid": 60,
+          "members": [
+
+          ]
+        },
+        "sudo": {
+          "gid": 27,
+          "members": [
+
+          ]
+        },
+        "shadow": {
+          "gid": 42,
+          "members": [
+
+          ]
+        },
+        "sys": {
+          "gid": 3,
+          "members": [
+
+          ]
+        },
+        "munin": {
+          "gid": 113,
+          "members": [
+
+          ]
+        },
+        "mysql": {
+          "gid": 105,
+          "members": [
+
+          ]
+        },
+        "tty": {
+          "gid": 5,
+          "members": [
+
+          ]
+        },
+        "backup": {
+          "gid": 34,
+          "members": [
+
+          ]
+        },
+        "libuuid": {
+          "gid": 101,
+          "members": [
+
+          ]
+        },
+        "staff": {
+          "gid": 50,
+          "members": [
+
+          ]
+        },
+        "www-data": {
+          "gid": 33,
+          "members": [
+
+          ]
+        },
+        "irc": {
+          "gid": 39,
+          "members": [
+
+          ]
+        },
+        "man": {
+          "gid": 12,
+          "members": [
+
+          ]
+        },
+        "src": {
+          "gid": 40,
+          "members": [
+
+          ]
+        },
+        "tape": {
+          "gid": 26,
+          "members": [
+
+          ]
+        },
+        "lp": {
+          "gid": 7,
+          "members": [
+
+          ]
+        },
+        "proxy": {
+          "gid": 13,
+          "members": [
+
+          ]
+        },
+        "fuse": {
+          "gid": 104,
+          "members": [
+
+          ]
+        },
+        "mail": {
+          "gid": 8,
+          "members": [
+
+          ]
+        },
+        "operator": {
+          "gid": 37,
+          "members": [
+
+          ]
+        },
+        "root": {
+          "gid": 0,
+          "members": [
+
+          ]
+        },
+        "cdrom": {
+          "gid": 24,
+          "members": [
+
+          ]
+        },
+        "postdrop": {
+          "gid": 112,
+          "members": [
+
+          ]
+        },
+        "plugdev": {
+          "gid": 46,
+          "members": [
+
+          ]
+        },
+        "fax": {
+          "gid": 21,
+          "members": [
+
+          ]
+        },
+        "bin": {
+          "gid": 2,
+          "members": [
+
+          ]
+        },
+        "video": {
+          "gid": 44,
+          "members": [
+
+          ]
+        },
+        "sasl": {
+          "gid": 45,
+          "members": [
+
+          ]
+        },
+        "ssh": {
+          "gid": 107,
+          "members": [
+
+          ]
+        },
+        "news": {
+          "gid": 9,
+          "members": [
+
+          ]
+        },
+        "users": {
+          "gid": 100,
+          "members": [
+
+          ]
+        },
+        "daemon": {
+          "gid": 1,
+          "members": [
+
+          ]
+        },
+        "ubuntu": {
+          "gid": 1000,
+          "members": [
+
+          ]
+        },
+        "mlocate": {
+          "gid": 106,
+          "members": [
+
+          ]
+        },
+        "voice": {
+          "gid": 22,
+          "members": [
+
+          ]
+        },
+        "gnats": {
+          "gid": 41,
+          "members": [
+
+          ]
+        },
+        "floppy": {
+          "gid": 25,
+          "members": [
+
+          ]
+        },
+        "disk": {
+          "gid": 6,
+          "members": [
+
+          ]
+        },
+        "ssl-cert": {
+          "gid": 108,
+          "members": [
+
+          ]
+        },
+        "crontab": {
+          "gid": 102,
+          "members": [
+
+          ]
+        },
+        "adm": {
+          "gid": 4,
+          "members": [
+
+          ]
+        },
+        "ntp": {
+          "gid": 110,
+          "members": [
+
+          ]
+        },
+        "postfix": {
+          "gid": 111,
+          "members": [
+
+          ]
+        },
+        "dialout": {
+          "gid": 20,
+          "members": [
+
+          ]
+        }
+      },
+      "passwd": {
+        "uucp": {
+          "gecos": "uucp",
+          "gid": 10,
+          "dir": "/var/spool/uucp",
+          "uid": 10,
+          "shell": "/bin/sh"
+        },
+        "mongodb": {
+          "gecos": "",
+          "gid": 999,
+          "dir": "/var/lib/mongodb",
+          "uid": 999,
+          "shell": "/bin/false"
+        },
+        "syslog": {
+          "gecos": "",
+          "gid": 103,
+          "dir": "/home/syslog",
+          "uid": 101,
+          "shell": "/bin/false"
+        },
+        "list": {
+          "gecos": "Mailing List Manager",
+          "gid": 38,
+          "dir": "/var/list",
+          "uid": 38,
+          "shell": "/bin/sh"
+        },
+        "games": {
+          "gecos": "games",
+          "gid": 60,
+          "dir": "/usr/games",
+          "uid": 5,
+          "shell": "/bin/sh"
+        },
+        "sys": {
+          "gecos": "sys",
+          "gid": 3,
+          "dir": "/dev",
+          "uid": 3,
+          "shell": "/bin/sh"
+        },
+        "munin": {
+          "gecos": "",
+          "gid": 113,
+          "dir": "/var/lib/munin",
+          "uid": 107,
+          "shell": "/bin/false"
+        },
+        "mysql": {
+          "gecos": "MySQL Server,,,",
+          "gid": 105,
+          "dir": "/var/lib/mysql",
+          "uid": 102,
+          "shell": "/bin/false"
+        },
+        "nobody": {
+          "gecos": "nobody",
+          "gid": 65534,
+          "dir": "/nonexistent",
+          "uid": 65534,
+          "shell": "/bin/sh"
+        },
+        "backup": {
+          "gecos": "backup",
+          "gid": 34,
+          "dir": "/var/backups",
+          "uid": 34,
+          "shell": "/bin/sh"
+        },
+        "libuuid": {
+          "gecos": "",
+          "gid": 101,
+          "dir": "/var/lib/libuuid",
+          "uid": 100,
+          "shell": "/bin/sh"
+        },
+        "www-data": {
+          "gecos": "www-data",
+          "gid": 33,
+          "dir": "/var/www",
+          "uid": 33,
+          "shell": "/bin/sh"
+        },
+        "irc": {
+          "gecos": "ircd",
+          "gid": 39,
+          "dir": "/var/run/ircd",
+          "uid": 39,
+          "shell": "/bin/sh"
+        },
+        "man": {
+          "gecos": "man",
+          "gid": 12,
+          "dir": "/var/cache/man",
+          "uid": 6,
+          "shell": "/bin/sh"
+        },
+        "lp": {
+          "gecos": "lp",
+          "gid": 7,
+          "dir": "/var/spool/lpd",
+          "uid": 7,
+          "shell": "/bin/sh"
+        },
+        "proxy": {
+          "gecos": "proxy",
+          "gid": 13,
+          "dir": "/bin",
+          "uid": 13,
+          "shell": "/bin/sh"
+        },
+        "sync": {
+          "gecos": "sync",
+          "gid": 65534,
+          "dir": "/bin",
+          "uid": 4,
+          "shell": "/bin/sync"
+        },
+        "mail": {
+          "gecos": "mail",
+          "gid": 8,
+          "dir": "/var/mail",
+          "uid": 8,
+          "shell": "/bin/sh"
+        },
+        "sshd": {
+          "gecos": "",
+          "gid": 65534,
+          "dir": "/var/run/sshd",
+          "uid": 103,
+          "shell": "/usr/sbin/nologin"
+        },
+        "root": {
+          "gecos": "root",
+          "gid": 0,
+          "dir": "/root",
+          "uid": 0,
+          "shell": "/bin/bash"
+        },
+        "bin": {
+          "gecos": "bin",
+          "gid": 2,
+          "dir": "/bin",
+          "uid": 2,
+          "shell": "/bin/sh"
+        },
+        "news": {
+          "gecos": "news",
+          "gid": 9,
+          "dir": "/var/spool/news",
+          "uid": 9,
+          "shell": "/bin/sh"
+        },
+        "daemon": {
+          "gecos": "daemon",
+          "gid": 1,
+          "dir": "/usr/sbin",
+          "uid": 1,
+          "shell": "/bin/sh"
+        },
+        "ubuntu": {
+          "gecos": "",
+          "gid": 1000,
+          "dir": "/home/ubuntu",
+          "uid": 1000,
+          "shell": "/bin/bash"
+        },
+        "gnats": {
+          "gecos": "Gnats Bug-Reporting System (admin)",
+          "gid": 41,
+          "dir": "/var/lib/gnats",
+          "uid": 41,
+          "shell": "/bin/sh"
+        },
+        "ntp": {
+          "gecos": "",
+          "gid": 110,
+          "dir": "/home/ntp",
+          "uid": 105,
+          "shell": "/bin/false"
+        },
+        "postfix": {
+          "gecos": "",
+          "gid": 111,
+          "dir": "/var/spool/postfix",
+          "uid": 106,
+          "shell": "/bin/false"
+        }
+      }
+    },
+    "macaddress": "00:25:90:27:3f:55",
+    "uptime_seconds": 5633736,
+    "block_device": {
+      "ram13": {
+        "size": "131072",
+        "removable": "0"
+      },
+      "ram0": {
+        "size": "131072",
+        "removable": "0"
+      },
+      "ram14": {
+        "size": "131072",
+        "removable": "0"
+      },
+      "ram1": {
+        "size": "131072",
+        "removable": "0"
+      },
+      "loop0": {
+        "size": "0",
+        "removable": "0"
+      },
+      "ram15": {
+        "size": "131072",
+        "removable": "0"
+      },
+      "ram2": {
+        "size": "131072",
+        "removable": "0"
+      },
+      "loop1": {
+        "size": "0",
+        "removable": "0"
+      },
+      "ram3": {
+        "size": "131072",
+        "removable": "0"
+      },
+      "loop2": {
+        "size": "0",
+        "removable": "0"
+      },
+      "ram4": {
+        "size": "131072",
+        "removable": "0"
+      },
+      "loop3": {
+        "size": "0",
+        "removable": "0"
+      },
+      "sda": {
+        "model": "JBOD-A",
+        "size": "975155200",
+        "rev": "V1.0",
+        "timeout": "45",
+        "removable": "1",
+        "vendor": "Adaptec",
+        "state": "running"
+      },
+      "ram5": {
+        "size": "131072",
+        "removable": "0"
+      },
+      "loop4": {
+        "size": "0",
+        "removable": "0"
+      },
+      "sdb": {
+        "model": "JBOD-B",
+        "size": "390328320",
+        "rev": "V1.0",
+        "timeout": "45",
+        "removable": "1",
+        "vendor": "Adaptec",
+        "state": "running"
+      },
+      "ram6": {
+        "size": "131072",
+        "removable": "0"
+      },
+      "loop5": {
+        "size": "0",
+        "removable": "0"
+      },
+      "ram10": {
+        "size": "131072",
+        "removable": "0"
+      },
+      "ram7": {
+        "size": "131072",
+        "removable": "0"
+      },
+      "loop6": {
+        "size": "0",
+        "removable": "0"
+      },
+      "ram11": {
+        "size": "131072",
+        "removable": "0"
+      },
+      "ram8": {
+        "size": "131072",
+        "removable": "0"
+      },
+      "loop7": {
+        "size": "0",
+        "removable": "0"
+      },
+      "ram12": {
+        "size": "131072",
+        "removable": "0"
+      },
+      "ram9": {
+        "size": "131072",
+        "removable": "0"
+      }
+    },
+    "platform": "ubuntu"
+  },
+  "chef_environment": "Production",
+  "run_list": [
+    "role[base]",
+    "role[mongodb-shard-server]",
+    "role[mongodb-replset-server]",
+    "role[monitored]",
+    "recipe[iptables]",
+    "role[SoftLayer]"
+  ],
+  "chef_type": "node"
+}
