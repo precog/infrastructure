@@ -6,28 +6,26 @@
 #
 #
 
-TEST_TOKEN="1BF2FA96-8817-4C98-8BCB-BEC6E86CB3C2"
-
 require 'net/http'
 require 'uri'
 
 require 'rubygems'
 require 'json'
 
-if ARGV.length != 6 then
+if ARGV.length != 7 then
   puts "Called with #{ARGV.length} args: #{ARGV.join(',')}"
-  puts "Usage: #{$0} <host> <port> <query name> <query content> <warn threshold in ms> <critical threshold in ms>"
+  puts "Usage: #{$0} <host> <port> <token> <query name> <query content> <warn threshold in ms> <critical threshold in ms>"
   exit(3)
 end
 
 begin
-  host, port, name, content, warn, critical = ARGV.shift(6)
+  host, port, token, name, content, warn, critical = ARGV.shift(7)
   
   # Turn %27 back into single quote (single quotes can't be passed in) and replace + in the escaped string with %2B ("+" is space in url-escaped)
   # Same with semicolon (%3B)
   escaped = URI.escape(content.gsub('%27','\'').gsub('%3B',';')).gsub('+', '%2B')
 
-  url = URI.parse("http://#{host}:#{port}/vfs/?tokenId=#{TEST_TOKEN}&method=GET&callback=ReportGridJsonpCallback16517847&q=#{escaped}")
+  url = URI.parse("http://#{host}:#{port}/vfs/?tokenId=#{token}&method=GET&callback=ReportGridJsonpCallback16517847&q=#{escaped}")
 
   #puts "URL= #{url}"
   

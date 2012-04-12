@@ -240,9 +240,11 @@ define service {
 }
 
 # Quirrel checks
-<% shard_config = [["shard-demo", 30084, 1]] # [name, port, enable] %>
+<% shard_config = [["shard-demo", 30084, "1BF2FA96-8817-4C98-8BCB-BEC6E86CB3C2", "", 1], 
+                   ["shard-play", 30080, "BDF2FEC5-2D2F-4473-955C-2B1BAD4F1EC6", "example/", 1],
+                   ["shard-beta", 30082, "BDF2FEC5-2D2F-4473-955C-2B1BAD4F1EC6", "example/", 1]] # [name, port, token, path prefix, enable] %>
 
-<% shard_config.each { |name,port,enabled| %>
+<% shard_config.each { |name,port,token,prefix,enabled| %>
 
 # <%= name %> checks
 define service {
@@ -252,7 +254,7 @@ define service {
        active_checks_enabled  <%= enabled %>
        service_description    Quirrel <%= name %> simple math query
        action_url             /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
-       check_command          check_quirrel!<%= port %>!"<%= name %> simple math"!"total := 2 + 1%3Btotal * 3"!200!400
+       check_command          check_quirrel!<%= port %>!<%= token %>!"<%= name %> simple math"!"total := 2 + 1%3Btotal * 3"!200!400
 }
 
 define service {
@@ -262,7 +264,7 @@ define service {
        active_checks_enabled  <%= enabled %>
        service_description    Quirrel <%= name %> mean value query
        action_url             /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
-       check_command          check_quirrel!<%= port %>!"<%= name %> mean value"!"mean(load(//payments).amount)"!200!400 
+       check_command          check_quirrel!<%= port %>!<%= token %>!"<%= name %> mean value"!"mean(load(//<%= prefix %>payments).amount)"!200!400 
 }
 
 define service {
@@ -273,7 +275,7 @@ define service {
        active_checks_enabled  <%= enabled %>
        service_description    Quirrel <%= name %> complex query
        action_url             /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
-       check_command          check_quirrel!<%= port %>!"<%= name %> complex"!"customers := load(//customers)%3Borders := load(//orders)%3BfractionForUser(%27userId) :=%3B  customers%27 := customers where customers.userId = %27userId%3B  orders%27 := orders where orders.userId = %27userId%3B  customers%27 ~ orders%27%3B  orders.total / customers.income%3BfractionForUser"!2000!5000
+       check_command          check_quirrel!<%= port %>!<%= token %>!"<%= name %> complex"!"customers := load(//<%= prefix %>customers)%3Borders := load(//<%= prefix %>orders)%3BfractionForUser(%27userId) :=%3B  customers%27 := customers where customers.userId = %27userId%3B  orders%27 := orders where orders.userId = %27userId%3B  customers%27 ~ orders%27%3B  orders.total / customers.income%3BfractionForUser"!2000!5000
 }
 
 <% } %>
