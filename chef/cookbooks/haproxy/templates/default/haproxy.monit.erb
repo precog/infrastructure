@@ -5,4 +5,6 @@ check process haproxy with pidfile /var/run/haproxy.pid
   if 3 restarts within 10 cycles then timeout
 
 check file haproxy.log with path /var/log/haproxy.log
-  if match '([[:digit:]]+\/){4}[[:digit:]]+ 405' then alert
+  if match '([[:digit:]]+\/){4}[[:digit:]]+ 40[058]' then alert
+  if match '([[:digit:]]+\/){4}[[:digit:]]+ 50[[:digit:]]' then alert
+
