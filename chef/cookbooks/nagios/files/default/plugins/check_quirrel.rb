@@ -6,6 +6,8 @@
 #
 #
 
+TEST_TOKEN="1BF2FA96-8817-4C98-8BCB-BEC6E86CB3C2"
+
 require 'net/http'
 require 'uri'
 
@@ -25,8 +27,9 @@ begin
   # Same with semicolon (%3B)
   escaped = URI.escape(content.gsub('%27','\'').gsub('%3B',';')).gsub('+', '%2B')
 
-  url = URI.parse("http://#{host}:#{port}/query?tokenId=C5EF0038-A2A2-47EB-88A4-AAFCE59EC22B&method=POST&callback=ReportGridJsonpCallback16517847&content=#{escaped}")
-  #url = URI.parse("http://#{host}:#{port}/services/quirrel/v1/query?tokenId=C5EF0038-A2A2-47EB-88A4-AAFCE59EC22B&method=POST&callback=ReportGridJsonpCallback16517847&content=#{escaped}")
+  url = URI.parse("http://#{host}:#{port}/vfs/?tokenId=#{TEST_TOKEN}&method=GET&callback=ReportGridJsonpCallback16517847&q=#{escaped}")
+
+  #puts "URL= #{url}"
   
   Net::HTTP.start(url.host, url.port) do |http|
     requrl = url.request_uri
@@ -34,8 +37,10 @@ begin
     http.request_get(requrl) do |response|
       duration = (Time.now - start_time) * 1000 # All times in ms
       if not response.is_a? Net::HTTPOK then
+        #$stderr.puts(response)
         $stderr.puts("UNKNOWN:Error collecting stats: #{response.read_body}")
       else
+        #$stderr.puts(response.read_body)
         begin
           message = "Results in #{duration}ms|duration=#{duration}ms"
           if duration > critical.to_f then
