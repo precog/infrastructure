@@ -275,7 +275,7 @@ define service {
        active_checks_enabled  <%= enabled %>
        service_description    Quirrel <%= name %> complex query
        action_url             /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
-       check_command          check_quirrel!<%= port %>!<%= token %>!"<%= name %> complex"!"customers := load(//<%= prefix %>customers)%3Borders := load(//<%= prefix %>orders)%3BfractionForUser(%27userId) :=%3B  customers%27 := customers where customers.userId = %27userId%3B  orders%27 := orders where orders.userId = %27userId%3B  customers%27 ~ orders%27%3B  orders.total / customers.income%3BfractionForUser"!2000!5000
+       check_command          check_quirrel!<%= port %>!<%= token %>!"<%= name %> complex"!"customers := //<%= prefix %>customers%3Borders := //<%= prefix %>orders%3BfractionForUser(%27userId) :=%3B  customers%27 := customers where customers.userId = %27userId%3B  orders%27 := orders where orders.userId = %27userId%3B  customers%27 ~ orders%27%3B  orders.total / customers.income%3BfractionForUser"!2000!5000
 }
 
 <% } %>
