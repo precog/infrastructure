@@ -17,6 +17,10 @@
 <%   end 
    end %>
 
+<% @node[:extra_ips_allowed].each { |ipaddr| %>
+/sbin/iptables -A RGSERVERS -s <%= ipaddr %> -j ACCEPT
+<% } %>
+
 # No one else!
 /sbin/iptables -A RGSERVERS -j REJECT
 
