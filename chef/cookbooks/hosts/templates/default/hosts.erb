@@ -1,6 +1,10 @@
 127.0.0.1 localhost
 <%= @node[:ipaddress] %> <%= @node[:fqdn] %> <%= @node[:hostname] %> <%= if @node[:cloud] then @node[:cloud][:local_hostname] end %> <%= if @node[:cloud] then @node[:cloud][:public_hostname] end %>
 
+<% @node[:extra_hosts].each { |line| %>
+<%= line %>
+<% } %>
+
 # The following lines are desirable for IPv6 capable hosts
 ::1 ip6-localhost ip6-loopback
 fe00::0 ip6-localnet
