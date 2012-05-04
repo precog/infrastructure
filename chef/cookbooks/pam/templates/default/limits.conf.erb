@@ -54,7 +54,7 @@
 #@student        -       maxlogins       4
 
 # Increase file descriptor limit
-root            -       nofile           65535
-*               -       nofile           65535
+root            -       nofile           <%= @node[:pam][:nofile] %>
+*               -       nofile           <%= @node[:pam][:nofile] %>
 
 # End of file
