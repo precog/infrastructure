@@ -7,6 +7,10 @@ define hostgroup {
   members ^.*$
 }
 
+define hostgroup {
+  hostgroup_name default
+}
+
 <% @roles.each do |role| %>
 define hostgroup {
   hostgroup_name <%= role %>
