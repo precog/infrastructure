@@ -136,5 +136,6 @@ if node[:hostname].match(/[0-9]+/)[0].to_i % 3 == 2
     minute 0
     hour 9
     user "mongodb"
+    action :delete
   end
 end
