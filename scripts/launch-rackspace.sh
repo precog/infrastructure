@@ -9,14 +9,20 @@ IP=$1
 PASS=$2
 FQDN=$3
 
+echo "IP = $IP"
+
 shift 3
 
-if host $IP | grep -v pointer > /dev/null ; then
-    IP=`dig +short $IP`
-fi
+#if host $IP | grep -v pointer > /dev/null ; then
+#    IP=`dig +short $IP`
+#fi
+
+echo "Copying mongo"
+
+sshpass -p $PASS scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ~/Downloads/mongodb_2.1.0_amd64.deb root@${IP}:
+sshpass -p $PASS ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@${IP} "sudo aptitude -y install xulrunner-dev && sudo dpkg -i mongodb_2.1.0_amd64.deb && sudo stop mongodb"
 
 echo "Launching instance at $IP"
-
 
 # Fix hosts/hostname
 `dirname $0`/pre-chef.sh $IP $FQDN $PASS
