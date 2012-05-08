@@ -1,7 +1,6 @@
 name "Production"
 description "Production server env"
 cookbook_versions ({
-  "java" => "< 0.4"
 })
 default_attributes ({
   "postfix" => {
