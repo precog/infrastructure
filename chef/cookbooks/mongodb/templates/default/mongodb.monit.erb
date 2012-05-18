@@ -36,8 +36,8 @@ check file mongodb.log with path /var/log/mongodb/mongodb.log
 #  group mongodb
 
 <% if File.exists?("/var/log/mongodb/mongodb-backup.log") %>
-check file mongodb-backup.log with path /var/log/mongodb/mongodb-backup.log
-  if timestamp > 1440 minutes then alert
-  depends on mongodb
-  group mongodb
+#check file mongodb-backup.log with path /var/log/mongodb/mongodb-backup.log
+#  if timestamp > 1440 minutes then alert
+#  depends on mongodb
+#  group mongodb
 <% end -%>
