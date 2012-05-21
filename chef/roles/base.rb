@@ -11,4 +11,4 @@ run_list "recipe[ubuntu_user]", "recipe[sudo]", "recipe[rc-local]", "recipe[host
          "recipe[tmux]", "recipe[iftop]", "recipe[nethogs]", "recipe[sysstat]",
          "recipe[python]", "recipe[monit]", "recipe[ec2::route53]", "recipe[postfix]", "recipe[rsyslog]",
          "recipe[mailx]", "recipe[munin::client]", "recipe[apt]", "recipe[chef::client]", "recipe[ntp]",
-         "recipe[htop]", "recipe[iotop]", "recipe[sysstat]", "recipe[pam]"
+         "recipe[htop]", "recipe[iotop]", "recipe[sysstat]", "recipe[pam]", "recipe[iptables]"
