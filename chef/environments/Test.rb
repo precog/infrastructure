@@ -31,7 +31,7 @@ override_attributes ({
   },
   "deployer" => {
     "notified" => "derek@reportgrid.com",
-    "server" => "http://devmongo01.reportgrid.com:29999/",
+    "server" => "http://devmongo04.reportgrid.com:29999/",
     "key" => "feedfacedeadbeef",
     "agent_options" => "debug: true"
   }

@@ -13,7 +13,7 @@ default_attributes ({
 override_attributes ({
   "deployer" => {
     "notified" => "operations@reportgrid.com",
-    "server" => "http://stageapp01.reportgrid.com:29999/",
+    "server" => "http://stageapp02.reportgrid.com:29999/",
     "key" => "justanotherstagingkey",
     "mongodb" => "deployment-staging"
   }
