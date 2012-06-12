@@ -161,7 +161,7 @@ define service {
     use                 default-service
     hostgroup_name      appserverV2
     service_description Analytics v1 response times
-    check_command	check_rg_service!/blueeyes/services/analytics/v1/health!response!2000!5000
+    check_command	check_rg_service!/blueeyes/services/analytics/v1/health!response!30000!50000
 }
 
 define service {
