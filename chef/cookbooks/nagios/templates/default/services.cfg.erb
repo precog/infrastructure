@@ -264,7 +264,7 @@ define service {
        active_checks_enabled  <%= enabled %>
        service_description    Quirrel <%= name %> mean value query
        action_url             /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
-       check_command          check_quirrel!<%= port %>!<%= token %>!"<%= name %> mean value"!"mean(load(//<%= prefix %>payments).amount)"!200!400 
+       check_command          check_quirrel!<%= port %>!<%= token %>!"<%= name %> mean value"!"mean(//<%= prefix %>payments.amount)"!200!400 
 }
 
 define service {
