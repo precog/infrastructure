@@ -56,6 +56,7 @@ frontend http
 backend services_<%= "#{service[0]}_#{service[1]}" %>
   reqrep ^([^\ ]*)\ /services/[[:alnum:]-]+/[[:alnum:]-]+/(.*) \1\ /\2
   reqadd X-Service-URL-Root: /services/<%= "#{service[0]}/#{service[1]}" %>
+  rspadd Access-Control-Allow-Origin:\ *
   option httpchk GET /blueeyes/services/<%= "#{service[0]}/#{service[1]}/health" %>
   <% params[:servers].each do |server| 
        if !server.nil? && server == @node[:fqdn] then %>
