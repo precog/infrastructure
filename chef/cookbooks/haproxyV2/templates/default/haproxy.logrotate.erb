@@ -1,0 +1,10 @@
+/var/log/haproxy.log {
+    rotate 8
+    weekly
+    missingok
+    notifempty
+    compress
+    postrotate
+        reload rsyslog >/dev/null 2>&1 || true
+    endscript
+}

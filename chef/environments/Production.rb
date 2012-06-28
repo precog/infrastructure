@@ -1,6 +1,7 @@
 name "Production"
 description "Production server env"
 cookbook_versions ({
+  "haproxyV2" => "< 0.1.0" # Disable use of this recipe
 })
 default_attributes ({
   "postfix" => {

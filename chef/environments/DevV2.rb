@@ -21,6 +21,11 @@ override_attributes ({
       "s3url" => "s3://ops.reportgrid.com/viz-dev/"
     }
   },
+  "precog" => {
+    "ide" => {
+      "s3url" => "s3://ops.reportgrid.com/ide-dev/"
+    }
+  },
   "deployer" => {
     "mongodb" => "deployment-qclusdev",
     "notified" => "operations@reportgrid.com",

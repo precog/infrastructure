@@ -1,0 +1,67 @@
+global
+	log /dev/log daemon info
+	#log 127.0.0.1	local1 notice
+	#log loghost	local0 info
+	maxconn 20000
+	#chroot /usr/share/haproxy
+	user haproxy
+	group haproxy
+	daemon
+	#debug
+	#quiet
+
+defaults
+	balance roundrobin
+	log global
+	maxconn 19500
+	mode http
+        monitor-uri /haproxy/health
+	option allbackups
+	option abortonclose
+	option dontlognull
+	option httpclose
+	option httplog
+	option forwardfor
+	stats enable
+	stats hide-version
+	stats refresh 5s
+	stats uri /haproxy/stats
+	timeout client 600s
+	timeout connect 600s
+	timeout http-request 30s
+	timeout server 600s
+
+frontend http
+	bind *:80
+
+	option httplog
+	capture request header X-Forwarded-For len 15
+	capture request header Referer len 50
+        log /dev/log daemon
+
+        # Deny forged decrypt headers for SSL
+        acl has_ssl_header hdr_cnt(reportgriddecrypter) gt 0
+        block if has_ssl_header !LOCALHOST
+
+	acl VFS_PATH path_beg "/v1/vfs"
+	use_backend service_ingest if METH_POST VFS_PATH
+
+        # IDE requests go to apache for servicing
+        acl ide_req  hdr_dom(host)    -i ide
+        acl devide_req hdr_dom(host)  -i devide
+        use_backend localapache       if ide_req or devide_req
+
+	default_backend service_query
+
+backend service_ingest
+	reqrep ^([^\ ]*)\ /v1/(.*) \1\ /\2
+	option httpchk GET /blueeyes/services/ingest/v1/health
+	server local_ingest localhost:30060 check
+
+backend service_query
+	reqrep ^([^\ ]*)\ /v1/(.*) \1\ /\2
+	option httpchk GET /blueeyes/services/quirrel/v1/health
+	server local_shard01 localhost:30070 check
+
+backend localapache
+        server localapache localhost:20000
