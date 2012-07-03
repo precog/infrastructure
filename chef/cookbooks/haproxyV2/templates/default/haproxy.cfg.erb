@@ -60,6 +60,7 @@ backend service_ingest
 
 backend service_query
 	reqrep ^([^\ ]*)\ /v1/(.*) \1\ /\2
+	rspadd Access-Control-Allow-Origin:\ *
 	option httpchk GET /blueeyes/services/quirrel/v1/health
 	server local_shard01 localhost:30070 check
 
