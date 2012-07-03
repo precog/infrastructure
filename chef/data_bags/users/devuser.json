@@ -1,0 +1,10 @@
+{
+  "id": "dev",
+  "groups": "sysadmin",
+  "htpasswd": "{SHA}JM8KF4L3u0ONBrudc19VzBcZaPU=",
+  "openid": "http://devuser.myopenid.com/",
+  "nagios": {
+    "pager": "/dev/null",
+    "email": "/dev/null"
+  }
+}
