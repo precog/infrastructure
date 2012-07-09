@@ -39,14 +39,15 @@ frontend http
   <%= "use_backend services_#{service[0][0]}_#{service[0][1]} if services_#{service[0][0]}_#{service[0][1]}"  %>
 <% end %>
 
+  acl precog_io_redir hdr_dom(host) -i precog
   acl renderer_request path_reg ^/services/viz/
-  use_backend apache_php if renderer_request
+  use_backend apache_php if renderer_request or precog_io_redir
 
-  acl api_request hdr(Host) -i api.reportgrid.com
+  acl api_request hdr(host) -i api.reportgrid.com
   use_backend website if api_request
 
   acl web_request path_reg ^/(sign-up|control-panel).html
-  acl secure_request hdr(Host) -i secure.reportgrid.com
+  acl secure_request hdr(host) -i secure.reportgrid.com
   use_backend secure_web_rewrite if web_request or secure_request or LOCALHOST
 
   default_backend website
