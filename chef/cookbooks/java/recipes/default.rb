@@ -50,14 +50,23 @@
 #end
 
 # Use openjdk to keep things simple
-package "default-jdk"
+if platform?("ubuntu","debian")
+  package "default-jdk"
 
-package "sun-java6-jre" do
-  action :purge
-  only_if "dpkg -l '*sun-java6-jre*' | egrep '^ii.*sun-java6-jre.*'"
-end
+  package "sun-java6-jre" do
+    action :purge
+    only_if "dpkg -l '*sun-java6-jre*' | egrep '^ii.*sun-java6-jre.*'"
+  end
 
-package "sun-java6-jdk" do
-  action :purge
-  only_if "dpkg -l '*sun-java6-jdk*' | egrep '^ii.*sun-java6-jdk.*'"
+  package "sun-java6-jdk" do
+    action :purge
+    only_if "dpkg -l '*sun-java6-jdk*' | egrep '^ii.*sun-java6-jdk.*'"
+  end
+elsif platform?("redhat","centos")
+  package "java-1.6.0-openjdk"
+
+  package "jdk" do
+    action :purge
+    only_if "yum list jdk"
+  end
 end
