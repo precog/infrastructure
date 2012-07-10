@@ -6,7 +6,9 @@
 #
 # All rights reserved - Do Not Redistribute
 #
-include_recipe "apt::s3tools"
+if platform?("ubuntu","debian")
+  include_recipe "apt::s3tools"
+end
 
 package "s3cmd" do
   package_name "s3cmd"
