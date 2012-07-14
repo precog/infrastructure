@@ -25,7 +25,7 @@ begin
   # Same with semicolon (%3B)
   escaped = URI.escape(content.gsub('%27','\'').gsub('%3B',';')).gsub('+', '%2B')
 
-  url = URI.parse("http://#{host}:#{port}/vfs/?tokenId=#{token}&method=GET&callback=ReportGridJsonpCallback16517847&q=#{escaped}")
+  url = URI.parse("http://#{host}:#{port}/vfs/?tokenId=#{token}&method=GET&q=#{escaped}")
 
   #puts "URL= #{url}"
   
@@ -36,9 +36,14 @@ begin
       duration = (Time.now - start_time) * 1000 # All times in ms
       if not response.is_a? Net::HTTPOK then
         #$stderr.puts(response)
-        $stderr.puts("UNKNOWN:Error collecting stats: #{response.read_body}")
+        $stderr.puts("WARNING:Error collecting stats: #{response.read_body}")
+        exit(1)
       else
         #$stderr.puts(response.read_body)
+        if /\[\]/ =~ response.read_body then
+          $stderr.puts("CRITICAL:Empty results: #{response.read_body}")
+          exit(1)
+        end
         begin
           message = "Results in #{duration}ms|duration=#{duration}ms"
           if duration > critical.to_f then
@@ -51,12 +56,13 @@ begin
             puts "OK:#{message}"
           end
         rescue => e
-          $stderr.puts("UNKNOWN:Error parsing response: #{e.message}")
+          $stderr.puts("WARNING:Error parsing response: #{e.message}")
+          exit(1)
         end
       end
     end
   end
 rescue => e
-  $stderr.puts("UNKNOWN:Error processing poll: #{e.message}")
-  exit(3)
+  $stderr.puts("WARNING:Error processing poll: #{e.message}")
+  exit(1)
 end
