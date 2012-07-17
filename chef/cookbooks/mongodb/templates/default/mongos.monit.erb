@@ -5,6 +5,6 @@ check process mongos with pidfile /var/run/mongodb/mongos.pid
   if 3 restarts within 10 cycles then timeout
 
 check file mongos.log with path /var/log/mongodb/mongos.log
-  if match "MongoException$Network" then alert
-  if match "SocketException" then alert
+  if match "MongoException$Network" for 3 cycles then alert
+  if match "SocketException" for 3 cycles then alert
 
