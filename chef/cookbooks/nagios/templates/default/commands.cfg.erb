@@ -148,6 +148,11 @@ define command {
 }
 
 define command {
+  command_name    check_https_content
+  command_line    $USER1$/check_http -I $HOSTADDRESS$ -S -H $ARG1$ -p $ARG2$ -u $ARG3$ -s $ARG4$ -w 5 -c 10 -t 30
+}
+
+define command {
   command_name    check_http_port
   command_line    $USER1$/check_http -I $HOSTADDRESS$ -H $HOSTADDRESS$ -p $ARG1$
 }

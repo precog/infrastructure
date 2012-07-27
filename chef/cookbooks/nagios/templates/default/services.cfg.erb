@@ -219,7 +219,6 @@ define service {
     use                 default-service
     hostgroup_name          mongodb-replset-server
     service_description     Mongo Lock Percentage
-#    check_command           check_mongodb!lock!27018!5!10
     check_command           check_mongodb!lock!27018!10!20
 }
 
@@ -227,7 +226,6 @@ define service {
     use                 default-service
     hostgroup_name          mongodb-replset-server
     service_description     Mongo Flush Average
-#    check_command           check_mongodb!flushing!27018!500!1000
     check_command           check_mongodb!flushing!27018!1000!2000
 }
 
@@ -235,7 +233,6 @@ define service {
       use                     default-service
       hostgroup_name          mongodb-replset-server
       service_description     MongoDB Index Miss Ratio
-#      check_command           check_mongodb!index_miss_ratio!27018!.005!.01
       check_command           check_mongodb!index_miss_ratio!27018!.03!.06
 }
 
@@ -254,7 +251,7 @@ define service {
        active_checks_enabled  <%= enabled %>
        service_description    Quirrel <%= name %> simple math query
        action_url             /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
-       check_command          check_quirrel!<%= port %>!<%= token %>!"<%= name %> simple math"!"total := 2 + 1%3Btotal * 3"!200!400
+       check_command          check_quirrel!<%= port %>!<%= token %>!"<%= name %> simple math"!"total := 2 + 1%3Btotal * 3"!400!800
 }
 
 define service {
@@ -264,7 +261,7 @@ define service {
        active_checks_enabled  <%= enabled %>
        service_description    Quirrel <%= name %> mean value query
        action_url             /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
-       check_command          check_quirrel!<%= port %>!<%= token %>!"<%= name %> mean value"!"mean(//<%= prefix %>payments.amount)"!200!400 
+       check_command          check_quirrel!<%= port %>!<%= token %>!"<%= name %> mean value"!"mean(//<%= prefix %>payments.amount)"!400!800 
 }
 
 define service {
@@ -275,7 +272,44 @@ define service {
        active_checks_enabled  <%= enabled %>
        service_description    Quirrel <%= name %> complex query
        action_url             /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
-       check_command          check_quirrel!<%= port %>!<%= token %>!"<%= name %> complex"!"customers := //<%= prefix %>customers%3Borders := //<%= prefix %>orders%3BfractionForUser(%27userId) :=%3B  customers%27 := customers where customers.userId = %27userId%3B  orders%27 := orders where orders.userId = %27userId%3B  customers%27 ~ orders%27%3B  orders.total / customers.income%3BfractionForUser"!2000!5000
+       check_command          check_quirrel!<%= port %>!<%= token %>!"<%= name %> complex"!"customers := //<%= prefix %>customers%3Borders := //<%= prefix %>orders%3BfractionForUser(%27userId) :=%3B  customers%27 := customers where customers.userId = %27userId%3B  orders%27 := orders where orders.userId = %27userId%3B  customers%27 ~ orders%27%3B  orders.total / customers.income%3BfractionForUser"!5000!10000
 }
 
 <% } %>
+
+# Quirrel shard additional services
+define service {
+       use                 default-service
+       hostgroup_name      quirrel-shard
+       service_description qwebirc
+       check_command       check_https_content!api.precog.com!9090!/!Quirrel
+}
+
+define service {
+    use                 default-service
+    hostgroup_name      quirrel-shard
+    service_description Ingest health
+    check_command	check_http_content!api.precog.com!30060!/blueeyes/services/ingest/v1/health!uptimeSeconds
+}
+
+define service {
+    use                 default-service
+    hostgroup_name      quirrel-shard
+    service_description Zookeeper
+    check_command	check_tcp!2181
+}
+
+define service {
+    use                 default-service
+    hostgroup_name      quirrel-shard
+    service_description Kafka Local
+    check_command	check_tcp!9082
+}
+
+define service {
+    use                 default-service
+    hostgroup_name      quirrel-shard
+    service_description Kafka Global
+    check_command	check_tcp!9092
+}
+
