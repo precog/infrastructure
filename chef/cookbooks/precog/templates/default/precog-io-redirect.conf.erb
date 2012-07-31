@@ -33,5 +33,6 @@
   RewriteEngine On
   RewriteLog <%= node[:apache][:log_dir] %>/<%= @application_name %>-rewrite.log
   RewriteLogLevel 0
+  RewriteCond %{REQUEST_URI} !^/google48bb.*  
   RewriteRule ^/(.*)$        http://precog.com/$1 [L,R=301]
 </VirtualHost>
