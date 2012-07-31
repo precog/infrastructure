@@ -49,7 +49,9 @@ frontend http
         # IDE requests go to apache for servicing
         acl ide_req  hdr_dom(host)    -i ide
         acl devide_req hdr_dom(host)  -i devide
-        use_backend localapache       if ide_req or devide_req
+        acl lab_req  hdr_dom(host)    -i lab
+        acl devlab_req hdr_dom(host)  -i devlab
+        use_backend localapache       if ide_req or devide_req or lab_req or devlab_req
 
 	default_backend service_query
 

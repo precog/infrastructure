@@ -24,7 +24,7 @@ end
 
 web_app "ide" do
   server_name node['fqdn']
-  server_aliases ["ide.precog.com", "devide.precog.com", "api.precog.com", "devapi.precog.com"]
+  server_aliases ["lab.precog.com", "devlab.precog.com", "ide.precog.com", "devide.precog.com", "api.precog.com", "devapi.precog.com"]
   docroot "#{node[:precog][:ide][:root]}/"
   template "ide.conf.erb"
 end
