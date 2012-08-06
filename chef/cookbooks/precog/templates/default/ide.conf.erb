@@ -40,11 +40,13 @@
   RewriteLog <%= node[:apache][:log_dir] %>/<%= @application_name %>-rewrite.log
   RewriteLogLevel 0
 
-  RewriteCond %{HTTP_HOST} ^devide.precog.com$
-  RewriteRule ^/(.*)$        https://devlab.precog.com/$1 [L,R=301]
+  RewriteCond %{HTTP_HOST} ^devide.precog.com$ [OR]
+  RewriteCond %{HTTP_HOST} ^devlab.precog.com$
+  RewriteRule ^/(.*)$        https://devlabcoat.precog.com/$1 [L,R=301]
 
-  RewriteCond %{HTTP_HOST} ^ide.precog.com$
-  RewriteRule ^/(.*)$        https://lab.precog.com/$1 [L,R=301]
+  RewriteCond %{HTTP_HOST} ^ide.precog.com$ [OR]
+  RewriteCond %{HTTP_HOST} ^lab.precog.com$
+  RewriteRule ^/(.*)$        https://labcoat.precog.com/$1 [L,R=301]
 
 #  RewriteLog <%= node[:apache][:log_dir] %>/<%= @application_name %>-rewrite.log
 #  RewriteLogLevel 0
