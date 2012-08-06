@@ -43,8 +43,11 @@ frontend http
         acl has_ssl_header hdr_cnt(reportgriddecrypter) gt 0
         block if has_ssl_header !LOCALHOST
 
-	acl VFS_PATH path_beg "/v1/vfs"
+	acl VFS_PATH  path_beg "/v1/vfs"
+        acl fake_post url_reg  -i method=POST
+ 
 	use_backend service_ingest if METH_POST VFS_PATH
+	use_backend service_ingest if fake_post VFS_PATH
 
         # IDE requests go to apache for servicing
         acl ide_req  hdr_dom(host)    -i ide
