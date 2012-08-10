@@ -178,6 +178,21 @@ define service {
     check_command	check_rg_service!/blueeyes/services/billing/v1/health!response!500!1000
 }
 
+# devci checks
+define service {
+    use                 default-service
+    hostgroup_name	nexus
+    service_description	Nexus endpoint
+    check_command	check_http_content!nexus.reportgrid.com!80!/index.html!200
+}
+
+define service {
+    use                 default-service
+    hostgroup_name	nexus
+    service_description	Jenkins endpoint
+    check_command	check_http_content_expect!devci01.reportgrid.com!8080!/securityRealm/commenceLogin!302
+}
+
 # devops checks
 define service {
     use                 default-service
