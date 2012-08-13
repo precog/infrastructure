@@ -6,7 +6,7 @@ description 'The default/base role for all nodes (i.e. all other roles are assum
 #         "recipe[jazor]"
 
 run_list "recipe[ubuntu_user]", "recipe[sudo]", "recipe[rc-local]", "recipe[hosts]", "recipe[at]", "recipe[ruby]",
-         "recipe[git]", "recipe[zip]", "recipe[monit]",
+         "recipe[git]", "recipe[zip]", "recipe[monit]", "recipe[tree]",
          "recipe[zsh]", "recipe[pam]", "recipe[openssh::client]", "recipe[openssh::server]",
          "recipe[tmux]", "recipe[iftop]", "recipe[nethogs]", "recipe[sysstat]",
          "recipe[python]", "recipe[monit]", "recipe[ec2::route53]", "recipe[postfix]", "recipe[rsyslog]",
