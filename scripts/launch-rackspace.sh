@@ -1,5 +1,7 @@
 #!/bin/zsh
 
+MONGOVERSION=2.1.2
+
 if (( $# < 3 )); then
     echo "Usage: `basename $0` <ip> <password> <desired fqdn> [<additional chef args>]"
     exit
@@ -19,8 +21,8 @@ shift 3
 
 echo "Copying mongo"
 
-sshpass -p $PASS scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ~/Downloads/mongodb_2.1.0_amd64.deb root@${IP}:
-sshpass -p $PASS ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@${IP} "sudo aptitude -y install xulrunner-dev && sudo dpkg -i mongodb_2.1.0_amd64.deb && sudo stop mongodb"
+sshpass -p $PASS scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ~/Downloads/mongodb_${MONGOVERSION}_amd64.deb root@${IP}:
+sshpass -p $PASS ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@${IP} "sudo aptitude -y install xulrunner-dev && sudo dpkg -i mongodb_${MONGOVERSION}_amd64.deb && sudo stop mongodb"
 
 echo "Launching instance at $IP"
 
