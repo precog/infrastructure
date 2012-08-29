@@ -3,11 +3,11 @@ check system load
   if memory usage > 99% for 10 times within 15 cycles then alert
 
 check filesystem rootfs with path /dev/root
-  if space usage > 80% for 5 times within 15 cycles then alert
+  if space usage > 85% for 5 times within 15 cycles then alert
 
 <% @node[:monit][:extra_filesystems].each { |fs| %>
 check filesystem fs-<%= fs %> with path <%= fs %>
-  if space usage > 80% for 5 times within 15 cycles then alert
+  if space usage > 85% for 5 times within 15 cycles then alert
 
 <% } %>
 check process atd with pidfile /var/run/atd.pid

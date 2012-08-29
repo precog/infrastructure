@@ -1,7 +1,7 @@
 check filesystem mongodb_data with path <%= @node[:mongodb][:data_mount_point] %>
   start program  = "/bin/mount <%= @node[:mongodb][:data_mount_point] %>"
   stop program  = "/bin/umount <%= @node[:mongodb][:data_mount_point] %>"
-  if space usage > 80% for 5 times within 15 cycles then alert
+  if space usage > 85% for 5 times within 15 cycles then alert
   if space usage > 99% then stop
   group mongodb
 
