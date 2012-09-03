@@ -328,3 +328,31 @@ define service {
     check_command	check_tcp!9092
 }
 
+# API content checks
+define service {
+    use                 default-service
+    hostgroup_name      reportgrid_api
+    service_description Precog JS
+    check_command       check_http_content!api.reportgrid.com!80!/js/precog.js!Precog
+}
+
+define service {
+    use                 default-service
+    hostgroup_name      reportgrid_api
+    service_description Reportgrid Core JS
+    check_command       check_http_content!api.reportgrid.com!80!/js/reportgrid-core.js!ReportGrid
+}
+
+define service {
+    use                 default-service
+    hostgroup_name      reportgrid_api
+    service_description Reportgrid Charts JS
+    check_command       check_http_content!api.reportgrid.com!80!/js/reportgrid-charts.js!function
+}
+
+define service {
+    use                 default-service
+    hostgroup_name      reportgrid_api
+    service_description Reportgrid Charts JS
+    check_command       check_http_content!api.reportgrid.com!80!/css/rg-charts.css!rg-colors-charts
+}

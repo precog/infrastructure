@@ -4,11 +4,15 @@
 define hostgroup {
   hostgroup_name all
   alias all
-  members ^.*$
+  members ^dev.*$,^appserver.*$,^mongo.*$,^qclus.*$
 }
 
 define hostgroup {
   hostgroup_name default
+}
+
+define hostgroup {
+  hostgroup_name reportgrid_api
 }
 
 <% @roles.each do |role| %>
