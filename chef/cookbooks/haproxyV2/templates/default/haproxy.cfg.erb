@@ -43,7 +43,7 @@ frontend http
         acl has_ssl_header hdr_cnt(reportgriddecrypter) gt 0
         block if has_ssl_header !LOCALHOST
 
-	acl VFS_PATH  path_beg "/v1/vfs"
+	acl VFS_PATH  path_beg /v1/vfs
         acl fake_post url_reg  -i method=POST
  
 	use_backend service_ingest if METH_POST VFS_PATH
