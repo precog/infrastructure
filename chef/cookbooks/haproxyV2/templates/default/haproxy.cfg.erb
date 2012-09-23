@@ -43,15 +43,14 @@ frontend http
         acl has_ssl_header hdr_cnt(reportgriddecrypter) gt 0
         block if has_ssl_header !LOCALHOST
 
-	acl VFS_PATH    path_beg /v1/vfs
-        acl fake_post   url_reg  -i method=POST
-        acl fake_delete url_reg  -i method=DELETE
-        acl METH_DELETE method DELETE
- 
-	use_backend service_ingest if METH_POST VFS_PATH
-	use_backend service_ingest if fake_post VFS_PATH
-	use_backend service_ingest if METH_DELETE VFS_PATH
-	use_backend service_ingest if fake_delete VFS_PATH
+        acl INGEST_PATH path_beg /ingest/v1
+        use_backend service_ingest    if INGEST_PATH
+
+        acl SECURITY_PATH path_beg /security/v1
+        use_backend service_security  if SECURITY_PATH
+
+        acl ACCOUNTS_PATH path_beg /accounts/v1
+        use_backend service_accounts  if ACCOUNTS_PATH
 
         # IDE requests go to apache for servicing
         acl ide_req  hdr_dom(host)    -i ide
@@ -65,12 +64,25 @@ frontend http
 	default_backend service_query
 
 backend service_ingest
-	reqrep ^([^\ ]*)\ /v1/(.*) \1\ /\2
+	reqrep ^([^\ ]*)\ /ingest/v1/(.*) \1\ /\2
 	option httpchk GET /blueeyes/services/ingest/v1/health
 	server local_ingest localhost:30060 check
 
+backend service_security
+	reqrep ^([^\ ]*)\ /security/v1/(.*) \1\ /\2
+	option httpchk GET /blueeyes/services/security/v1/health
+	server local_security localhost:30062 check
+
+backend service_accounts
+	reqrep ^([^\ ]*)\ /accounts/v1/(.*) \1\ /\2
+	option httpchk GET /blueeyes/services/auth/v1/health
+	server local_accounts localhost:30064 check
+
+
 backend service_query
-	reqrep ^([^\ ]*)\ /v1/(.*) \1\ /\2
+        # Query handles both queries and metadata now
+	reqrep ^([^\ ]*)\ /analytics/v1/(.*) \1\ /analytics/\2
+	reqrep ^([^\ ]*)\ /meta/v1/(.*) \1\ /meta/\2
 	rspadd Access-Control-Allow-Origin:\ *
 	option httpchk GET /blueeyes/services/quirrel/v1/health
 	server local_shard01 localhost:30070 check
