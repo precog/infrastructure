@@ -252,9 +252,12 @@ define service {
 }
 
 # Quirrel checks
-<% shard_config = [["shard-demo", 30084, "1BF2FA96-8817-4C98-8BCB-BEC6E86CB3C2", "", 1], 
-                   ["shard-play", 30080, "BDF2FEC5-2D2F-4473-955C-2B1BAD4F1EC6", "example/", 1],
-                   ["shard-beta", 30082, "BDF2FEC5-2D2F-4473-955C-2B1BAD4F1EC6", "example/", 1]] # [name, port, token, path prefix, enable] %>
+<% shard_config = [["shard-demo1", 30150, "5CDA81E8-9817-438A-A340-F34E578E86F8", "", 1], 
+                   ["shard-demo2", 30152, "5CDA81E8-9817-438A-A340-F34E578E86F8", "", 1],
+                   ["shard-demo3", 30154, "5CDA81E8-9817-438A-A340-F34E578E86F8", "", 1],
+                   ["shard-demo4", 30156, "5CDA81E8-9817-438A-A340-F34E578E86F8", "", 1],
+                   #["shard-play", 30080, "BDF2FEC5-2D2F-4473-955C-2B1BAD4F1EC6", "example/", 1],
+                   ["shard-beta", 30070, "88893651-23BA-4A3E-A8CD-FCADBE1F0A18", "example/", 1]] # [name, port, token, path prefix, enable] %>
 
 <% shard_config.each { |name,port,token,prefix,enabled| %>
 
@@ -276,7 +279,7 @@ define service {
        active_checks_enabled  <%= enabled %>
        service_description    Quirrel <%= name %> mean value query
        action_url             /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
-       check_command          check_quirrel!<%= port %>!<%= token %>!"<%= name %> mean value"!"mean(//<%= prefix %>payments.amount)"!400!800 
+       check_command          check_quirrel!<%= port %>!<%= token %>!"<%= name %> mean value"!"mean(//<%= prefix %>clicks.product.price)"!1000!2000 
 }
 
 define service {
@@ -287,7 +290,7 @@ define service {
        active_checks_enabled  <%= enabled %>
        service_description    Quirrel <%= name %> complex query
        action_url             /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
-       check_command          check_quirrel!<%= port %>!<%= token %>!"<%= name %> complex"!"customers := //<%= prefix %>customers%3Borders := //<%= prefix %>orders%3BfractionForUser(%27userId) :=%3B  customers%27 := customers where customers.userId = %27userId%3B  orders%27 := orders where orders.userId = %27userId%3B  customers%27 ~ orders%27%3B  orders.total / customers.income%3BfractionForUser"!5000!10000
+       check_command          check_quirrel!<%= port %>!<%= token %>!"<%= name %> complex"!"solve %27price, %27gender clicks := //clicks tally := count(clicks where clicks.customer.gender = %27gender & clicks.product.price = %27price) { price : %27price, gender: %27gender, tally: tally }"!20000!30000
 }
 
 <% } %>
