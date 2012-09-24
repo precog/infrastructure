@@ -75,7 +75,7 @@ backend service_security
 
 backend service_accounts
 	reqrep ^([^\ ]*)\ /accounts/v1/(.*) \1\ /\2
-	option httpchk GET /blueeyes/services/auth/v1/health
+	option httpchk GET /blueeyes/services/accounts/v1/health
 	server local_accounts localhost:30064 check
 
 
