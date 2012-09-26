@@ -8,7 +8,7 @@
 #
 include_recipe "ruby"
 include_recipe "postfix"
-include_recipe "reportgrid::baseenv"
+#include_recipe "reportgrid::baseenv"
 
 #gem_package "mail" do
 #  action :install
