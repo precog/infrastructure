@@ -7,7 +7,7 @@
 # All rights reserved - Do Not Redistribute
 #
 include_recipe "java"
-include_recipe "reportgrid::baseenv"
+#include_recipe "reportgrid::baseenv"
 
 jar_file = "deployment-assembly-0.2.0.jar"
 
