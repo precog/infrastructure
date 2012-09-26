@@ -256,7 +256,6 @@ define service {
                    ["shard-demo2", 30152, "5CDA81E8-9817-438A-A340-F34E578E86F8", "", 1],
                    ["shard-demo3", 30154, "5CDA81E8-9817-438A-A340-F34E578E86F8", "", 1],
                    ["shard-demo4", 30156, "5CDA81E8-9817-438A-A340-F34E578E86F8", "", 1],
-                   #["shard-play", 30080, "BDF2FEC5-2D2F-4473-955C-2B1BAD4F1EC6", "example/", 1],
                    ["shard-beta", 30070, "88893651-23BA-4A3E-A8CD-FCADBE1F0A18", "example/", 1]] # [name, port, token, path prefix, enable] %>
 
 <% shard_config.each { |name,port,token,prefix,enabled| %>
@@ -308,6 +307,20 @@ define service {
     hostgroup_name      quirrel-shard
     service_description Ingest health
     check_command	check_http_content!api.precog.com!30060!/blueeyes/services/ingest/v1/health!uptimeSeconds
+}
+
+define service {
+    use                 default-service
+    hostgroup_name      quirrel-shard
+    service_description Security health
+    check_command	check_http_content!api.precog.com!30062!/blueeyes/services/security/v1/health!uptimeSeconds
+}
+
+define service {
+    use                 default-service
+    hostgroup_name      quirrel-shard
+    service_description Accounts health
+    check_command	check_http_content!api.precog.com!30064!/blueeyes/services/accounts/v1/health!uptimeSeconds
 }
 
 define service {
