@@ -1,5 +1,5 @@
 <% @params[:server_aliases] ||= [] %>
-<VirtualHost *:20000>
+<VirtualHost *:80>
   ServerName <%= @params[:server_name] %>
   ServerAlias <% @params[:server_aliases].each do |a| %><%= "#{a}" %> <% end %>
   DocumentRoot <%= @params[:docroot] %>
@@ -7,7 +7,7 @@
   
   <Directory <%= @params[:docroot] %>>
     Options FollowSymLinks
-    AllowOverride Limit FileInfo
+    AllowOverride Limit FileInfo Options
     Order allow,deny
     Allow from all
   </Directory>
@@ -15,6 +15,8 @@
   <Directory />
     Options FollowSymLinks
     AllowOverride None
+    Order Deny,Allow
+    Deny from All
   </Directory>
 
   <Location /server-status>
@@ -29,6 +31,19 @@
   ErrorLog <%= node[:apache][:log_dir] %>/<%= @params[:name] %>-error.log
   CustomLog <%= node[:apache][:log_dir] %>/<%= @params[:name] %>-access.log combined
 
+  # If the system maintenance page exists, we're in maintenance mode
+  RewriteCond %{DOCUMENT_ROOT}/system/maintenance.html -f
+  RewriteCond %{SCRIPT_FILENAME} !maintenance.html
+  RewriteRule ^.*$ /system/maintenance.html [L]
+
+  # Rewrite all requests for the original reportgrid site to the new link
+  RewriteCond %{HTTP_HOST} =reportgrid.com [NC,OR]
+  RewriteCond %{HTTP_HOST} =www.reportgrid.com [NC]
+  RewriteRule ^.* http://www.precog.com/products/reportgrid [R,L]
+  
+  # Redirect registration result
+  RewriteRule ^/registration/profile http://www.precog.com/account [R,L]
+
 #  RewriteEngine On
 #  RewriteLog <%= node[:apache][:log_dir] %>/<%= @application_name %>-rewrite.log
 #  RewriteLogLevel 0
@@ -37,8 +52,4 @@
 #  RewriteCond %{HTTP_HOST}   !^<%= @params[:server_name] %> [NC]
 #  RewriteCond %{HTTP_HOST}   !^$
 #  RewriteRule ^/(.*)$        http://<%= @params[:server_name] %>/$1 [L,R=301]
-#
-#  RewriteCond %{DOCUMENT_ROOT}/system/maintenance.html -f
-#  RewriteCond %{SCRIPT_FILENAME} !maintenance.html
-#  RewriteRule ^.*$ /system/maintenance.html [L]
 </VirtualHost>
