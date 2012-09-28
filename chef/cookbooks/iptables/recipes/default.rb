@@ -10,14 +10,20 @@ include_recipe "rc-local"
 
 execute "iptables.sh" do
   command "/etc/rc.local.d/iptables.sh"
-  action :nothing
+  action :run
   only_if "test -f /etc/rc.local.d/iptables.sh"
+end
+
+execute "iptables-local.sh" do
+  command "/etc/rc.local.d/iptables-local.sh"
+  action :run
+  only_if "test -f /etc/rc.local.d/iptables-local.sh"
 end
 
 template "/etc/rc.local.d/iptables.sh" do
   variables(:rgservers => search(:node, "*:*"))
   mode "755"
-  notifies :run, resources(:execute => "iptables.sh")
+  notifies :run, resources(:execute => "iptables.sh", :execute => "iptables-local.sh")
 end
 
   
