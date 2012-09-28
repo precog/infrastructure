@@ -19,10 +19,12 @@ shift 3
 #    IP=`dig +short $IP`
 #fi
 
-echo "Copying mongo"
-
-sshpass -p $PASS scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ~/Downloads/mongodb_${MONGOVERSION}_amd64.deb root@${IP}:
-sshpass -p $PASS ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@${IP} "sudo aptitude -y install xulrunner-dev && sudo dpkg -i mongodb_${MONGOVERSION}_amd64.deb && sudo stop mongodb"
+if echo "$@" | grep -i mongo; then
+    echo "Copying mongo"
+    
+    sshpass -p $PASS scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ~/Downloads/mongodb_${MONGOVERSION}_amd64.deb root@${IP}:
+    sshpass -p $PASS ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@${IP} "sudo aptitude -y install xulrunner-dev && sudo dpkg -i mongodb_${MONGOVERSION}_amd64.deb && sudo stop mongodb"
+fi
 
 echo "Launching instance at $IP"
 
