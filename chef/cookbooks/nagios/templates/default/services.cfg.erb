@@ -268,7 +268,7 @@ define service {
        active_checks_enabled  <%= enabled %>
        service_description    Quirrel <%= name %> simple math query
        action_url             /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
-       check_command          check_quirrel!<%= port %>!<%= token %>!"<%= name %> simple math"!"total := 2 + 1%3Btotal * 3"!400!800
+       check_command          check_quirrel!<%= port %>!<%= token %>!"<%= name %> simple math"!"total := 2 + 1%3Btotal * 3"!1000!2000
 }
 
 define service {
@@ -278,7 +278,7 @@ define service {
        active_checks_enabled  <%= enabled %>
        service_description    Quirrel <%= name %> mean value query
        action_url             /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
-       check_command          check_quirrel!<%= port %>!<%= token %>!"<%= name %> mean value"!"mean(//<%= prefix %>clicks.product.price)"!1000!2000 
+       check_command          check_quirrel!<%= port %>!<%= token %>!"<%= name %> mean value"!"mean(//<%= prefix %>clicks.product.price)"!5000!10000 
 }
 
 define service {
@@ -289,7 +289,7 @@ define service {
        active_checks_enabled  <%= enabled %>
        service_description    Quirrel <%= name %> complex query
        action_url             /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
-       check_command          check_quirrel!<%= port %>!<%= token %>!"<%= name %> complex"!"solve %27price, %27gender clicks := //clicks tally := count(clicks where clicks.customer.gender = %27gender & clicks.product.price = %27price) { price : %27price, gender: %27gender, tally: tally }"!20000!30000
+       check_command          check_quirrel!<%= port %>!<%= token %>!"<%= name %> complex"!"solve %27price, %27gender clicks := //clicks tally := count(clicks where clicks.customer.gender = %27gender & clicks.product.price = %27price) { price : %27price, gender: %27gender, tally: tally }"!40000!60000
 }
 
 <% } %>
@@ -371,4 +371,19 @@ define service {
     hostgroup_name      reportgrid_api
     service_description Reportgrid Charts JS
     check_command       check_http_content!api.reportgrid.com!80!/css/rg-charts.css!rg-colors-charts
+}
+
+# Monitor the web servers
+define service {
+    use                 default-service
+    hostgroup_name      precogwebsite
+    service_description Precog Website
+    check_command       check_http_content!www.precog.com!80!/!ReportGrid
+}
+
+define service {
+    use                 default-service
+    hostgroup_name      precogwebsite
+    service_description Precog Website Events
+    check_command       check_http_content!www.precog.com!80!/about/events!Event
 }
