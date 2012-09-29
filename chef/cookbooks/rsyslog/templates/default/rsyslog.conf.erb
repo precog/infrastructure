@@ -14,7 +14,9 @@ $ModLoad imuxsock # provides support for local system logging
 $ModLoad imklog   # provides kernel logging support (previously done by rklogd)
 #$ModLoad immark  # provides --MARK-- message capability
 
+<% if node[:platform] != "ubuntu" or node[:platform_version] != "12.04" then %>
 $KLogPath /var/run/rsyslog/kmsg
+<% end %>
 
 ###########################
 #### GLOBAL DIRECTIVES ####
