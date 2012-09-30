@@ -23,6 +23,7 @@ template "client.rb" do
   source "client.rb.erb"
   path "/etc/chef/client.rb"
   mode "0644"
+  notifies :restart, resources(:service => "chef-client")
 end
 
 execute "clear-validation.pem" do

@@ -79,3 +79,5 @@ signing_ca_user "chef"
 
 Mixlib::Log::Formatter.show_time = true
 
+# Force chef-client to perform runs in separate processes to limit memory growth
+client_fork         true
