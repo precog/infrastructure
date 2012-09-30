@@ -53,7 +53,7 @@ end
 
 desc "Reload Analytics-v1"
 task :analytics_restart_v1, :roles => :appserver, :max_hosts => 1 do
-  run "#{sudo} restart mongos && sleep 5 && #{sudo} restart analytics-v1"
+  run "#{sudo} restart mongos && sleep 30 && #{sudo} restart analytics-v1"
 end
 
 desc "Reload Billing-v1"
