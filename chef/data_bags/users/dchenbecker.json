@@ -4,7 +4,7 @@
   "htpasswd": "{SHA}R7VIUMDGzCXLJutl4CJHzKHCvvE=",
   "openid": "http://dchenbecker.myopenid.com/",
   "nagios": {
-    "pager": "derek-cell@reportgrid.com",
-    "email": "derek-cell@reportgrid.com"
+    "pager": "derek-cell@chen-becker.org",
+    "email": "derek-cell@chen-becker.org"
   }
 }
