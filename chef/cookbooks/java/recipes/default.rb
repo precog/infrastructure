@@ -51,7 +51,11 @@
 
 # Use openjdk to keep things simple
 if platform?("ubuntu","debian")
-  package "default-jdk"
+  if node[:platform_version] == "12.04" then
+    package "openjdk-7-jdk"
+  else
+    package "default-jdk"
+  end
 
   package "sun-java6-jre" do
     action :purge
@@ -63,10 +67,11 @@ if platform?("ubuntu","debian")
     only_if "dpkg -l '*sun-java6-jdk*' | egrep '^ii.*sun-java6-jdk.*'"
   end
 elsif platform?("redhat","centos")
-  package "java-1.6.0-openjdk"
-
-  package "jdk" do
-    action :purge
-    only_if "yum list jdk"
-  end
+  # We'll just handle this manually on CentOS for now
+  #package "java-1.6.0-openjdk"
+  #
+  #package "jdk" do
+  #  action :purge
+  #  only_if "yum list jdk"
+  #end
 end
