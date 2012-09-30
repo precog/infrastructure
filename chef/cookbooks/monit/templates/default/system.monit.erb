@@ -2,7 +2,7 @@ check system load
   if loadavg (15min) > <%= @node[:cpu][:total] * 0.9 %> for 10 times within 15 cycles then alert
   if memory usage > 99% for 10 times within 15 cycles then alert
 
-check filesystem rootfs with path /dev/root
+check filesystem rootfs with path /
   if space usage > 85% for 5 times within 15 cycles then alert
 
 <% @node[:monit][:extra_filesystems].each { |fs| %>
