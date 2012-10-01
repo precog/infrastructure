@@ -108,7 +108,7 @@ cron "mongodb-health" do
   user 'mongodb'
 end
 
-if node[:hostname].match(/[0-9]+/)[0].to_i % 3 == 2
+if node[:hostname].match(/[0-9]+/) != nil and node[:hostname].match(/[0-9]+/)[0].to_i % 3 == 2
   directory "mongodb_backups" do
     path "#{node[:ec2][:ephemeral_backups]}/mongodb/"
     owner 'mongodb'
