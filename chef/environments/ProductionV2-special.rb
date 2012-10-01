@@ -18,12 +18,12 @@ override_attributes ({
       }
     },
     "visualization" => {
-      "s3url" => "s3://ops.reportgrid.com/viz-prodv2-special/"
+      "s3url" => "s3://ops.reportgrid.com/viz-prod/"
     }
   },
   "precog" => {
     "ide" => {
-      "s3url" => "s3://ops.reportgrid.com/ide-prodv2-special/"
+      "s3url" => "s3://ops.reportgrid.com/ide-prod/"
     }
   },
   "deployer" => {
