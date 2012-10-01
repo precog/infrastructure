@@ -1,0 +1,12 @@
+# zookeeper
+#
+# Config management for Kafka/etc
+
+description	"ZooKeeper"
+
+start on filesystem
+stop on runlevel S
+
+respawn
+
+exec /usr/share/zookeeper/bin/zkServer.sh start-foreground /etc/precog/zookeeper.cfg
