@@ -7,13 +7,14 @@
 # All rights reserved - Do Not Redistribute
 #
 include_recipe "java"
-#include_recipe "reportgrid::baseenv"
+include_recipe "reportgrid::baseenv"
 
 jar_file = "deployment-assembly-0.2.0.jar"
 
 directory "/opt/reportgrid/deployservice" do
   owner "reportgrid"
   mode "755"
+  recursive true
 end
 
 template "/etc/reportgrid/deployer-v1.conf" do
