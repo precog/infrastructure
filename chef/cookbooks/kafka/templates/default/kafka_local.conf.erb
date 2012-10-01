@@ -1,0 +1,14 @@
+# kafka
+#
+# Queueing system
+
+description	"Kafka"
+
+start on filesystem
+stop on runlevel S
+
+respawn
+
+script
+sudo -u precog /opt/precog/kafka/bin/kafka-server-start.sh /etc/precog/kafka-local-log4j.properties /etc/precog/precog.local-kafka.properties
+end script
