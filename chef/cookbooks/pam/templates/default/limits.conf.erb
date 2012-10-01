@@ -56,5 +56,8 @@
 # Increase file descriptor limit
 root            -       nofile           <%= @node[:pam][:nofile] %>
 *               -       nofile           <%= @node[:pam][:nofile] %>
+root            -       nproc            <%= @node[:pam][:nproc] %>
+*               -       nproc            <%= @node[:pam][:nproc] %>
+
 
 # End of file

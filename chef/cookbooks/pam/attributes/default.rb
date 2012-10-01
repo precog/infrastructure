@@ -1,1 +1,2 @@
-default[:pam][:nofile] = 65535
+default[:pam][:nofile] = 100000
+default[:pam][:nproc] = 20000
