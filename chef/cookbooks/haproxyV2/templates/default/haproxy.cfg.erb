@@ -73,16 +73,19 @@ frontend http
 backend service_ingest
 	reqrep ^([^\ ]*)\ /ingest/v1/(.*) \1\ /\2
 	option httpchk GET /blueeyes/services/ingest/v1/health
+        rspadd Access-Control-Allow-Origin:\ *
 	server local_ingest localhost:30060 check
 
 backend service_security
 	reqrep ^([^\ ]*)\ /security/v1/(.*) \1\ /\2
 	option httpchk GET /blueeyes/services/security/v1/health
+        rspadd Access-Control-Allow-Origin:\ *
 	server local_security localhost:30062 check
 
 backend service_accounts
 	reqrep ^([^\ ]*)\ /accounts/v1/(.*) \1\ /\2
 	option httpchk GET /blueeyes/services/accounts/v1/health
+        rspadd Access-Control-Allow-Origin:\ *
 	server local_accounts localhost:30064 check
 
 backend service_query
@@ -90,6 +93,7 @@ backend service_query
 	reqrep ^([^\ ]*)\ /analytics/v1/(.*) \1\ /analytics/\2
 	reqrep ^([^\ ]*)\ /meta/v1/(.*) \1\ /meta/\2
 	option httpchk GET /blueeyes/services/quirrel/v1/health
+        rspadd Access-Control-Allow-Origin:\ *
 	server local_shard01 localhost:30070 check
 
 backend localapache
