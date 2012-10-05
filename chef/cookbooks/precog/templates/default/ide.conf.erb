@@ -13,7 +13,13 @@
 
     Header set Access-Control-Allow-Origin *
     Header set Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, X-File-Name, X-File-Size, X-File-Type, X-Precog-Path, X-Precog-Service, X-Precog-Token, X-Precog-Uuid, Accept"
-    Header set Access-Control-Allow-Method *
+    Header set Access-Control-Allow-Methods GET
+    Header append Access-Control-Allow-Methods HEAD
+    Header append Access-Control-Allow-Methods POST
+    Header append Access-Control-Allow-Methods OPTIONS
+    Header append Access-Control-Allow-Methods TRACE
+    Header append Access-Control-Allow-Methods PUT
+    Header append Access-Control-Allow-Methods DELETE
   </Directory>
 
   # Make legacy URLs work still
