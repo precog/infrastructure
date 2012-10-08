@@ -6,7 +6,7 @@
 #
 # All rights reserved - Do Not Redistribute
 #
-include_recipe "apache2"
+include_recipe "precog::certs"
 # These enable the relevant modules
 include_recipe "apache2::mod_php5"
 
