@@ -7,7 +7,7 @@
 # All rights reserved - Do Not Redistribute
 #
 package "mailx" do
-  if node['platform'] != 'centos' then
+  if platform?("ubuntu", "debian") then
     package_name "bsd-mailx"
   end
 end
