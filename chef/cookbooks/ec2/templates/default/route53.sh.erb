@@ -9,6 +9,15 @@ if FileTest.exists? "/usr/bin/route53" then
   route53bin = "/usr/bin/route53"
 elsif FileTest.exists? "/var/lib/gems/1.8/bin/route53" then
   route53bin = "/var/lib/gems/1.8/bin/route53"
+elsif FileTest.exists? "/usr/local/bin/route53" then
+  route53bin = "/usr/local/bin/route53"
+end
+
+# Use the proper domain for this host
+if /precog/ =~ node[:fqdn] then
+  r53domain = "precog.com."
+else
+  r53domain = "reportgrid.com."
 end
 %>
 
@@ -29,9 +38,9 @@ PUBHOST=`hostname -i`
 <% end %>
 
 # Handle the primary names
-if ! <%= route53bin %> --file /root/.route53 -l reportgrid.com | egrep "^`hostname -f`" > /dev/null || <%= route53bin %> --file /root/.route53 -l reportgrid.com. | egrep "^`hostname -f`" | grep -v ${PUBHOST} > /dev/null ; then
-    <%= route53bin %> --file /root/.route53 --zone reportgrid.com. --remove --name <%= node[:fqdn] + '.' %> --type <%= recordType %> | tee -a <%= node[:ec2][:route53][:log] %>
-    <%= route53bin %> --file /root/.route53 --zone reportgrid.com. --create --name <%= node[:fqdn] + '.' %> --type <%= recordType %> --ttl 60 --values "${PUBHOST}" | tee -a <%= node[:ec2][:route53][:log] %>
+if ! <%= route53bin %> --file /root/.route53 -l reportgrid.com | egrep "^`hostname -f`" > /dev/null || <%= route53bin %> --file /root/.route53 -l <%= r53domain %> | egrep "^`hostname -f`" | grep -v ${PUBHOST} > /dev/null ; then
+    <%= route53bin %> --file /root/.route53 --zone <%= r53domain %> --remove --name <%= node[:fqdn] + '.' %> --type <%= recordType %> | tee -a <%= node[:ec2][:route53][:log] %>
+    <%= route53bin %> --file /root/.route53 --zone <%= r53domain %> --create --name <%= node[:fqdn] + '.' %> --type <%= recordType %> --ttl 60 --values "${PUBHOST}" | tee -a <%= node[:ec2][:route53][:log] %>
 else
     echo "  Primary <%= node[:fqdn] %> points correctly to ${PUBHOST}" | tee -a <%= node[:ec2][:route53][:log] %>
 fi
@@ -39,9 +48,9 @@ fi
 
 <% node[:ec2][:route53][:aliases].each do |dnsalias| %>
 # Handle alias <%= dnsalias %> to <%= node[:fqdn] %>
-if ! <%= route53bin %> --file /root/.route53 -l reportgrid.com | egrep "^<%= dnsalias %>" > /dev/null || <%= route53bin %> --file /root/.route53 -l reportgrid.com. | egrep "^<%= dnsalias %>" | grep -v <%= node[:fqdn] %> > /dev/null ; then
-    <%= route53bin %> --file /root/.route53 --zone reportgrid.com. --remove --name <%= dnsalias + '.' %> --type CNAME | tee -a <%= node[:ec2][:route53][:log] %>
-    <%= route53bin %> --file /root/.route53 --zone reportgrid.com. --create --name <%= dnsalias + '.' %> --type CNAME --ttl 60 --values <%= node[:fqdn] + '.' %> | tee -a <%= node[:ec2][:route53][:log] %>
+if ! <%= route53bin %> --file /root/.route53 -l reportgrid.com | egrep "^<%= dnsalias %>" > /dev/null || <%= route53bin %> --file /root/.route53 -l <%= r53domain %> | egrep "^<%= dnsalias %>" | grep -v <%= node[:fqdn] %> > /dev/null ; then
+    <%= route53bin %> --file /root/.route53 --zone <%= r53domain %> --remove --name <%= dnsalias + '.' %> --type CNAME | tee -a <%= node[:ec2][:route53][:log] %>
+    <%= route53bin %> --file /root/.route53 --zone <%= r53domain %> --create --name <%= dnsalias + '.' %> --type CNAME --ttl 60 --values <%= node[:fqdn] + '.' %> | tee -a <%= node[:ec2][:route53][:log] %>
 else
     echo "  Alias <%= dnsalias %> is pointed correctly to <%= node[:fqdn] %>" | tee -a <%= node[:ec2][:route53][:log] %>
 fi

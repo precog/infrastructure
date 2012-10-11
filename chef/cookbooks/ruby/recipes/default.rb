@@ -11,18 +11,16 @@ package "irb" do
 end
 
 package "ruby-dev" do
-  if node['platform'] == 'centos' then
+  if platform?('centos','redhat') then
     package_name "ruby-devel"
-  else
-    package_name "ruby-dev"
   end
 end
 
-package "rubygems" do
-  if node['platform'] == 'centos' then
+package "rubygems"
+
+package "rake" do
+  if platform?('centos','redhat') then
     package_name "rubygem-rake"
-  else
-    package_name "rake"
   end
 end
 
@@ -36,13 +34,13 @@ end
 #  package_name "rake"
 #end
 
-#gem_package "lockfile" do
-#  package_name "lockfile"
-#end
+gem_package "lockfile" do
+  package_name "lockfile"
+end
 
-#gem_package "log4r" do
-#  package_name "log4r"
-#end
+gem_package "log4r" do
+  package_name "log4r"
+end
 
 template "rubygems.sh.profile" do
   source "rubygems.sh.profile.erb"
