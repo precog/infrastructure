@@ -48,7 +48,7 @@ end
 
 # Ensure that no service stays unmonitored for long
 cron "monit-monitor-all" do
-  command "/usr/bin/env monit monitor all"
+  command "if [ -f /usr/bin/monit ]; then /usr/bin/monit monitor all; else /usr/sbin/monit monitor all; fi"
   minute "0"
   hour "0"
 end
