@@ -11,10 +11,9 @@ BASEDIR=$1
 ACCTDB=$2
 USAGEFILE="/tmp/Usage-$ACCTDB-`date '+%F'`.csv"
 
-for desc in `find $BASEDIR -name projection_descriptor.json`; do
-	ACCOUNT=`sed -n -e 's/.*"path":"\/\([^\/]*\)\/.*/\1/p' $desc`
-	PROJDIR=`dirname $desc`
-	SIZE=`du -sk $PROJDIR | cut -f 1`
+for ACCTDIR in $(cd $BASEDIR; ls); do
+	SIZE=`du -sk $BASEDIR/$ACCTDIR | cut -f 1`
+	ACCOUNT=`echo $ACCTDIR | tr -d '/'` 
 	#echo "$ACCOUNT:$SIZE"
 	accounts[$ACCOUNT]=$(( accounts[$ACCOUNT] + $SIZE ))
 done
