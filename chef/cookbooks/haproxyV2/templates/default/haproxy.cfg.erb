@@ -1,105 +1,107 @@
 global
-	log /dev/log daemon info
+	log             /dev/log daemon info
 	#log 127.0.0.1	local1 notice
 	#log loghost	local0 info
-	maxconn 20000
+	maxconn         20000
 	#chroot /usr/share/haproxy
-	user haproxy
-	group haproxy
+	user            haproxy
+	group           haproxy
 	daemon
 	#debug
 	#quiet
 
 defaults
-	balance roundrobin
-	log global
-	maxconn 19500
-	mode http
-        monitor-uri /haproxy/health
-	option allbackups
-	option abortonclose
-	option dontlognull
-	option httpclose
-	option httplog
-	option forwardfor
-	stats enable
-	stats hide-version
-	stats refresh 5s
-	stats uri /haproxy/stats
-	timeout client 600s
-	timeout connect 600s
-	timeout http-request 30s
-	timeout server 600s
+	balance         roundrobin
+	log             global
+	maxconn         19500
+	mode            http
+        monitor-uri     /haproxy/health
+	option          allbackups
+	option          abortonclose
+	option          dontlognull
+	option          httpclose
+	option          httplog
+	option          forwardfor
+	stats           enable
+	stats           hide-version
+	stats           refresh 5s
+	stats           uri /haproxy/stats
+	timeout         client 600s
+	timeout         connect 600s
+	timeout         http-request 30s
+	timeout         server 600s
 
-frontend http
-	bind *:80
+frontend                http
+	bind            *:80
 
-	option httplog
-	capture request header X-Forwarded-For len 15
-	capture request header Referer len 50
-        log /dev/log daemon
+	option          httplog
+	capture         request header X-Forwarded-For len 15
+	capture         request header Referer len 50
+        log             /dev/log daemon
 
         # Deny forged decrypt headers for SSL
-        acl has_ssl_header hdr_cnt(reportgriddecrypter) gt 0
-        block if has_ssl_header !LOCALHOST
+        acl             has_ssl_header hdr_cnt(reportgriddecrypter) gt 0
+        block           if has_ssl_header !LOCALHOST
 
-        use_backend fake_options      if METH_OPTIONS
+        use_backend     fake_options      if METH_OPTIONS
 
-        acl INGEST_PATH path_beg /ingest/v1
-        use_backend service_ingest    if INGEST_PATH
+        acl             INGEST_PATH path_beg /ingest/v1
+        use_backend     service_ingest    if INGEST_PATH
 
-        acl SECURITY_PATH path_beg /security/v1
-        use_backend service_security  if SECURITY_PATH
+        acl             SECURITY_PATH path_beg /security/v1
+        use_backend     service_security  if SECURITY_PATH
 
-        acl ACCOUNTS_PATH path_beg /accounts/v1
-        use_backend service_accounts  if ACCOUNTS_PATH
+        acl             ACCOUNTS_PATH path_beg /accounts/v1
+        use_backend     service_accounts  if ACCOUNTS_PATH
 
-        acl ANALYTICS_PATH path_beg /analytics/v1
-        acl META_PATH path_beg /meta/v1
-        use_backend service_query if ANALYTICS_PATH or META_PATH
+        acl             ANALYTICS_PATH path_beg /analytics/v1
+        acl             META_PATH path_beg /meta/v1
+        use_backend     service_query if ANALYTICS_PATH or META_PATH
 
         # IDE requests go to apache for servicing
-        acl ide_req  hdr_dom(host)    -i ide
-        acl devide_req hdr_dom(host)  -i devide
-        acl lab_req  hdr_dom(host)    -i lab
-        acl devlab_req hdr_dom(host)  -i devlab
-        acl labcoat_req  hdr_dom(host)    -i labcoat
-        acl devlabcoat_req hdr_dom(host)  -i devlabcoat
-        acl local_req hdr_dom(host)  -i <%= node[:hostname] %>
-        use_backend localapache       if ide_req or devide_req or lab_req or devlab_req or labcoat_req or devlabcoat_req or local_req
+        acl             ide_req  hdr_dom(host)    -i ide
+        acl             devide_req hdr_dom(host)  -i devide
+        acl             lab_req  hdr_dom(host)    -i lab
+        acl             devlab_req hdr_dom(host)  -i devlab
+        acl             labcoat_req  hdr_dom(host)    -i labcoat
+        acl             devlabcoat_req hdr_dom(host)  -i devlabcoat
+        acl             builder_req  hdr_dom(host) -i builder
+        acl             devbuilder_req  hdr_dom(host) -i devbuilder
+        acl             local_req hdr_dom(host)  -i <%= node[:hostname] %>
+        use_backend     localapache       if ide_req or devide_req or lab_req or devlab_req or labcoat_req or devlabcoat_req or local_req or builder_req or devbuilder_req
 
 	default_backend service_query
 
-backend service_ingest
-	reqrep ^([^\ ]*)\ /ingest/v1/(.*) \1\ /\2
-	option httpchk GET /blueeyes/services/ingest/v1/health
-        rspadd Access-Control-Allow-Origin:\ *
-	server local_ingest localhost:30060 check
+backend                 service_ingest
+	reqrep          ^([^\ ]*)\ /ingest/v1/(.*) \1\ /\2
+	option          httpchk GET /blueeyes/services/ingest/v1/health
+        rspadd          Access-Control-Allow-Origin:\ *
+	server          local_ingest localhost:30060 check
 
-backend service_security
-	reqrep ^([^\ ]*)\ /security/v1/(.*) \1\ /\2
-	option httpchk GET /blueeyes/services/security/v1/health
-        rspadd Access-Control-Allow-Origin:\ *
-	server local_security localhost:30062 check
+backend                 service_security
+	reqrep          ^([^\ ]*)\ /security/v1/(.*) \1\ /\2
+	option          httpchk GET /blueeyes/services/security/v1/health
+        rspadd          Access-Control-Allow-Origin:\ *
+	server          local_security localhost:30062 check
 
-backend service_accounts
-	reqrep ^([^\ ]*)\ /accounts/v1/(.*) \1\ /\2
-	option httpchk GET /blueeyes/services/accounts/v1/health
-        rspadd Access-Control-Allow-Origin:\ *
-	server local_accounts localhost:30064 check
+backend                 service_accounts
+	reqrep          ^([^\ ]*)\ /accounts/v1/(.*) \1\ /\2
+	option          httpchk GET /blueeyes/services/accounts/v1/health
+        rspadd          Access-Control-Allow-Origin:\ *
+	server          local_accounts localhost:30064 check
 
-backend service_query
+backend                 service_query
         # Query handles both queries and metadata now
-	reqrep ^([^\ ]*)\ /analytics/v1/(.*) \1\ /analytics/\2
-	reqrep ^([^\ ]*)\ /meta/v1/(.*) \1\ /meta/\2
-	option httpchk GET /blueeyes/services/quirrel/v1/health
-        rspadd Access-Control-Allow-Origin:\ *
-	server local_shard01 localhost:30070 check
+	reqrep          ^([^\ ]*)\ /analytics/v1/(.*) \1\ /analytics/\2
+	reqrep          ^([^\ ]*)\ /meta/v1/(.*) \1\ /meta/\2
+	option          httpchk GET /blueeyes/services/quirrel/v1/health
+        rspadd          Access-Control-Allow-Origin:\ *
+	server          local_shard01 localhost:30070 check
 
-backend localapache
-        server localapache localhost:20000
+backend                 localapache
+        server          localapache localhost:20000
 
-backend fake_options
-        reqirep ^Host.* Host:\ api.precog.com
-	reqrep ^([^\ ]*)\ /.* \1\ /\ HTTP/1.1
-        server fake_options localhost:20000
+backend                 fake_options
+        reqirep         ^Host.* Host:\ api.precog.com
+	reqrep          ^([^\ ]*)\ /.* \1\ /\ HTTP/1.1
+        server          fake_options localhost:20000

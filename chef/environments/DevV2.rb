@@ -24,6 +24,9 @@ override_attributes ({
   "precog" => {
     "ide" => {
       "s3url" => "s3://ops.reportgrid.com/ide-dev/"
+    },
+    "builder" => {
+      "s3url" => "s3://ops.reportgrid.com/builder-dev/"
     }
   },
   "deployer" => {

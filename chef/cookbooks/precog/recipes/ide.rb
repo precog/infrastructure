@@ -11,7 +11,7 @@ include_recipe "apache2::mod_php5"
 include_recipe "apache2::mod_alias"
 include_recipe "s3tools"
 
-directory "/var/www/ide" do
+directory "#{node[:precog][:ide][:root]}" do
   recursive true
   owner "www-data"
   mode  "755"
