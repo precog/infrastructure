@@ -1,7 +1,7 @@
 <% @params[:server_aliases] ||= [] %>
 <VirtualHost *:20000>
-  ServerName <%= @params[:server_name] %>
-  ServerAlias <% @params[:server_aliases].each do |a| %><%= "#{a}" %> <% end %>
+  ServerName <%= @params[:server_aliases][0] %>
+  ServerAlias <% @params[:server_aliases][1..-1].each do |a| %><%= "#{a}" %> <% end %>
   DocumentRoot <%= @params[:docroot] %>
   RewriteEngine On
   
