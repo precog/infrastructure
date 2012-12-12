@@ -18,7 +18,7 @@ defaults
   <% end -%>
 
 frontend http
-  bind *:80
+  bind *:81
 
   # Enable request logging (with X-Forwarded-For)
   option httplog
@@ -44,7 +44,8 @@ frontend http
   use_backend apache_php if renderer_request or precog_io_redir
 
   acl api_request hdr(host) -i api.reportgrid.com
-  use_backend website if api_request
+  redirect prefix http://static.api.reportgrid.com if api_request
+  # use_backend website if api_request
 
   acl web_request path_reg ^/(sign-up|control-panel).html
   acl secure_request hdr(host) -i secure.reportgrid.com
