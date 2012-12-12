@@ -373,6 +373,13 @@ define service {
     check_command       check_http_content!api.reportgrid.com!80!/css/rg-charts.css!rg-colors-charts
 }
 
+define service {
+    use                 default-service
+    hostgroup_name      reportgrid_api
+    service_description Reportgrid Viz Samples
+    check_command       check_http_content!api.reportgrid.com!80!/services/viz/samples/index.php!overlapping
+}
+
 # Monitor the web servers
 define service {
     use                 default-service

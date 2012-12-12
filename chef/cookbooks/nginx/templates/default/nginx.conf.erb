@@ -69,14 +69,15 @@ http {
     }
 
     location ^~ /services/viz {
-      rewrite ^/services//[[:alnum:]-]+/(.*) $1 break;
+      rewrite ^/services/viz/(.*) /$1 break;
       proxy_pass http://localhost:20000;
+      proxy_set_header Host $http_host;
     }
 
    <% @services.each do |service, params| %>
     location ~* <%= "^/(blueeyes/|)services/#{service[0]}/#{service[1]}/" %> {
       # Rewrite incoming request to use the service's URI scheme
-      rewrite ^/services/[[:alnum:]-]+/[[:alnum:]-]+/(.*) $1 break;
+      rewrite ^/services/[[:alnum:]-]+/[[:alnum:]-]+/(.*) /$1 break;
       proxy_set_header X-Service-URL-Root /services/<%= "#{service[0]}/#{service[1]}" %>;
       add_header Access-Control-Allow-Origin *;
 
