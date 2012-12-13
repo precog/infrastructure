@@ -30,7 +30,7 @@ http {
   upstream <%= "#{service[0]}_#{service[1]}" %> {
     <% params[:servers].each do |server|
          if !server.nil? && server == @node[:fqdn] then %>
-    server <%= "#{server}:#{params[:port]}" %>;
+    server <%= "localhost:#{params[:port]}" %>;
     <%     else %>
     server <%= "#{server}:#{params[:port]}" %> backup;
     <%   end %>
@@ -42,7 +42,7 @@ http {
   proxy_cache_path /var/nginx/cache levels=1:2 keys_zone=STATIC:50m;
 
   server {
-    listen 80;
+    listen 85;
     server_name "api.reportgrid.com";
 
     # Health check should succeed
@@ -64,25 +64,32 @@ http {
     }            
     
     # We completely block access to the billing admin interface via proxy
-    location ^~ /services/billing/v1/accounts/assess {
+    location /services/billing/v1/accounts/assess {
       return 403;
     }
 
-    location ^~ /services/viz {
-      rewrite ^/services/viz/(.*) /$1 break;
+    location /services/viz {
+      rewrite ^/services/viz/(.*)$ /$1 break;
       proxy_pass http://localhost:20000;
       proxy_set_header Host $http_host;
     }
 
    <% @services.each do |service, params| %>
-    location ~* <%= "^/(blueeyes/|)services/#{service[0]}/#{service[1]}/" %> {
+    location <%= "/services/#{service[0]}/#{service[1]}/" %> {
       # Rewrite incoming request to use the service's URI scheme
-      rewrite ^/services/[[:alnum:]-]+/[[:alnum:]-]+/(.*) /$1 break;
+      #rewrite ^/services/[[:alnum:]-]+/[[:alnum:]-]+/(.*)$ /$1 break;
       proxy_set_header X-Service-URL-Root /services/<%= "#{service[0]}/#{service[1]}" %>;
       add_header Access-Control-Allow-Origin *;
 
       proxy_cache off;
-      proxy_pass http://<%= "#{service[0]}_#{service[1]}" %>;
+      proxy_pass http://<%= "#{service[0]}_#{service[1]}" %>/;
+      proxy_set_header Host $http_host;
+    }
+
+    location <%= "/blueeyes/services/#{service[0]}/#{service[1]}/" %> {
+      proxy_cache off;
+      proxy_pass http://localhost:<%= params[:port] %>;
+      proxy_set_header Host $http_host;
     }
 
    <% end %>  
@@ -93,6 +100,7 @@ http {
       proxy_cache_valid 5m;
       proxy_ignore_headers Cache-Control;
       proxy_pass http://api.reportgrid.com.s3-website-us-east-1.amazonaws.com:80;
+      proxy_set_header Host $http_host;
     }
  }
 }

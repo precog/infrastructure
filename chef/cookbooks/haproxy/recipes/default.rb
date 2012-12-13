@@ -12,7 +12,7 @@ end
 
 service "haproxy" do
   service_name "haproxy"
-  action :disable
+  action :enable
   supports :reload => true
 end
 
@@ -57,14 +57,13 @@ template "haproxy.cfg" do
   source "haproxy.cfg.erb"
   path "/etc/haproxy/haproxy.cfg"
   mode "0644"
-  #notifies :reload, resources(:service => "haproxy")
+  notifies :reload, resources(:service => "haproxy")
 end
 
 template "haproxy.monit" do
   source "haproxy.monit.erb"
   path "/etc/monit/conf.d/haproxy.monit"
   mode "0644"
-  action :delete
   notifies :restart, resources(:service => "monit")
 end
 
