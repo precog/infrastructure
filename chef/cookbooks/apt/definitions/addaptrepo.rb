@@ -6,9 +6,13 @@ define :add_apt_repo, :url => nil do
       raise ArgumentError, "Missing PPA URL"
     end
 
-    execute "add-apt-repository" do
-      command "add-apt-repository #{params[:url]}"
-      notifies :run, "execute[aptitude_update]", :immediately
+    ppaParts = /ppa:(.*)\/(.*)/.match(params[:url])
+
+    if Dir.glob("/etc/apt/sources.list.d/#{ppaParts[1]}*").empty? then
+      execute "add-apt-repository" do
+        command "add-apt-repository #{params[:url]}"
+        notifies :run, "execute[aptitude_update]", :immediately
+      end
     end
   end
 end
