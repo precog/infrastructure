@@ -362,6 +362,27 @@ define service {
 define service {
     use                 default-service
     hostgroup_name      reportgrid_api
+    service_description Reportgrid Core CSS
+    check_command       check_http_content!api.reportgrid.com!80!/css/rg.css!rg-colors-default
+}
+
+define service {
+    use                 default-service
+    hostgroup_name      reportgrid_api
+    service_description Reportgrid Query JS
+    check_command       check_http_content!api.reportgrid.com!80!/js/reportgrid-query.js!function
+}
+
+define service {
+    use                 default-service
+    hostgroup_name      reportgrid_api
+    service_description Reportgrid Viz JS
+    check_command       check_http_content!api.reportgrid.com!80!/js/reportgrid-viz.js!function
+}
+
+define service {
+    use                 default-service
+    hostgroup_name      reportgrid_api
     service_description Reportgrid Charts JS
     check_command       check_http_content!api.reportgrid.com!80!/js/reportgrid-charts.js!function
 }
@@ -369,7 +390,7 @@ define service {
 define service {
     use                 default-service
     hostgroup_name      reportgrid_api
-    service_description Reportgrid Charts JS
+    service_description Reportgrid Charts CSS
     check_command       check_http_content!api.reportgrid.com!80!/css/rg-charts.css!rg-colors-charts
 }
 
