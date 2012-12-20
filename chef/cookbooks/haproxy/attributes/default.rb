@@ -21,8 +21,8 @@ default[:haproxy][:defaults] = [
   'stats hide-version',
   'stats refresh 2s',
   'stats uri /haproxy/stats',
-  'timeout client 600s',
-  'timeout connect 600s',
+  'timeout client 60s',
+  'timeout connect 10s',
   'timeout http-request 5s',
   'timeout server 600s'
 ]

@@ -62,9 +62,9 @@ backend services_<%= "#{service[0]}_#{service[1]}" %>
   option httpchk GET /blueeyes/services/<%= "#{service[0]}/#{service[1]}/health" %>
   <% params[:servers].each do |server| 
        if !server.nil? && server == @node[:fqdn] then %>
-  server <%= server %> <%= "#{server}:#{params[:port]}" %> check inter 5000 rise 2 fall 2
+  server <%= server %> <%= "#{server}:#{params[:port]}" %> maxconn 10 check inter 5000 rise 2 fall 2
   <%   else %>
-  server <%= server %> <%= "#{server}:#{params[:port]}" %> check inter 5000 rise 2 fall 2 backup
+  server <%= server %> <%= "#{server}:#{params[:port]}" %> maxconn 10 check inter 5000 rise 2 fall 2 backup
   <%   end %>
   <% end %>
 
