@@ -99,8 +99,8 @@ http {
       proxy_cache STATIC;
       proxy_cache_valid 5m;
       proxy_ignore_headers Cache-Control;
-      proxy_pass http://api.reportgrid.com.s3-website-us-east-1.amazonaws.com:80;
-      proxy_set_header Host $http_host;
+      proxy_pass http://static.api.reportgrid.com:80;
+      proxy_set_header Host api.reportgrid.com;
     }
  }
 }
