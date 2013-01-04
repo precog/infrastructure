@@ -52,6 +52,7 @@ frontend                http
         use_backend     service_security  if SECURITY_PATH
 
         acl             ACCOUNTS_PATH path_beg /accounts/v1
+        block           if ACCOUNTS_PATH !LOCALHOST
         use_backend     service_accounts  if ACCOUNTS_PATH
 
         acl             ANALYTICS_PATH path_beg /analytics/v1
