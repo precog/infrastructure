@@ -5,7 +5,7 @@ if [[ $# < 3 ]]; then
     exit 1
 fi
 
-declare -A accounts
+declare -A accountsUsage
 
 BASEDIR=$1
 ACCTDB=$2
@@ -20,7 +20,7 @@ for ACCTDIR in $(cd $BASEDIR; ls); do
 	SIZE=$(echo "scale=2; `du -sk $BASEDIR/$ACCTDIR | cut -f 1` / 1024" | bc )
 	ACCOUNT=`echo $ACCTDIR | tr -d '/'` 
 	#echo "$ACCOUNT:$SIZE"
-	accounts[$ACCOUNT]=$(echo ${accounts[$ACCOUNT]:-0} " + $SIZE" | bc | sed 's/^\./0./')
+	accountsUsage["$ACCOUNT"]=$(echo "$SIZE" | sed 's/^\./0./')
 	#declare -A PATHSIZE
 	#for subdir in `find $BASEDIR/$ACCTDIR -name projection_descriptor.json`; do
 	#	SIZE=$(echo "scale=2; $(du -sk $(dirname $subdir) | cut -f 1) / 1024" | bc)
@@ -39,14 +39,19 @@ for ACCTDIR in $(cd $BASEDIR; ls); do
 	#done
 done
 
-echo -e "Account,Usage in KB,Account Email" > $USAGEFILE
+# Output data for all accounts
 rm -f $ACCTJSONFILE
-for account in ${!accounts[@]}; do
-  EMAIL=`echo "db.accounts.find({\"accountId\":\"$account\"}).forEach(function(x) { printjson(x.email)})" | mongo --quiet $ACCTDB 2>1`
-  if [ -n "$EMAIL" ]; then
-    echo -e "$account,${accounts[$account]},$EMAIL"
-    echo -e "{ \"timestamp\":\"$TIMESTAMP\", \"server\":\"$SERVERID\", \"account\":\"$account\", \"usage\":${accounts[$account]}, \"email\":$EMAIL}" >> $ACCTJSONFILE 
-  fi
+echo -e "Account,Account Email,Creation timestamp,Usage in KB" > $USAGEFILE
+for acctEntry in $(echo "db.accounts.find().forEach(function(x) { print(x.accountId + ',' + x.email + ',' + x.accountCreationDate) })" | mongo --quiet $ACCTDB 2>1); do
+    IFS="," read -a PARTS <<< "$acctEntry"
+    account=${PARTS[0]}
+    if [ -z "$account" ]; then
+        echo "Bad account info: $acctEntry" >&2
+    else
+        USAGE=${accountsUsage["$account"]:-0}
+        echo -e "$acctEntry,$USAGE"
+        echo -e "{ \"timestamp\":\"$TIMESTAMP\", \"server\":\"$SERVERID\", \"account\":\"$account\", \"usage\":$USAGE, \"email\":\"${PARTS[1]}\", \"creationDate\":${PARTS[2]}}" >> $ACCTJSONFILE 
+    fi
 done | sort -n -k 1 >> $USAGEFILE
 shift 2
 
