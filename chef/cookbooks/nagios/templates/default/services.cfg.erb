@@ -183,7 +183,7 @@ define service {
     use                 default-service
     hostgroup_name	nexus
     service_description	Nexus endpoint
-    check_command	check_http_content!nexus.reportgrid.com!80!/index.html!200
+    check_command	check_http_content!nexus.reportgrid.com!80!/index.html!Sonatype
 }
 
 define service {
