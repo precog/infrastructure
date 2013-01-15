@@ -294,6 +294,38 @@ define service {
 
 <% } %>
 
+# Nebula checks
+define service {
+       use                    default-service
+       hostgroup_name         quirrel-shardV2
+       process_perf_data      1
+       active_checks_enabled  1
+       service_description    Quirrel simple math query
+       action_url             /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
+       check_command          check_quirrel!30070!AB150219-F045-4A32-A015-1C378FB1792B!"Simple math"!"total := 2 + 1%3Btotal * 3"!1000!2000
+}
+
+define service {
+       use                    default-service
+       hostgroup_name         quirrel-shardV2
+       process_perf_data      1
+       active_checks_enabled  1
+       service_description    Quirrel mean value query
+       action_url             /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
+       check_command          check_quirrel!30070!AB150219-F045-4A32-A015-1C378FB1792B!"Mean value"!"mean(load(%22/0000000067/clicks%22).product.price)"!5000!10000 
+}
+
+define service {
+       use                    default-service
+       hostgroup_name         quirrel-shardV2
+       normal_check_interval  300
+       process_perf_data      1
+       active_checks_enabled  1
+       service_description    Quirrel complex query
+       action_url             /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
+       check_command          check_quirrel!30070!AB150219-F045-4A32-A015-1C378FB1792B!"Complex query"!"solve %27price, %27gender clicks := //0000000067/clicks tally := count(clicks where clicks.customer.gender = %27gender & clicks.product.price = %27price) { price : %27price, gender: %27gender, tally: tally }"!40000!60000
+}
+
 # Quirrel shard additional services
 define service {
        use                 default-service
