@@ -1,0 +1,10 @@
+{
+  "id": "dcsobral",
+  "groups": "sysadmin",
+  "htpasswd": "{SHA}uALUWzq0kflMwZULWThEry/ygV0=",
+  "openid": "http://dcsobral.myopenid.com/",
+  "nagios": {
+    "pager": "dcsobral@precog.com",
+    "email": "dcsobral@precog.com"
+  }
+}

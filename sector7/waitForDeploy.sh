@@ -2,7 +2,7 @@
 
 if [ "$#" != "5" ]; then
     echo "Usage: `basename $0` <env config> <service> <serial> <minimum deploy count> <timeout in seconds>"
-    exit
+    exit 2
 fi
 
 DEPLOYER=`dirname $0`/tools/deploymanager.rb

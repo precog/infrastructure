@@ -24,7 +24,7 @@ end
 
 web_app "builder" do
   server_name node['fqdn']
-  server_aliases ["builder.precog.com", "devbuilder.precog.com"]
+  server_aliases ["builder.reportgrid.com", "devbuilder.reportgrid.com", "builder.precog.com", "devbuilder.precog.com"]
   docroot "#{node[:precog][:builder][:root]}/"
   template "builder.conf.erb"
 end
