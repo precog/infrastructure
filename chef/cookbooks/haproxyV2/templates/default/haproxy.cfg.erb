@@ -57,7 +57,8 @@ frontend                http
 
         acl             ANALYTICS_PATH path_beg /analytics/v1
         acl             META_PATH path_beg /meta/v1
-        use_backend     service_query if ANALYTICS_PATH or META_PATH
+        acl             JOBS_PATH path_beg /jobs/v1
+        use_backend     service_query if ANALYTICS_PATH or META_PATH or JOBS_PATH
 
         # IDE requests go to apache for servicing
         acl             ide_req  hdr_dom(host)    -i ide
@@ -92,9 +93,10 @@ backend                 service_accounts
 	server          local_accounts localhost:30064 check
 
 backend                 service_query
-        # Query handles both queries and metadata now
+        # Query handles queries, jobs, and metadata now
 	reqrep          ^([^\ ]*)\ /analytics/v1/(.*) \1\ /analytics/\2
 	reqrep          ^([^\ ]*)\ /meta/v1/(.*) \1\ /meta/\2
+	reqrep          ^([^\ ]*)\ /jobs/v1/(.*) \1\ /analytics/\2
 	option          httpchk GET /blueeyes/services/quirrel/v1/health
         rspadd          Access-Control-Allow-Origin:\ *
 	server          local_shard01 localhost:30070 check
