@@ -1,7 +1,6 @@
-<% @params[:server_aliases] ||= [] %>
 <VirtualHost *:443>
-  ServerName <%= @params[:server_name] %>:443
-  ServerAlias <% @params[:server_aliases].each do |a| %><%= "#{a}" %> <% end %>
+  ServerName www.reportgrid.com
+  ServerAlias *.reportgrid.com
   RewriteEngine On
 
   RequestHeader append ReportGridDecrypter "Decrypted at %t"

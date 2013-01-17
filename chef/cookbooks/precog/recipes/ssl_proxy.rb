@@ -11,8 +11,8 @@ include_recipe "precog::certs"
 include_recipe "apache2::mod_proxy"
 include_recipe "apache2::mod_proxy_http"
 
-web_app "ssl_proxy_localhost" do
+web_app "ssl_precog_proxy_localhost" do
   server_name "api.precog.com"
   server_aliases [node['fqdn']]
-  template "ssl_proxy_localhost.conf.erb"
+  template "ssl_precog_proxy_localhost.conf.erb"
 end

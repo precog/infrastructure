@@ -1,15 +1,15 @@
 #
-# Cookbook Name:: precog
+# Cookbook Name:: reportgrid
 # Recipe:: certs
 #
-# Copyright 2012, 2013, Precog
+# Copyright 2013, ReportGrid
 #
 # All rights reserved - Do Not Redistribute
 #
 include_recipe "apache2"
 include_recipe "apache2::mod_ssl"
 
-if platform?("ubuntu", "debian")
+if platform?("ubuntu", "debian") 
 	owner_name = "www-data"
 else
 	owner_name = "root"
@@ -20,17 +20,17 @@ directory "/etc/apache2/ssl" do
   mode "755"
 end
 
-cookbook_file "/etc/apache2/ssl/precog.cert" do
+cookbook_file "/etc/apache2/ssl/reportgrid.cert" do
   owner owner_name
   mode "444"
 end
 
-cookbook_file "/etc/apache2/ssl/precog.ca.cert" do
+cookbook_file "/etc/apache2/ssl/reportgrid.ca.cert" do
   owner owner_name
   mode "444"
 end
 
-cookbook_file "/etc/apache2/ssl/precog.key" do
+cookbook_file "/etc/apache2/ssl/reportgrid.key" do
   owner owner_name
   mode "400"
 end
