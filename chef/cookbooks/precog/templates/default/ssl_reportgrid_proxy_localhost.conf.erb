@@ -1,14 +1,12 @@
-<% @params[:server_aliases] ||= [] %>
 <VirtualHost *:443>
-  ServerName <%= @params[:server_name] %>:443
-  ServerAlias <% @params[:server_aliases].each do |a| %><%= "#{a}" %> <% end %>
+  ServerName *.reportgrid.com:443
   RewriteEngine On
 
   RequestHeader append ReportGridDecrypter "Decrypted at %t"
 
-  SSLCertificateFile /etc/apache2/ssl/precog.cert
-  SSLCertificateKeyFile /etc/apache2/ssl/precog.key
-  SSLCACertificateFile /etc/apache2/ssl/precog.ca.cert
+  SSLCertificateFile /etc/apache2/ssl/reportgrid.cert
+  SSLCertificateKeyFile /etc/apache2/ssl/reportgrid.key
+  SSLCACertificateFile /etc/apache2/ssl/reportgrid.ca.cert
   SSLEngine on
 
   SSLProxyEngine on
