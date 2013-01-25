@@ -11,18 +11,18 @@ then
 fi
 
 curlJIRA() {
-	if [[ $# -lt 4 && $# -gt 2 ]]
+	if [ $# -eq 4 ]
 	then
-		curl -s -H "Authorization: Basic cHJlY29nYWRtaW46TGV3aXMgQ2Fycm9sbA==" -X $1 -H "Content-Type: application/json" "https://precog.atlassian.net/rest/api/2/issue/$2$3" 
-	elif [ $# -eq 4 ]
+		curl -s -H "Authorization: Basic cHJlY29nYWRtaW46TGV3aXNDYXJyb2xs" -X $1 -H "Content-Type: application/json" "https://precog.atlassian.net/rest/api/2/$2/$3$4" 
+	elif [ $# -eq 5 ]
 	then
-		curl -s -H "Authorization: Basic cHJlY29nYWRtaW46TGV3aXMgQ2Fycm9sbA==" -X $1 -H "Content-Type: application/json" "https://precog.atlassian.net/rest/api/2/issue/$2$3" --data "$4"
+		curl -s -H "Authorization: Basic cHJlY29nYWRtaW46TGV3aXNDYXJyb2xs" -X $1 -H "Content-Type: application/json" "https://precog.atlassian.net/rest/api/2/$2/$3$4" --data "$5"
 	else
 		cat <<-EOF
 			Invalid number of parameters to jiraCMD: $*
-			Expected: HTTP-VERB ISSUE-ID [path-or-parameters] [data]
+			Expected: HTTP-VERB APIGROUP APIKEY path-or-parameters [data]
 
-			To pass data without a path, pass an empty string as third parameter.
+			In the absence of a path or parameter, pass an empty string.
 		EOF
 		exit 2
 	fi
@@ -43,7 +43,7 @@ jiraCMDPrettyJSON() {
 
 
 getTransitions() {
-	jiraCMDPrettyJSON GET "$1" /transitions | grep -B2 -F '"to"'  | grep -B1 -F '"name"'
+	jiraCMDPrettyJSON GET issue "$1" /transitions | grep -B2 -F '"to"'  | grep -B1 -F '"name"'
 }
 
 getTransition() {
@@ -54,7 +54,7 @@ makeTransition() {
 	TID=$(chomp $(getTransition "$1" "$2") | cut -d ':' -f 2)
 	if [ -n "$TID" ]
 	then
-		RESPONSE=$(jiraCMD POST "$1" /transitions "{ \"transition\": $TID }")
+		RESPONSE=$(jiraCMD POST issue "$1" /transitions "{ \"transition\": $TID }")
 		if [ -n "$RESPONSE" ]
 		then
 			echo $RESPONSE
