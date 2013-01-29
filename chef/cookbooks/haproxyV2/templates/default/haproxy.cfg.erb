@@ -45,21 +45,25 @@ frontend                http
 
         use_backend     fake_options      if METH_OPTIONS
 
+        acl             ANALYTICS_PATH path_beg /analytics/v1
+        acl             META_PATH path_beg /meta/v1
         acl             INGEST_PATH path_beg /ingest/v1
+        acl             SECURITY_PATH path_beg /security/v1
+        acl             ACCOUNTS_PATH path_beg /accounts/v1
+        acl             JOBS_PATH path_beg /jobs/v1
+
+	acl             STAGING_HOST hdr_dom(host) -i staging
+	use_backend     service_staging   if STAGING_HOST ANALYTICS_PATH or STAGING_HOST META_PATH 
+
         use_backend     service_ingest    if INGEST_PATH
 
-        acl             SECURITY_PATH path_beg /security/v1
         use_backend     service_security  if SECURITY_PATH
 
-        acl             ACCOUNTS_PATH path_beg /accounts/v1
         block           if ACCOUNTS_PATH !LOCALHOST
         use_backend     service_accounts  if ACCOUNTS_PATH
 
-        acl             ANALYTICS_PATH path_beg /analytics/v1
-        acl             META_PATH path_beg /meta/v1
         use_backend     service_query if ANALYTICS_PATH or META_PATH
 
-        acl             JOBS_PATH path_beg /jobs/v1
         use_backend     service_jobs if JOBS_PATH
 
         # IDE requests go to apache for servicing
@@ -107,6 +111,14 @@ backend                 service_query
 	option          httpchk GET /blueeyes/services/quirrel/v1/health
         rspadd          Access-Control-Allow-Origin:\ *
 	server          local_shard01 localhost:30070 check
+
+backend                 service_staging
+        # Query handles queries and metadata now
+	reqrep          ^([^\ ]*)\ /analytics/v1/(.*) \1\ /analytics/\2
+	reqrep          ^([^\ ]*)\ /meta/v1/(.*) \1\ /meta/\2
+	option          httpchk GET /blueeyes/services/quirrel/v1/health
+        rspadd          Access-Control-Allow-Origin:\ *
+	server          local_staging01 localhost:40070 check
 
 backend                 localapache
         server          localapache localhost:20000
