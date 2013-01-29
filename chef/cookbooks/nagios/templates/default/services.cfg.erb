@@ -337,8 +337,15 @@ define service {
 define service {
     use                 default-service
     hostgroup_name      quirrel-shard
-    service_description Ingest health
+    service_description Beta ingest health
     check_command	check_http_content!api.precog.com!30060!/blueeyes/services/ingest/v1/health!uptimeSeconds
+}
+
+define service {
+    use                 default-service
+    hostgroup_name      quirrel-shardV2
+    service_description Nebula ingest health
+    check_command	check_http_content!nebula.precog.com!30060!/blueeyes/services/ingest/v1/health!uptimeSeconds
 }
 
 define service {
