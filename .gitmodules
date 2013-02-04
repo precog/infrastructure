@@ -1,0 +1,3 @@
+[submodule "chef/cookbooks/sysctl"]
+	path = chef/cookbooks/sysctl
+	url = git@github.com:reportgrid/sysctl-cookbook.git
