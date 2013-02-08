@@ -18,7 +18,10 @@ CURRDIR=$(pwd | cut -c 1-$(echo -n "$STORAGE" | wc -c))
     exit 1
 }
 
-mkdir recovery
+mkdir recovery || {
+  echo "Recovery directory exists already! Exiting!"
+  exit 1
+}
 monit unmonitor $1
 stop $1
 cp byIdentity* recovery/
