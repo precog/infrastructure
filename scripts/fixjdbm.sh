@@ -19,14 +19,30 @@ CURRDIR=$(pwd | cut -c 1-$(echo -n "$STORAGE" | wc -c))
 }
 
 mkdir recovery || {
-  echo "Recovery directory exists already! Exiting!"
-  exit 1
+    echo "Recovery directory exists already! Exiting!"
+    exit 1
 }
-monit unmonitor $1
-stop $1
-cp byIdentity* recovery/
-cd recovery
-~ubuntu/scala-2.9.2/bin/scala -cp /usr/share/java/$1.jar ~ubuntu/fixjdbm.scala
-cp fixed/* ../
-start $1
-monit monitor $1
+
+LOCKFILE=/var/lock/fixlock.${1}
+
+(
+    flock -n 9 || {
+        echo "Could not acquire lockfile! Maybe it is stale?"
+        ls -l $LOCKFILE
+        exit 1
+    }
+    # ... commands executed under lock ...
+    monit unmonitor $1
+    stop $1
+    cp byIdentity* recovery/
+    cd recovery
+    ~ubuntu/scala-2.9.2/bin/scala -cp /usr/share/java/$1.jar ~ubuntu/fixjdbm.scala
+    cp fixed/* ../
+    start $1
+    monit monitor $1
+
+    echo Removing lockfile
+    rm $LOCKFILE
+) 9> $LOCKFILE
+
+# vim: et ts=4 sts=4 sw=4
