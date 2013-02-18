@@ -5,7 +5,7 @@
   ServerAlias <% @params[:server_aliases].each do |a| %><%= "#{a}" %> <% end %>
   DocumentRoot <%= @params[:docroot] %>
   RewriteEngine On
-  
+
 <% if listenport == 443 then %>
   SSLCertificateFile /etc/apache2/ssl/precog.cert
   SSLCertificateKeyFile /etc/apache2/ssl/precog.key
@@ -48,7 +48,7 @@
   RewriteCond %{HTTP_HOST} =reportgrid.com [NC,OR]
   RewriteCond %{HTTP_HOST} =www.reportgrid.com [NC]
   RewriteRule ^.* http://www.precog.com/products/reportgrid [R,L]
-  
+
   # Redirect registration result
   RewriteRule ^/registration/profile http://www.precog.com/account [R,L]
 
