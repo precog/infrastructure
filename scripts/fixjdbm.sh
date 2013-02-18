@@ -32,14 +32,14 @@ LOCKFILE=/var/lock/fixlock.${1}
         exit 1
     }
     # ... commands executed under lock ...
-    monit unmonitor $1
+    monit -g $1 unmonitor
     stop $1
     cp byIdentity* recovery/
     cd recovery
     ~ubuntu/scala-2.9.2/bin/scala -cp /usr/share/java/$1.jar ~ubuntu/fixjdbm.scala
     cp fixed/* ../
     start $1
-    monit monitor $1
+    monit -g $1 monitor
 
     echo Removing lockfile
     rm $LOCKFILE
