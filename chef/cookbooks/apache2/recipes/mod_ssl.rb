@@ -17,6 +17,12 @@
 # limitations under the License.
 #
 
+unless node['apache']['listen_ports'].include?(node['apache']['mod_ssl']['listen_port'])
+  node.default['apache']['listen_ports'] += [node['apache']['mod_ssl']['listen_port']]
+end
+
+ports = node['apache']['listen_ports']
+
 if platform?("redhat", "centos", "scientific", "fedora")
   package "mod_ssl" do
     action :install
@@ -29,14 +35,9 @@ if platform?("redhat", "centos", "scientific", "fedora")
   end
 end
 
-ports = node[:apache][:listen_ports].include?("443") ? node[:apache][:listen_ports] : [node[:apache][:listen_ports], "443"].flatten
-
-template "#{node[:apache][:dir]}/ports.conf" do
-  source "ports.conf.erb"
-  variables :apache_listen_ports => ports
-  notifies :restart, resources(:service => "apache2")
-  mode 0644
-end
+# Force our potentially extended port list to be generated into ports.conf
+ports_template = resources(:template => "#{node['apache']['dir']}/ports.conf")
+ports_template.variables[:apache_listen_ports] = ports.map{|p| p.to_i}.uniq
 
 apache_module "ssl" do
   conf true

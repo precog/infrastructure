@@ -19,8 +19,23 @@ CURRDIR=$(pwd | cut -c 1-$(echo -n "$STORAGE" | wc -c))
 }
 
 mkdir recovery || {
-    echo "Recovery directory exists already! Exiting!"
-    exit 1
+    echo "Recovery directory exists -- trying to move old directories"
+    set -e
+    if [ -d recovery.0 ]
+    then
+        LASTFILE=$(ls -1d recovery.* | tail -1)
+        LASTVER=${LASTFILE##*.}
+        for ver in $(seq $LASTVER -1 0)
+        do
+            mv recovery.$ver recovery.$(($ver + 1))
+        done
+    else
+        LASTVER=-1
+    fi
+    mv recovery recovery.0
+    mkdir recovery
+    echo "Moved old diretories. There are now $(($LASTVER + 3)) recovery directories"
+    set +e
 }
 
 LOCKFILE=/var/lock/fixlock.${1}
@@ -32,14 +47,14 @@ LOCKFILE=/var/lock/fixlock.${1}
         exit 1
     }
     # ... commands executed under lock ...
-    monit unmonitor $1
+    monit -g $1 unmonitor
     stop $1
     cp byIdentity* recovery/
     cd recovery
     ~ubuntu/scala-2.9.2/bin/scala -cp /usr/share/java/$1.jar ~ubuntu/fixjdbm.scala
     cp fixed/* ../
     start $1
-    monit monitor $1
+    monit -g $1 monitor
 
     echo Removing lockfile
     rm $LOCKFILE

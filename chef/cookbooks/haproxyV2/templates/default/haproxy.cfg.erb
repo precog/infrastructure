@@ -30,6 +30,7 @@ defaults
 	timeout         connect 600s
 	timeout         http-request 30s
 	timeout         server 600s
+        retries         10
 
 frontend                http
 	bind            *:80
