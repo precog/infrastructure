@@ -56,6 +56,9 @@ frontend                http
 	acl             STAGING_HOST hdr_dom(host) -i staging
 	use_backend     service_staging   if STAGING_HOST ANALYTICS_PATH or STAGING_HOST META_PATH 
 
+	acl             NIHDB_HOST hdr_dom(host) -i nihdb
+	use_backend     service_nihdb     if NIHDB_HOST ANALYTICS_PATH or NIHDB_HOST META_PATH 
+
         use_backend     service_ingest    if INGEST_PATH
 
         use_backend     service_security  if SECURITY_PATH
@@ -120,6 +123,14 @@ backend                 service_staging
 	option          httpchk GET /blueeyes/services/quirrel/v1/health
         rspadd          Access-Control-Allow-Origin:\ *
 	server          local_staging01 localhost:40070 check
+
+backend                 service_nihdb
+        # Query handles queries and metadata now
+	reqrep          ^([^\ ]*)\ /analytics/v1/(.*) \1\ /analytics/\2
+	reqrep          ^([^\ ]*)\ /meta/v1/(.*) \1\ /meta/\2
+	option          httpchk GET /blueeyes/services/quirrel/v1/health
+        rspadd          Access-Control-Allow-Origin:\ *
+	server          local_nihdb01 localhost:50070 check
 
 backend                 localapache
         server          localapache localhost:20000
