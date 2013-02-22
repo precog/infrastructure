@@ -30,7 +30,7 @@ defaults
 	timeout         connect 600s
 	timeout         http-request 30s
 	timeout         server 600s
-        retries         10
+        retries         30 # shard takes up to 30 seconds to restart at this time (pre-nihdb)
 
 frontend                http
 	bind            *:80
@@ -84,29 +84,31 @@ frontend                http
 
 	default_backend service_query
 
+	# Backends with a single server use rise 1 fall 30 to withstand service restarts
+
 backend                 service_ingest
 	reqrep          ^([^\ ]*)\ /ingest/v1/(.*) \1\ /\2
 	option          httpchk GET /blueeyes/services/ingest/v1/health
         rspadd          Access-Control-Allow-Origin:\ *
-	server          local_ingest localhost:30060 check
+	server          local_ingest localhost:30060 check rise 1 fall 30
 
 backend                 service_security
 	reqrep          ^([^\ ]*)\ /security/v1/(.*) \1\ /\2
 	option          httpchk GET /blueeyes/services/security/v1/health
         rspadd          Access-Control-Allow-Origin:\ *
-	server          local_security localhost:30062 check
+	server          local_security localhost:30062 check rise 1 fall 30
 
 backend                 service_accounts
 	reqrep          ^([^\ ]*)\ /accounts/v1/(.*) \1\ /\2
 	option          httpchk GET /blueeyes/services/accounts/v1/health
         rspadd          Access-Control-Allow-Origin:\ *
-	server          local_accounts localhost:30064 check
+	server          local_accounts localhost:30064 check rise 1 fall 30
 
 backend                 service_jobs
 	reqrep          ^([^\ ]*)\ /jobs/v1/(.*) \1\ /jobs/\2
 	option          httpchk GET /blueeyes/services/jobs/v1/health
         rspadd          Access-Control-Allow-Origin:\ *
-	server          local_jobs localhost:30066 check
+	server          local_jobs localhost:30066 check rise 1 fall 30
 
 backend                 service_query
         # Query handles queries and metadata now
@@ -114,7 +116,7 @@ backend                 service_query
 	reqrep          ^([^\ ]*)\ /meta/v1/(.*) \1\ /meta/\2
 	option          httpchk GET /blueeyes/services/quirrel/v1/health
         rspadd          Access-Control-Allow-Origin:\ *
-	server          local_shard01 localhost:30070 check
+	server          local_shard01 localhost:30070 check rise 1 fall 30
 
 backend                 service_staging
         # Query handles queries and metadata now
@@ -122,7 +124,7 @@ backend                 service_staging
 	reqrep          ^([^\ ]*)\ /meta/v1/(.*) \1\ /meta/\2
 	option          httpchk GET /blueeyes/services/quirrel/v1/health
         rspadd          Access-Control-Allow-Origin:\ *
-	server          local_staging01 localhost:40070 check
+	server          local_staging01 localhost:40070 check rise 1 fall 30
 
 backend                 service_nihdb
         # Query handles queries and metadata now
@@ -130,7 +132,7 @@ backend                 service_nihdb
 	reqrep          ^([^\ ]*)\ /meta/v1/(.*) \1\ /meta/\2
 	option          httpchk GET /blueeyes/services/quirrel/v1/health
         rspadd          Access-Control-Allow-Origin:\ *
-	server          local_nihdb01 localhost:50070 check
+	server          local_nihdb01 localhost:50070 check rise 1 fall 30
 
 backend                 localapache
         server          localapache localhost:20000
