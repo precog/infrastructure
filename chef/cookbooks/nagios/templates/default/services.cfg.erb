@@ -337,6 +337,17 @@ define service {
        check_command          check_quirrel!30070!C0F57A14-2931-4BEF-8ABF-B6E239A2FD59!"SnapEngage query"!"import std::stats::* import std::time::* agents := //0000000056/se12014/timzon-snapabug-widget/status upperBound := 1358261667962 lowerBound := 1357023600000 extraLB := lowerBound - (24*60*60000) results := solve 'agent agents' := agents where agents.timestamp <= upperBound & agents.timestamp >= extraLB & agents.agentId = 'agent order := denseRank(agents'.timestamp) agents'' := agents' with { rank: order } newagents := new agents'' newagents' := newagents with { rank: newagents.rank - 1 } result := newagents' ~ agents'' { first: agents'', second: newagents' } where newagents'.rank = agents''.rank {start: std::math::max(result.first.timestamp, lowerBound), end: result.second.timestamp, agentId: result.first.agentId, status: result.first.status, name: result.first.agentAlias, data: result.first} results where results.end > lowerBound"!10000!15000
 }
 
+define service {
+       use                    default-service
+       hostgroup_name         quirrel-shardV2
+       normal_check_interval  300
+       process_perf_data      1
+       active_checks_enabled  1
+       service_description    SnapEngage NihDB query
+       action_url             /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
+       check_command          check_quirrel!50070!C0F57A14-2931-4BEF-8ABF-B6E239A2FD59!"SnapEngage NihDB query"!"import std::stats::* import std::time::* agents := //0000000056/se12014/timzon-snapabug-widget/status upperBound := 1358261667962 lowerBound := 1357023600000 extraLB := lowerBound - (24*60*60000) results := solve 'agent agents' := agents where agents.timestamp <= upperBound & agents.timestamp >= extraLB & agents.agentId = 'agent order := denseRank(agents'.timestamp) agents'' := agents' with { rank: order } newagents := new agents'' newagents' := newagents with { rank: newagents.rank - 1 } result := newagents' ~ agents'' { first: agents'', second: newagents' } where newagents'.rank = agents''.rank {start: std::math::max(result.first.timestamp, lowerBound), end: result.second.timestamp, agentId: result.first.agentId, status: result.first.status, name: result.first.agentAlias, data: result.first} results where results.end > lowerBound"!10000!15000
+}
+
 # Quirrel shard additional services
 define service {
        use                 default-service
