@@ -55,6 +55,7 @@ frontend                http
 
 	acl             SNAPENGAGE1 url_sub apiKey=5D28D0F7-2678-4E1F-B30C-6B453A8BC8A8
 	acl             SNAPENGAGE2 url_sub apiKey=C0F57A14-2931-4BEF-8ABF-B6E239A2FD59
+	acl             COLLEGEMINER url_sub apiKey=44A35581-CE9B-4BE2-B218-1CA776AF8DF0
 
 	acl             STAGING_HOST hdr_dom(host) -i staging
 	use_backend     service_staging   if STAGING_HOST ANALYTICS_PATH or STAGING_HOST META_PATH 
@@ -64,6 +65,7 @@ frontend                http
 
 	use_backend     service_nihdb     if SNAPENGAGE1 ANALYTICS_PATH or SNAPENGAGE1 META_PATH
 	use_backend     service_nihdb     if SNAPENGAGE2 ANALYTICS_PATH or SNAPENGAGE2 META_PATH
+	use_backend     service_nihdb     if COLLEGEMINER ANALYTICS_PATH or COLLEGEMINER META_PATH
 
         use_backend     service_ingest    if INGEST_PATH
 
