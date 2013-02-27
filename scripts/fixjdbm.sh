@@ -23,7 +23,7 @@ mkdir recovery || {
     set -e
     if [ -d recovery.0 ]
     then
-        LASTFILE=$(ls -1d recovery.* | tail -1)
+        LASTFILE=$(ls -1d recovery.* | sort -t '.' -k 2 -n | tail -1)
         LASTVER=${LASTFILE##*.}
         for ver in $(seq $LASTVER -1 0)
         do
