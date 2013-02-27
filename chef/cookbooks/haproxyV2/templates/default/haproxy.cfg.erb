@@ -53,9 +53,9 @@ frontend                http
         acl             ACCOUNTS_PATH path_beg /accounts/v1
         acl             JOBS_PATH path_beg /jobs/v1
 
-	acl             SNAPENGAGE1 url_sub apiKey=5D28D0F7-2678-4E1F-B30C-6B453A8BC8A8
-	acl             SNAPENGAGE2 url_sub apiKey=C0F57A14-2931-4BEF-8ABF-B6E239A2FD59
-	acl             COLLEGEMINER url_sub apiKey=44A35581-CE9B-4BE2-B218-1CA776AF8DF0
+	#acl             SNAPENGAGE1 url_sub apiKey=5D28D0F7-2678-4E1F-B30C-6B453A8BC8A8
+	#acl             SNAPENGAGE2 url_sub apiKey=C0F57A14-2931-4BEF-8ABF-B6E239A2FD59
+	#acl             COLLEGEMINER url_sub apiKey=44A35581-CE9B-4BE2-B218-1CA776AF8DF0
 
 	acl             STAGING_HOST hdr_dom(host) -i staging
 	use_backend     service_staging   if STAGING_HOST ANALYTICS_PATH or STAGING_HOST META_PATH 
@@ -63,9 +63,9 @@ frontend                http
 	acl             NIHDB_HOST hdr_dom(host) -i nihdb
 	use_backend     service_nihdb     if NIHDB_HOST ANALYTICS_PATH or NIHDB_HOST META_PATH 
 
-	use_backend     service_nihdb     if SNAPENGAGE1 ANALYTICS_PATH or SNAPENGAGE1 META_PATH
-	use_backend     service_nihdb     if SNAPENGAGE2 ANALYTICS_PATH or SNAPENGAGE2 META_PATH
-	use_backend     service_nihdb     if COLLEGEMINER ANALYTICS_PATH or COLLEGEMINER META_PATH
+	#use_backend     service_nihdb     if SNAPENGAGE1 ANALYTICS_PATH or SNAPENGAGE1 META_PATH
+	#use_backend     service_nihdb     if SNAPENGAGE2 ANALYTICS_PATH or SNAPENGAGE2 META_PATH
+	#use_backend     service_nihdb     if COLLEGEMINER ANALYTICS_PATH or COLLEGEMINER META_PATH
 
         use_backend     service_ingest    if INGEST_PATH
 
@@ -74,7 +74,7 @@ frontend                http
         block           if ACCOUNTS_PATH !LOCALHOST
         use_backend     service_accounts  if ACCOUNTS_PATH
 
-        use_backend     service_query if ANALYTICS_PATH or META_PATH
+        use_backend     service_nihdb if ANALYTICS_PATH or META_PATH
 
         use_backend     service_jobs if JOBS_PATH
 
