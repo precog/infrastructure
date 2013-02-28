@@ -57,8 +57,14 @@ frontend                http
 	#acl             SNAPENGAGE2 url_sub apiKey=C0F57A14-2931-4BEF-8ABF-B6E239A2FD59
 	#acl             COLLEGEMINER url_sub apiKey=44A35581-CE9B-4BE2-B218-1CA776AF8DF0
 
+        acl             ANALYTICS_HEALTH path_beg /blueeyes/services/query/
+        acl             INGEST_HEALTH path_beg /blueeyes/services/ingest/
+        acl             SECURITY_HEALTH path_beg /blueeyes/services/security/
+        acl             ACCOUNTS_HEALTH path_beg /blueeyes/services/accounts/
+        acl             JOBS_HEALTH path_beg /blueeyes/services/jobs/
+
 	acl             STAGING_HOST hdr_dom(host) -i staging
-	use_backend     service_staging   if STAGING_HOST ANALYTICS_PATH or STAGING_HOST META_PATH 
+	use_backend     service_staging   if STAGING_HOST ANALYTICS_PATH or STAGING_HOST META_PATH
 
 	acl             NIHDB_HOST hdr_dom(host) -i nihdb
 	use_backend     service_nihdb     if NIHDB_HOST ANALYTICS_PATH or NIHDB_HOST META_PATH 
@@ -67,16 +73,16 @@ frontend                http
 	#use_backend     service_nihdb     if SNAPENGAGE2 ANALYTICS_PATH or SNAPENGAGE2 META_PATH
 	#use_backend     service_nihdb     if COLLEGEMINER ANALYTICS_PATH or COLLEGEMINER META_PATH
 
-        use_backend     service_ingest    if INGEST_PATH
+        use_backend     service_ingest    if INGEST_PATH or INGEST_HEALTH
 
-        use_backend     service_security  if SECURITY_PATH
+        use_backend     service_security  if SECURITY_PATH or SECURITY_HEALTH
 
         block           if ACCOUNTS_PATH !LOCALHOST
-        use_backend     service_accounts  if ACCOUNTS_PATH
+        use_backend     service_accounts  if ACCOUNTS_PATH or ACCOUNTS_HEALTH
 
-        use_backend     service_nihdb if ANALYTICS_PATH or META_PATH
+        use_backend     service_nihdb if ANALYTICS_PATH or META_PATH or ACCOUNTS_HEALTH
 
-        use_backend     service_jobs if JOBS_PATH
+        use_backend     service_jobs if JOBS_PATH or JOBS_HEALTH
 
         # IDE requests go to apache for servicing
         acl             ide_req  hdr_dom(host)    -i ide
