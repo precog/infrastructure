@@ -26,10 +26,10 @@ defaults
 	stats           hide-version
 	stats           refresh 5s
 	stats           uri /haproxy/stats
-	timeout         client 600s
-	timeout         connect 600s
+	timeout         client 10m
+	timeout         connect 10m
 	timeout         http-request 30s
-	timeout         server 600s
+	timeout         server 30m
         retries         30 # shard takes up to 30 seconds to restart at this time (pre-nihdb)
 
 frontend                http
