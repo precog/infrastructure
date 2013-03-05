@@ -10,6 +10,8 @@ include_recipe "apache2"
 include_recipe "apache2::mod_php5"
 include_recipe "apache2::mod_alias"
 include_recipe "apache2::mod_rewrite"
+include_recipe "apache2::mod_deflate"
+include_recipe "apache2::mod_expires"
 include_recipe "s3tools"
 
 directory "#{node[:precog][:builder][:root]}" do
