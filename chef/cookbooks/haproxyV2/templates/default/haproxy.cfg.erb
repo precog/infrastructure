@@ -44,6 +44,10 @@ frontend                http
         acl             has_ssl_header hdr_cnt(reportgriddecrypter) gt 0
         block           if has_ssl_header !LOCALHOST
 
+	# Deny known bad guys
+	acl             bad_path path_beg /w00tw00t
+	block		if bad_path
+
         use_backend     fake_options      if METH_OPTIONS
 
         acl             ANALYTICS_PATH path_beg /analytics/v1
@@ -53,10 +57,6 @@ frontend                http
         acl             ACCOUNTS_PATH path_beg /accounts/v1
         acl             JOBS_PATH path_beg /jobs/v1
 
-	#acl             SNAPENGAGE1 url_sub apiKey=5D28D0F7-2678-4E1F-B30C-6B453A8BC8A8
-	#acl             SNAPENGAGE2 url_sub apiKey=C0F57A14-2931-4BEF-8ABF-B6E239A2FD59
-	#acl             COLLEGEMINER url_sub apiKey=44A35581-CE9B-4BE2-B218-1CA776AF8DF0
-
         acl             ANALYTICS_HEALTH path_beg /blueeyes/services/analytics/
         acl             INGEST_HEALTH path_beg /blueeyes/services/ingest/
         acl             SECURITY_HEALTH path_beg /blueeyes/services/security/
@@ -64,25 +64,25 @@ frontend                http
         acl             JOBS_HEALTH path_beg /blueeyes/services/jobs/
 
 	acl             STAGING_HOST hdr_dom(host) -i staging
-	use_backend     service_staging   if STAGING_HOST ANALYTICS_PATH or STAGING_HOST META_PATH
-
 	acl             NIHDB_HOST hdr_dom(host) -i nihdb
-	#use_backend     service_nihdb     if NIHDB_HOST ANALYTICS_PATH or NIHDB_HOST META_PATH 
+	acl		NEBULAB_HOST hdr_dom(host) -i nihdb
 
-	#use_backend     service_nihdb     if SNAPENGAGE1 ANALYTICS_PATH or SNAPENGAGE1 META_PATH
-	#use_backend     service_nihdb     if SNAPENGAGE2 ANALYTICS_PATH or SNAPENGAGE2 META_PATH
-	#use_backend     service_nihdb     if COLLEGEMINER ANALYTICS_PATH or COLLEGEMINER META_PATH
+	use_backend	service_ingest_b    if NEBULAB_HOST INGEST_PATH or NEBULAB_HOST INGEST_HEALTH
+        use_backend     service_ingest      if INGEST_PATH or INGEST_HEALTH
 
-        use_backend     service_ingest    if INGEST_PATH or INGEST_HEALTH
-
-        use_backend     service_security  if SECURITY_PATH or SECURITY_HEALTH
+        use_backend     service_security_b  if NEBULAB_HOST SECURITY_PATH or NEBULAB_HOST SECURITY_HEALTH
+        use_backend     service_security    if SECURITY_PATH or SECURITY_HEALTH
 
         block           if ACCOUNTS_PATH !LOCALHOST
-        use_backend     service_accounts  if ACCOUNTS_PATH or ACCOUNTS_HEALTH
+        use_backend     service_accounts_b  if NEBULAB_HOST ACCOUNTS_PATH or NEBULAB_HOST ACCOUNTS_HEALTH
+        use_backend     service_accounts    if ACCOUNTS_PATH or ACCOUNTS_HEALTH
 
-        use_backend     service_query if ANALYTICS_PATH or META_PATH or ACCOUNTS_HEALTH
+	use_backend     service_staging     if STAGING_HOST ANALYTICS_PATH or STAGING_HOST META_PATH or STAGING_HOST ACCOUNTS_HEALTH
+	use_backend     service_query_b     if NEBULAB_HOST ANALYTICS_PATH or NEBULAB_HOST META_PATH or NEBULAB_HOST ACCOUNTS_HEALTH
+        use_backend     service_query       if ANALYTICS_PATH or META_PATH or ACCOUNTS_HEALTH
 
-        use_backend     service_jobs if JOBS_PATH or JOBS_HEALTH
+        use_backend     service_jobs_b      if NEBULAB_HOST JOBS_PATH or NEBULAB_HOST JOBS_HEALTH
+        use_backend     service_jobs        if JOBS_PATH or JOBS_HEALTH
 
         # IDE requests go to apache for servicing
         acl             ide_req  hdr_dom(host)    -i ide
@@ -96,6 +96,10 @@ frontend                http
         acl             local_req hdr_dom(host)  -i <%= node[:hostname] %>
         use_backend     localapache       if ide_req or devide_req or lab_req or devlab_req or labcoat_req or devlabcoat_req or local_req or builder_req or devbuilder_req
 
+	# Block robots from query
+	acl		robots_req path_beg /robots.txt
+	block		if robots_req
+
 	default_backend service_query
 
 	# Backends with a single server use rise 1 fall 30 to withstand service restarts
@@ -106,11 +110,23 @@ backend                 service_ingest
         rspadd          Access-Control-Allow-Origin:\ *
 	server          local_ingest localhost:30060 check rise 1 fall 30
 
+backend                 service_ingest_b
+	reqrep          ^([^\ ]*)\ /ingest/v1/(.*) \1\ /\2
+	option          httpchk GET /blueeyes/services/ingest/v2/health
+        rspadd          Access-Control-Allow-Origin:\ *
+	server          local_ingest localhost:31060 check rise 1 fall 30
+
 backend                 service_security
 	reqrep          ^([^\ ]*)\ /security/v1/(.*) \1\ /\2
 	option          httpchk GET /blueeyes/services/security/v1/health
         rspadd          Access-Control-Allow-Origin:\ *
 	server          local_security localhost:30062 check rise 1 fall 30
+
+backend                 service_security_b
+	reqrep          ^([^\ ]*)\ /security/v1/(.*) \1\ /\2
+	option          httpchk GET /blueeyes/services/security/v1/health
+        rspadd          Access-Control-Allow-Origin:\ *
+	server          local_security localhost:31062 check rise 1 fall 30
 
 backend                 service_accounts
 	reqrep          ^([^\ ]*)\ /accounts/v1/(.*) \1\ /\2
@@ -118,11 +134,23 @@ backend                 service_accounts
         rspadd          Access-Control-Allow-Origin:\ *
 	server          local_accounts localhost:30064 check rise 1 fall 30
 
+backend                 service_accounts_b
+	reqrep          ^([^\ ]*)\ /accounts/v1/(.*) \1\ /\2
+	option          httpchk GET /blueeyes/services/accounts/v1/health
+        rspadd          Access-Control-Allow-Origin:\ *
+	server          local_accounts localhost:31064 check rise 1 fall 30
+
 backend                 service_jobs
 	reqrep          ^([^\ ]*)\ /jobs/v1/(.*) \1\ /jobs/\2
 	option          httpchk GET /blueeyes/services/jobs/v1/health
         rspadd          Access-Control-Allow-Origin:\ *
 	server          local_jobs localhost:30066 check rise 1 fall 30
+
+backend                 service_jobs_b
+	reqrep          ^([^\ ]*)\ /jobs/v1/(.*) \1\ /jobs/\2
+	option          httpchk GET /blueeyes/services/jobs/v1/health
+        rspadd          Access-Control-Allow-Origin:\ *
+	server          local_jobs localhost:31066 check rise 1 fall 30
 
 backend                 service_query
         # Query handles queries and metadata now
@@ -130,8 +158,16 @@ backend                 service_query
 	reqrep          ^([^\ ]*)\ /meta/v1/(.*) \1\ /meta/\2
 	option          httpchk GET /blueeyes/services/analytics/v2/health
         rspadd          Access-Control-Allow-Origin:\ *
-	server          local_shard01 localhost:30070 check rise 1 fall 30
+	server          local_shard01 localhost:30070 check rise 1 fall 4
 	server          local_shard02 localhost:31070 check rise 1 fall 30 backup
+
+backend                 service_query_b
+        # Query handles queries and metadata now
+	reqrep          ^([^\ ]*)\ /analytics/v1/(.*) \1\ /analytics/\2
+	reqrep          ^([^\ ]*)\ /meta/v1/(.*) \1\ /meta/\2
+	option          httpchk GET /blueeyes/services/analytics/v2/health
+        rspadd          Access-Control-Allow-Origin:\ *
+	server          local_shard02 localhost:31070 check rise 1 fall 30
 
 backend                 service_staging
         # Query handles queries and metadata now
