@@ -302,7 +302,7 @@ define service {
        active_checks_enabled  1
        service_description    Quirrel simple math query
        action_url             /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
-       check_command          check_quirrel!50070!AB150219-F045-4A32-A015-1C378FB1792B!"Simple math"!"total := 2 + 1%3Btotal * 3"!1000!2000
+       check_command          check_quirrel!30070!AB150219-F045-4A32-A015-1C378FB1792B!"Simple math"!"total := 2 + 1%3Btotal * 3"!1000!2000
 }
 
 define service {
@@ -312,7 +312,7 @@ define service {
        active_checks_enabled  1
        service_description    Quirrel mean value query
        action_url             /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
-       check_command          check_quirrel!50070!AB150219-F045-4A32-A015-1C378FB1792B!"Mean value"!"mean(load(%22/0000000067/clicks%22).product.price)"!5000!10000
+       check_command          check_quirrel!30070!AB150219-F045-4A32-A015-1C378FB1792B!"Mean value"!"mean(load(%22/0000000067/clicks%22).product.price)"!5000!10000
 }
 
 define service {
@@ -323,7 +323,7 @@ define service {
        active_checks_enabled  1
        service_description    Quirrel complex query
        action_url             /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
-       check_command          check_quirrel!50070!AB150219-F045-4A32-A015-1C378FB1792B!"Complex query"!"solve %27price, %27gender clicks := //0000000067/clicks tally := count(clicks where clicks.customer.gender = %27gender & clicks.product.price = %27price) { price : %27price, gender: %27gender, tally: tally }"!40000!60000
+       check_command          check_quirrel!30070!AB150219-F045-4A32-A015-1C378FB1792B!"Complex query"!"solve %27price, %27gender clicks := //0000000067/clicks tally := count(clicks where clicks.customer.gender = %27gender & clicks.product.price = %27price) { price : %27price, gender: %27gender, tally: tally }"!40000!60000
 }
 
 define service {
@@ -334,7 +334,7 @@ define service {
        active_checks_enabled  1
        service_description    SnapEngage query
        action_url             /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
-       check_command          check_quirrel!50070!C0F57A14-2931-4BEF-8ABF-B6E239A2FD59!"SnapEngage query"!"import std::stats::* import std::time::* agents := //0000000056/se12014/timzon-snapabug-widget/status upperBound := 1358261667962 lowerBound := 1357023600000 extraLB := lowerBound - (24*60*60000) results := solve 'agent agents' := agents where agents.timestamp <= upperBound & agents.timestamp >= extraLB & agents.agentId = 'agent order := denseRank(agents'.timestamp) agents'' := agents' with { rank: order } newagents := new agents'' newagents' := newagents with { rank: newagents.rank - 1 } result := newagents' ~ agents'' { first: agents'', second: newagents' } where newagents'.rank = agents''.rank {start: std::math::max(result.first.timestamp, lowerBound), end: result.second.timestamp, agentId: result.first.agentId, status: result.first.status, name: result.first.agentAlias, data: result.first} results where results.end > lowerBound"!10000!15000
+       check_command          check_quirrel!30070!C0F57A14-2931-4BEF-8ABF-B6E239A2FD59!"SnapEngage query"!"import std::stats::* import std::time::* agents := //0000000056/se12014/timzon-snapabug-widget/status upperBound := 1358261667962 lowerBound := 1357023600000 extraLB := lowerBound - (24*60*60000) results := solve 'agent agents' := agents where agents.timestamp <= upperBound & agents.timestamp >= extraLB & agents.agentId = 'agent order := denseRank(agents'.timestamp) agents'' := agents' with { rank: order } newagents := new agents'' newagents' := newagents with { rank: newagents.rank - 1 } result := newagents' ~ agents'' { first: agents'', second: newagents' } where newagents'.rank = agents''.rank {start: std::math::max(result.first.timestamp, lowerBound), end: result.second.timestamp, agentId: result.first.agentId, status: result.first.status, name: result.first.agentAlias, data: result.first} results where results.end > lowerBound"!10000!15000
 }
 
 define service {
