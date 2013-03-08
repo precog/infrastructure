@@ -96,10 +96,6 @@ frontend                http
         acl             local_req hdr_dom(host)  -i <%= node[:hostname] %>
         use_backend     localapache       if ide_req or devide_req or lab_req or devlab_req or labcoat_req or devlabcoat_req or local_req or builder_req or devbuilder_req
 
-	# Block robots from query
-	acl		robots_req path_beg /robots.txt
-	block		if robots_req
-
 	default_backend service_query
 
 	# Backends with a single server use rise 1 fall 30 to withstand service restarts
