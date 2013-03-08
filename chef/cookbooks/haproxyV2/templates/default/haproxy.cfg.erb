@@ -48,8 +48,6 @@ frontend                http
 	acl             bad_path path_beg /w00tw00t
 	block		if bad_path
 
-        use_backend     fake_options      if METH_OPTIONS
-
         acl             ANALYTICS_PATH path_beg /analytics/v1
         acl             META_PATH path_beg /meta/v1
         acl             INGEST_PATH path_beg /ingest/v1
@@ -67,13 +65,18 @@ frontend                http
 	acl             NIHDB_HOST hdr_dom(host) -i nihdb
 	acl		NEBULAB_HOST hdr_dom(host) -i nihdb
 
+	# Block external access to accounts -- all blocks apply before any use_backend rule
+	block           if ACCOUNTS_PATH !LOCALHOST
+
+	# Backend rules -- processed after all block rules
+        use_backend     fake_options      if METH_OPTIONS
+
 	use_backend	service_ingest_b    if NEBULAB_HOST INGEST_PATH or NEBULAB_HOST INGEST_HEALTH
         use_backend     service_ingest      if INGEST_PATH or INGEST_HEALTH
 
         use_backend     service_security_b  if NEBULAB_HOST SECURITY_PATH or NEBULAB_HOST SECURITY_HEALTH
         use_backend     service_security    if SECURITY_PATH or SECURITY_HEALTH
 
-        block           if ACCOUNTS_PATH !LOCALHOST
         use_backend     service_accounts_b  if NEBULAB_HOST ACCOUNTS_PATH or NEBULAB_HOST ACCOUNTS_HEALTH
         use_backend     service_accounts    if ACCOUNTS_PATH or ACCOUNTS_HEALTH
 
@@ -102,9 +105,10 @@ frontend                http
 
 backend                 service_ingest
 	reqrep          ^([^\ ]*)\ /ingest/v1/(.*) \1\ /\2
-	option          httpchk GET /blueeyes/services/ingest/v1/health
+	#option          httpchk GET /blueeyes/services/ingest/v1/health
         rspadd          Access-Control-Allow-Origin:\ *
-	server          local_ingest localhost:30060 check rise 1 fall 30
+	server          local_ingest01 localhost:30060 check rise 1 fall 30 backup
+	server          local_ingest02 localhost:31060 check rise 1 fall 4
 
 backend                 service_ingest_b
 	reqrep          ^([^\ ]*)\ /ingest/v1/(.*) \1\ /\2
@@ -116,7 +120,8 @@ backend                 service_security
 	reqrep          ^([^\ ]*)\ /security/v1/(.*) \1\ /\2
 	option          httpchk GET /blueeyes/services/security/v1/health
         rspadd          Access-Control-Allow-Origin:\ *
-	server          local_security localhost:30062 check rise 1 fall 30
+	server          local_security01 localhost:30062 check rise 1 fall 30 backup
+	server          local_security02 localhost:31062 check rise 1 fall 4
 
 backend                 service_security_b
 	reqrep          ^([^\ ]*)\ /security/v1/(.*) \1\ /\2
@@ -128,7 +133,8 @@ backend                 service_accounts
 	reqrep          ^([^\ ]*)\ /accounts/v1/(.*) \1\ /\2
 	option          httpchk GET /blueeyes/services/accounts/v1/health
         rspadd          Access-Control-Allow-Origin:\ *
-	server          local_accounts localhost:30064 check rise 1 fall 30
+	server          local_accounts01 localhost:30064 check rise 1 fall 30 backup
+	server          local_accounts02 localhost:31064 check rise 1 fall 4
 
 backend                 service_accounts_b
 	reqrep          ^([^\ ]*)\ /accounts/v1/(.*) \1\ /\2
@@ -140,7 +146,8 @@ backend                 service_jobs
 	reqrep          ^([^\ ]*)\ /jobs/v1/(.*) \1\ /jobs/\2
 	option          httpchk GET /blueeyes/services/jobs/v1/health
         rspadd          Access-Control-Allow-Origin:\ *
-	server          local_jobs localhost:30066 check rise 1 fall 30
+	server          local_jobs01 localhost:30066 check rise 1 fall 30 backup
+	server          local_jobs02 localhost:31066 check rise 1 fall 4
 
 backend                 service_jobs_b
 	reqrep          ^([^\ ]*)\ /jobs/v1/(.*) \1\ /jobs/\2
