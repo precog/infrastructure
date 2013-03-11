@@ -161,8 +161,8 @@ backend                 service_query
 	reqrep          ^([^\ ]*)\ /meta/v1/(.*) \1\ /meta/\2
 	option          httpchk GET /blueeyes/services/analytics/v2/health
         rspadd          Access-Control-Allow-Origin:\ *
-	server          local_shard01 localhost:30070 check rise 1 fall 4
-	server          local_shard02 localhost:31070 check rise 1 fall 30 backup
+	#server          local_shard01 localhost:30070 check rise 1 fall 4
+	server          local_shard02 localhost:31070 check rise 1 fall 30 #backup
 
 backend                 service_query_b
         # Query handles queries and metadata now
