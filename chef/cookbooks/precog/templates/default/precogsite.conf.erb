@@ -1,12 +1,12 @@
 <% @params[:server_aliases] ||= [] %>
-<% [ 80, 443 ].each do |listenport| %>
+<% node['apache']['listen_ports'].each do |listenport| %>
 <VirtualHost *:<%= listenport %>>
   ServerName <%= @params[:server_name] %>
   ServerAlias <% @params[:server_aliases].each do |a| %><%= "#{a}" %> <% end %>
   DocumentRoot <%= @params[:docroot] %>
   RewriteEngine On
 
-<% if listenport == 443 then %>
+<% if listenport.to_s == "443" then %>
   SSLCertificateFile /etc/apache2/ssl/precog.cert
   SSLCertificateKeyFile /etc/apache2/ssl/precog.key
   SSLCACertificateFile /etc/apache2/ssl/precog.ca.cert
