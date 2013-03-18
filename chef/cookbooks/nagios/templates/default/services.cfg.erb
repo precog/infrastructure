@@ -465,14 +465,14 @@ define service {
 # Monitor the web servers
 define service {
     use                 default-service
-    hostgroup_name      precogwebsite
+    hostgroup_name      precogwebsitevarnish
     service_description Precog Website
     check_command       check_http_content!www.precog.com!80!/!ReportGrid
 }
 
 define service {
     use                 default-service
-    hostgroup_name      precogwebsite
+    hostgroup_name      precogwebsitevarnish
     service_description Precog Website Events
     check_command       check_http_content!www.precog.com!80!/about/events!Event
 }
