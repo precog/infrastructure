@@ -252,18 +252,23 @@ define service {
 }
 
 # Quirrel checks
-<% shard_config = [["shard-demo1", 31150, "5CDA81E8-9817-438A-A340-F34E578E86F8", "", 1],
-                   ["shard-demo2", 31152, "5CDA81E8-9817-438A-A340-F34E578E86F8", "", 1],
-                   ["shard-demo3", 31154, "5CDA81E8-9817-438A-A340-F34E578E86F8", "", 1],
-                   ["shard-demo4", 31156, "5CDA81E8-9817-438A-A340-F34E578E86F8", "", 1],
-                   ["shard-beta", 30070, "88893651-23BA-4A3E-A8CD-FCADBE1F0A18", "example/", 1]] # [name, port, token, path prefix, enable] %>
+<% shard_config = [
+   ["quirrel-shard", "demo1", 31150, "5CDA81E8-9817-438A-A340-F34E578E86F8", "", 1],
+   ["quirrel-shard", "demo2", 31152, "5CDA81E8-9817-438A-A340-F34E578E86F8", "", 1],
+   ["quirrel-shard", "demo3", 31154, "5CDA81E8-9817-438A-A340-F34E578E86F8", "", 1],
+   ["quirrel-shard", "demo4", 31156, "5CDA81E8-9817-438A-A340-F34E578E86F8", "", 1],
+   ["quirrel-shard", "beta", 30070, "81B2A050-7964-40B6-B9E8-AA6111F2535B", "0000000828/healthCheck/", 1], # We're using a child of the dog-food account/api key here
+   ["quirrel-shard", "beta-b", 31070, "81B2A050-7964-40B6-B9E8-AA6111F2535B", "0000000828/healthCheck/", 1],
+   ["quirrel-shardV2", "nebula", 30070, "AB150219-F045-4A32-A015-1C378FB1792B", "0000000067/", 1],
+   ["quirrel-shardV2", "nebula-b", 30070, "AB150219-F045-4A32-A015-1C378FB1792B", "0000000067/", 1]
+] # [hostgroup, name, port, token, path prefix, enable] %>
 
-<% shard_config.each { |name,port,token,prefix,enabled| %>
+<% shard_config.each { |hostgroup,name,port,token,prefix,enabled| %>
 
 # <%= name %> checks
 define service {
        use                    default-service
-       hostgroup_name         quirrel-shard
+       hostgroup_name         <%= hostgroup %>
        process_perf_data      1
        active_checks_enabled  <%= enabled %>
        service_description    Quirrel <%= name %> simple math query
@@ -273,59 +278,85 @@ define service {
 
 define service {
        use                    default-service
-       hostgroup_name         quirrel-shard
+       hostgroup_name         <%= hostgroup %>
        process_perf_data      1
        active_checks_enabled  <%= enabled %>
        service_description    Quirrel <%= name %> mean value query
        action_url             /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
-       check_command          check_quirrel!<%= port %>!<%= token %>!"<%= name %> mean value"!"mean(//<%= prefix %>clicks.product.price)"!5000!10000
+       check_command          check_quirrel!<%= port %>!<%= token %>!"<%= name %> mean value"!"mean(load(%22/<%= prefix %>clicks%22).product.price)"!5000!10000
 }
 
 define service {
        use                    default-service
-       hostgroup_name         quirrel-shard
+       hostgroup_name         <%= hostgroup %>
        normal_check_interval  300
        process_perf_data      1
        active_checks_enabled  <%= enabled %>
        service_description    Quirrel <%= name %> complex query
        action_url             /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
-       check_command          check_quirrel!<%= port %>!<%= token %>!"<%= name %> complex"!"solve %27price, %27gender clicks := //clicks tally := count(clicks where clicks.customer.gender = %27gender & clicks.product.price = %27price) { price : %27price, gender: %27gender, tally: tally }"!40000!60000
+       check_command          check_quirrel!<%= port %>!<%= token %>!"<%= name %> complex"!"clicks := //<%= prefix %>clicks solve %27price, %27gender tally := count(clicks where clicks.customer.gender = %27gender & clicks.product.price = %27price) { price : %27price, gender: %27gender, tally: tally }"!40000!60000
 }
 
 <% } %>
 
-# Nebula checks
+# Blueeyes checks config [hostgroup, name, port, hostname, service/version]
+# These are (currently) very simple checks against the BE health status
+<% be_config = [
+   ["quirrel-shard","Beta ingest",30060,"beta.precog.com","ingest/v2"],
+   ["quirrel-shard","Beta B ingest",31060,"beta.precog.com","ingest/v2"],
+   ["quirrel-shard","Beta auth",30062,"beta.precog.com","security/v1"],
+   ["quirrel-shard","Beta B auth",31062,"beta.precog.com","security/v1"],
+   ["quirrel-shard","Beta accounts",30064,"beta.precog.com","accounts/v1"],
+   ["quirrel-shard","Beta B accounts",31064,"beta.precog.com","accounts/v1"],
+   ["quirrel-shard","Beta jobs",30066,"beta.precog.com","jobs/v1"],
+   ["quirrel-shard","Beta B jobs",31066,"beta.precog.com","jobs/v1"],
+
+   ["quirrel-shardV2","Nebula ingest",30060,"nebula.precog.com","ingest/v2"],
+   ["quirrel-shardV2","Nebula B ingest",31060,"nebula.precog.com","ingest/v2"],
+   ["quirrel-shardV2","Nebula auth",30062,"nebula.precog.com","security/v1"],
+   ["quirrel-shardV2","Nebula B auth",31062,"nebula.precog.com","security/v1"],
+   ["quirrel-shardV2","Nebula accounts",30064,"nebula.precog.com","accounts/v1"],
+   ["quirrel-shardV2","Nebula B accounts",31064,"nebula.precog.com","accounts/v1"],
+   ["quirrel-shardV2","Nebula jobs",30066,"nebula.precog.com","jobs/v1"],
+   ["quirrel-shardV2","Nebula B jobs",31066,"nebula.precog.com","jobs/v1"]
+]
+%>
+
+<% be_config.each { |hostgroup,name,port,hostname,service| %>
 define service {
-       use                    default-service
-       hostgroup_name         quirrel-shardV2
-       process_perf_data      1
-       active_checks_enabled  1
-       service_description    Quirrel simple math query
-       action_url             /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
-       check_command          check_quirrel!30070!AB150219-F045-4A32-A015-1C378FB1792B!"Simple math"!"total := 2 + 1%3Btotal * 3"!1000!2000
+    use                 default-service
+    hostgroup_name      <%= hostgroup %>
+    service_description <%= name %> health
+    check_command	check_http_content!<%= hostname %>!<%= port %>!/blueeyes/services/<%= service %>/health!uptimeSeconds
+}
+<% } %>
+
+# Infrastructure tests (TODO: get service-specific plugins for HC)
+<% ["quirrel-shard", "quirrel-shardV2"].each { |hostgroup| %>
+define service {
+    use                 default-service
+    hostgroup_name      <%= hostgroup %>
+    service_description Zookeeper
+    check_command	check_tcp!2181
 }
 
 define service {
-       use                    default-service
-       hostgroup_name         quirrel-shardV2
-       process_perf_data      1
-       active_checks_enabled  1
-       service_description    Quirrel mean value query
-       action_url             /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
-       check_command          check_quirrel!30070!AB150219-F045-4A32-A015-1C378FB1792B!"Mean value"!"mean(load(%22/0000000067/clicks%22).product.price)"!5000!10000
+    use                 default-service
+    hostgroup_name      <%= hostgroup %>
+    service_description Kafka Local
+    check_command	check_tcp!9082
 }
 
 define service {
-       use                    default-service
-       hostgroup_name         quirrel-shardV2
-       normal_check_interval  300
-       process_perf_data      1
-       active_checks_enabled  1
-       service_description    Quirrel complex query
-       action_url             /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
-       check_command          check_quirrel!30070!AB150219-F045-4A32-A015-1C378FB1792B!"Complex query"!"solve %27price, %27gender clicks := //0000000067/clicks tally := count(clicks where clicks.customer.gender = %27gender & clicks.product.price = %27price) { price : %27price, gender: %27gender, tally: tally }"!40000!60000
+    use                 default-service
+    hostgroup_name      <%= hostgroup %>
+    service_description Kafka Global
+    check_command	check_tcp!9092
 }
 
+<% } %>
+
+# Extra Nebula checks
 define service {
        use                    default-service
        hostgroup_name         quirrel-shardV2
@@ -337,72 +368,12 @@ define service {
        check_command          check_quirrel!30070!C0F57A14-2931-4BEF-8ABF-B6E239A2FD59!"SnapEngage query"!"import std::stats::* import std::time::* agents := //0000000056/se12014/timzon-snapabug-widget/status upperBound := 1358261667962 lowerBound := 1357023600000 extraLB := lowerBound - (24*60*60000) results := solve 'agent agents' := agents where agents.timestamp <= upperBound & agents.timestamp >= extraLB & agents.agentId = 'agent order := denseRank(agents'.timestamp) agents'' := agents' with { rank: order } newagents := new agents'' newagents' := newagents with { rank: newagents.rank - 1 } result := newagents' ~ agents'' { first: agents'', second: newagents' } where newagents'.rank = agents''.rank {start: std::math::max(result.first.timestamp, lowerBound), end: result.second.timestamp, agentId: result.first.agentId, status: result.first.status, name: result.first.agentAlias, data: result.first} results where results.end > lowerBound"!10000!15000
 }
 
-define service {
-       use                    default-service
-       hostgroup_name         quirrel-shardV2
-       normal_check_interval  300
-       process_perf_data      1
-       active_checks_enabled  0
-       service_description    SnapEngage NihDB query
-       action_url             /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
-       check_command          check_quirrel!50070!C0F57A14-2931-4BEF-8ABF-B6E239A2FD59!"SnapEngage NihDB query"!"import std::stats::* import std::time::* agents := //0000000056/se12014/timzon-snapabug-widget/status upperBound := 1358261667962 lowerBound := 1357023600000 extraLB := lowerBound - (24*60*60000) results := solve 'agent agents' := agents where agents.timestamp <= upperBound & agents.timestamp >= extraLB & agents.agentId = 'agent order := denseRank(agents'.timestamp) agents'' := agents' with { rank: order } newagents := new agents'' newagents' := newagents with { rank: newagents.rank - 1 } result := newagents' ~ agents'' { first: agents'', second: newagents' } where newagents'.rank = agents''.rank {start: std::math::max(result.first.timestamp, lowerBound), end: result.second.timestamp, agentId: result.first.agentId, status: result.first.status, name: result.first.agentAlias, data: result.first} results where results.end > lowerBound"!10000!15000
-}
-
 # Quirrel shard additional services
 define service {
        use                 default-service
        hostgroup_name      quirrel-shard
        service_description qwebirc
        check_command       check_https_content!api.precog.com!9090!/!Quirrel
-}
-
-define service {
-    use                 default-service
-    hostgroup_name      quirrel-shard
-    service_description Beta ingest health
-    check_command	check_http_content!api.precog.com!30060!/blueeyes/services/ingest/v1/health!uptimeSeconds
-}
-
-define service {
-    use                 default-service
-    hostgroup_name      quirrel-shardV2
-    service_description Nebula ingest health
-    check_command	check_http_content!nebula.precog.com!30060!/blueeyes/services/ingest/v1/health!uptimeSeconds
-}
-
-define service {
-    use                 default-service
-    hostgroup_name      quirrel-shard
-    service_description Security health
-    check_command	check_http_content!api.precog.com!30062!/blueeyes/services/security/v1/health!uptimeSeconds
-}
-
-define service {
-    use                 default-service
-    hostgroup_name      quirrel-shard
-    service_description Accounts health
-    check_command	check_http_content!api.precog.com!30064!/blueeyes/services/accounts/v1/health!uptimeSeconds
-}
-
-define service {
-    use                 default-service
-    hostgroup_name      quirrel-shard
-    service_description Zookeeper
-    check_command	check_tcp!2181
-}
-
-define service {
-    use                 default-service
-    hostgroup_name      quirrel-shard
-    service_description Kafka Local
-    check_command	check_tcp!9082
-}
-
-define service {
-    use                 default-service
-    hostgroup_name      quirrel-shard
-    service_description Kafka Global
-    check_command	check_tcp!9092
 }
 
 # API content checks
