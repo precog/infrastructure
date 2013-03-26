@@ -56,4 +56,4 @@ done | sort -n -k 1 >> $USAGEFILE
 shift 2
 
 #echo "Usage attached" | mutt -s "$ACCTDB usage" -a $USAGEFILE -- "$@"
-curl -Ss -X POST --data-binary @$ACCTJSONFILE 'https://beta.precog.com/ingest/v1/sync/fs/0000000828/byAccount/?apiKey=907C4B1E-A00D-4B1D-A191-90D4DE00EEB6'
+curl -Ss -X POST -H 'Content-Type: application/json' --data-binary @$ACCTJSONFILE 'https://beta.precog.com/ingest/v1/sync/fs/0000000828/byAccount/?apiKey=907C4B1E-A00D-4B1D-A191-90D4DE00EEB6'
