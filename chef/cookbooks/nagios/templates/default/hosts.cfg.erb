@@ -8,6 +8,20 @@ define host {
   hostgroups reportgrid_api
 }
 
+define host {
+  use server
+  address 50.28.37.144
+  host_name beta.precog.com
+  hostgroups precog_beta_api
+}
+
+define host {
+  use server
+  address 50.28.37.36
+  host_name nebula.precog.com
+  hostgroups precog_nebula_api
+}
+
 <% @nodes.each do |n| 
   # Total hack to exclude Arbiters based on a marker role
   if n.role?("mongodb-arbiter") then

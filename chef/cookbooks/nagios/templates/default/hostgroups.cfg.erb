@@ -15,6 +15,14 @@ define hostgroup {
   hostgroup_name reportgrid_api
 }
 
+define hostgroup {
+  hostgroup_name precog_beta_api
+}
+
+define hostgroup {
+  hostgroup_name precog_nebula_api
+}
+
 <% @roles.each do |role| %>
 define hostgroup {
   hostgroup_name <%= role %>

@@ -370,3 +370,8 @@ define command {
     command_name    check_quirrel
     command_line    $USER1$/check_quirrel.rb $HOSTADDRESS$ $ARG1$ $ARG2$ $ARG3$ $ARG4$ $ARG5$ $ARG6$
 }
+
+define command {
+    command_name    check_precog_account
+    command_line    $USER1$/check_http -I $HOSTADDRESS$ -S -H $ARG1$ -p $ARG2$ -u $ARG3$ -a "$ARG4$" -s $ARG5$ -w 5 -c 10 -t 30
+}

@@ -356,6 +356,39 @@ define service {
 
 <% } %>
 
+<% api_config = [
+   ["precog_beta_api", "beta.precog.com", "81B2A050-7964-40B6-B9E8-AA6111F2535B", "0000000828"],
+   ["precog_nebula_api", "nebula.precog.com", "AB150219-F045-4A32-A015-1C378FB1792B", "0000000067"]
+]
+
+api_config.each { |hostgroup,hostname,apikey,account| %>
+
+define service {
+    use                 default-service
+    hostgroup_name      <%= hostgroup %>
+    service_description Describe API Key
+    check_command       check_https_content!<%= hostname %>!443!/security/v1/apikeys/<%= apikey %>!issuerChain
+}
+
+define service {
+    use                 default-service
+    hostgroup_name      <%= hostgroup %>
+    service_description Describe account
+    check_command       check_precog_account!<%= hostname %>!443!/accounts/v1/accounts/<%= account %>!operations@precog.com:all them rule to one!accountCreationDate
+}
+
+define service {
+    use                 default-service
+    hostgroup_name      <%= hostgroup %>
+    service_description Simple ingest
+    check_command       check_precog_account!<%= hostname %>!443!/accounts/v1/accounts/<%= account %>!operations@precog.com:all them rule to one!accountCreationDate
+}
+
+
+
+<% } %>
+
+
 # Extra Nebula checks
 define service {
        use                    default-service
