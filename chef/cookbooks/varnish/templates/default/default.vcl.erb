@@ -4,6 +4,9 @@ backend default {
 }
 
 sub vcl_recv {
+    // Disable caching
+    return(pass);
+
     // Remove visitor_id, pardot, has_js and Google Analytics __* cookies.
     set req.http.Cookie = regsuball(req.http.Cookie, "(^|;\s*)(__[a-z]+|has_js|visitor_id[0-9]+|pardot)=[^;]*", "");
     // Remove a ";" prefix, if present.
@@ -58,6 +61,9 @@ sub vcl_deliver {
 }
 
 sub vcl_fetch {
+    // Disable changes on fetch
+    return(pass);
+
     if( req.request != "POST" ) {
         unset beresp.http.set-cookie;
         #unset obj.http.set-cookie;
