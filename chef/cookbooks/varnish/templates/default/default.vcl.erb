@@ -3,9 +3,22 @@ backend default {
     .port = "<%= node['varnish']['backend_port'] %>";
 }
 
+backend blog {
+    .host = "web3.precog.com";
+    .port = "80";
+}
+
 sub vcl_recv {
-    // Disable caching
-    return(pass);
+    if (req.http.host ~ "blog\.precog\.com") {
+        set req.backend = blog;
+    } else {
+        set req.backend = default;
+    }
+
+    // do not cache anything that isn't the blog
+    if (!(req.http.host ~ "blog\.precog\.com")) {
+        return(pass);
+    }
 
     // Remove visitor_id, pardot, has_js and Google Analytics __* cookies.
     set req.http.Cookie = regsuball(req.http.Cookie, "(^|;\s*)(__[a-z]+|has_js|visitor_id[0-9]+|pardot)=[^;]*", "");
@@ -61,8 +74,11 @@ sub vcl_deliver {
 }
 
 sub vcl_fetch {
-    // Disable changes on fetch
-    return(pass);
+    // Disable changes on fetch on anything that isn't blog
+    if (!(req.http.host ~ "blog\.precog\.com")) {
+        set beresp.http.X-Cacheable = "NO:Not Cacheable";
+        return(pass);
+    }
 
     if( req.request != "POST" ) {
         unset beresp.http.set-cookie;
