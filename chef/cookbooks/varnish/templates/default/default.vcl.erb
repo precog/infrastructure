@@ -76,7 +76,7 @@ sub vcl_deliver {
 sub vcl_fetch {
     // Disable changes on fetch on anything that isn't blog
     if (!(req.http.host ~ "blog\.precog\.com")) {
-        set beresp.http.X-Cacheable = "NO:Not Cacheable";
+        set beresp.http.X-Cacheable = "NO:Not Cacheable by Policy";
         return(pass);
     }
 
