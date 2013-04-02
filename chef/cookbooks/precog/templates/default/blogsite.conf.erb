@@ -1,5 +1,6 @@
 <VirtualHost *:443>
   ServerName blog.precog.com
+  DocumentRoot /var/www
   RewriteEngine On
 
   SSLCertificateFile /etc/apache2/ssl/precog.cert
@@ -15,6 +16,13 @@
   LogLevel info
   ErrorLog <%= node[:apache][:log_dir] %>/<%= @params[:name] %>-error.log
   CustomLog <%= node[:apache][:log_dir] %>/<%= @params[:name] %>-access.log combined
+
+  <Directory />
+    Options FollowSymLinks
+    AllowOverride None
+    Order Deny,Allow
+    Deny from All
+  </Directory>
 
   <Proxy *>
     Order deny,allow
