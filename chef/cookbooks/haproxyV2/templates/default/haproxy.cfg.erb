@@ -1,90 +1,83 @@
 global
-	log             /dev/log daemon info
-	#log 127.0.0.1	local1 notice
-	#log loghost	local0 info
-	maxconn         20000
-	#chroot /usr/share/haproxy
-	user            haproxy
-	group           haproxy
-	daemon
-	#debug
-	#quiet
+        log             /dev/log daemon info
+        maxconn         20000
+        user            haproxy
+        group           haproxy
+        daemon
 
 defaults
-	balance         roundrobin
-	maxconn         19500
-	mode            http
+        balance         roundrobin
+        mode            http
         monitor-uri     /haproxy/health
-	option          allbackups
-	option          abortonclose
-	option          dontlognull
-	option          httpclose
-	option          httplog
-	option          forwardfor
-	stats           enable
-	stats           hide-version
-	stats           refresh 5s
-	stats           uri /haproxy/stats
-	timeout         client 10m
-	timeout         connect 10m
-	timeout         http-request 30s
-	timeout         server 30m
+
+        option          httplog
+        option          http-server-close
+        option          forwardfor        except 127.0.0.0/8
+        option          redispatch
+        option          allbackups
+        option          abortonclose
         retries         30
+
+        timeout         http-request 600s
+        timeout         queue 10m
+        timeout         connect 10m
+        timeout         client 10m
+        timeout         server 10m
+        timeout         http-keep-alive 10s
+        timeout         check 10s
+
+        maxconn         19500
+
+        stats           enable
+        stats           hide-version
+        stats           refresh 5s
+        stats           uri /haproxy/stats
 
 frontend                http
 	bind            *:80
+        bind            *:443 ssl crt /etc/haproxy/certs/precog.pem ciphers HIGH:MEDIUM:!ADH
 
 	option          httplog
 	capture         request header X-Forwarded-For len 15
 	capture         request header Referer len 50
-        log             /dev/log daemon
-
-        # Deny forged decrypt headers for SSL
-        acl             has_ssl_header hdr_cnt(reportgriddecrypter) gt 0
-        block           if has_ssl_header !LOCALHOST
+        log             global
 
 	# Deny known bad guys
 	acl             bad_path path_beg /w00tw00t
-	block		if bad_path
 
-        acl             ANALYTICS_PATH path_beg /analytics/v1
-        acl             META_PATH path_beg /meta/v1
-        acl             INGEST_PATH path_beg /ingest/v1
-        acl             SECURITY_PATH path_beg /security/v1
-        acl             ACCOUNTS_PATH path_beg /accounts/v1
-        acl             JOBS_PATH path_beg /jobs/v1
-
-        acl             ANALYTICS_HEALTH path_beg /blueeyes/services/analytics/
-        acl             INGEST_HEALTH path_beg /blueeyes/services/ingest/
-        acl             SECURITY_HEALTH path_beg /blueeyes/services/security/
-        acl             ACCOUNTS_HEALTH path_beg /blueeyes/services/accounts/
-        acl             JOBS_HEALTH path_beg /blueeyes/services/jobs/
+        acl             ANALYTICS_PATH path_beg /analytics/v2
+        acl             META_PATH      path_beg /meta/v2
+        acl             INGEST_PATH    path_beg /ingest/v2
+        acl             SECURITY_PATH  path_beg /security/v1
+        acl             ACCOUNTS_PATH  path_beg /accounts/v1
+        acl             JOBS_PATH      path_beg /jobs/v1
 
 	acl             STAGING_HOST hdr_dom(host) -i staging
 	acl             NEBULAB_HOST hdr_dom(host) -i nebula-b
 
+        acl             HAS_SSL ssl_fc
 
-	# Block external access to accounts -- all blocks apply before any use_backend rule
-	block           if ACCOUNTS_PATH !LOCALHOST
+        block           if ACCOUNTS_PATH !HAS_SSL
+        block           if bad_path
 
 	# Backend rules -- processed after all block rules
         use_backend     fake_options      if METH_OPTIONS
 
-	use_backend	service_ingest_b    if NEBULAB_HOST INGEST_PATH or NEBULAB_HOST INGEST_HEALTH
-        use_backend     service_ingest      if INGEST_PATH or INGEST_HEALTH
+	use_backend	service_ingest_b    if NEBULAB_HOST INGEST_PATH
+        use_backend     service_ingest      if INGEST_PATH
 
-        use_backend     service_security_b  if NEBULAB_HOST SECURITY_PATH or NEBULAB_HOST SECURITY_HEALTH
-        use_backend     service_security    if SECURITY_PATH or SECURITY_HEALTH
+        use_backend     service_security_b  if NEBULAB_HOST SECURITY_PATH
+        use_backend     service_security    if SECURITY_PATH
 
-        use_backend     service_accounts_b  if NEBULAB_HOST ACCOUNTS_PATH or NEBULAB_HOST ACCOUNTS_HEALTH
-        use_backend     service_accounts    if ACCOUNTS_PATH or ACCOUNTS_HEALTH
+        use_backend     service_accounts_b  if NEBULAB_HOST ACCOUNTS_PATH
+        use_backend     service_accounts    if ACCOUNTS_PATH
 
-	use_backend     service_staging     if STAGING_HOST ANALYTICS_PATH or STAGING_HOST META_PATH or STAGING_HOST ACCOUNTS_HEALTH
-	use_backend     service_query_b     if NEBULAB_HOST ANALYTICS_PATH or NEBULAB_HOST META_PATH or NEBULAB_HOST ACCOUNTS_HEALTH
-        use_backend     service_query       if ANALYTICS_PATH or META_PATH or ACCOUNTS_HEALTH
+	use_backend     service_staging     if STAGING_HOST ANALYTICS_PATH or STAGING_HOST META_PATH
+	use_backend     service_query_b     if NEBULAB_HOST ANALYTICS_PATH or NEBULAB_HOST META_PATH
+        use_backend     service_query       if ANALYTICS_PATH or META_PATH
 
-        use_backend     service_jobs_b      if NEBULAB_HOST JOBS_PATH or NEBULAB_HOST JOBS_HEALTH
-        use_backend     service_jobs        if JOBS_PATH or JOBS_HEALTH
+        use_backend     service_jobs_b      if NEBULAB_HOST JOBS_PATH
+        use_backend     service_jobs        if JOBS_PATH
 
         # IDE requests go to apache for servicing
         acl             ide_req  hdr_dom(host)    -i ide
@@ -103,66 +96,62 @@ frontend                http
 	# Backends with a single server use rise 1 fall 30 to withstand service restarts
 
 backend                 service_ingest
-	reqrep          ^([^\ ]*)\ /ingest/v1/(.*) \1\ /\2
-	option          httpchk GET /blueeyes/services/ingest/v2/health
+	option          httpchk GET /ingest/v2/health
 	rspadd          Access-Control-Allow-Origin:\ *
 	default-server	rise 1 fall 3 inter 2s fastinter 1s downinter 5s error-limit 4 on-error mark-down
 	server          local_ingest01 localhost:30060 check observe layer7
 	server          local_ingest02 localhost:31060 check observe layer7
 
 backend                 service_ingest_b
-	reqrep          ^([^\ ]*)\ /ingest/v1/(.*) \1\ /\2
-	option          httpchk GET /blueeyes/services/ingest/v2/health
+	option          httpchk GET /ingest/v2/health
         rspadd          Access-Control-Allow-Origin:\ *
 	server          local_ingest localhost:31060 check rise 1 fall 30
 
 backend                 service_security
-	reqrep          ^([^\ ]*)\ /security/v1/(.*) \1\ /\2
-	option          httpchk GET /blueeyes/services/security/v1/health
+	option          httpchk GET /security/v1/health
         rspadd          Access-Control-Allow-Origin:\ *
 	default-server	rise 1 fall 3 inter 2s fastinter 1s downinter 5s error-limit 4 on-error mark-down
 	server          local_security01 localhost:30062 check observe layer7
 	server          local_security02 localhost:31062 check fall 30 backup
 
 backend                 service_security_b
-	reqrep          ^([^\ ]*)\ /security/v1/(.*) \1\ /\2
-	option          httpchk GET /blueeyes/services/security/v1/health
+
+	option          httpchk GET /security/v1/health
         rspadd          Access-Control-Allow-Origin:\ *
 	server          local_security localhost:31062 check rise 1 fall 30
 
 backend                 service_accounts
-	reqrep          ^([^\ ]*)\ /accounts/v1/(.*) \1\ /\2
-	option          httpchk GET /blueeyes/services/accounts/v1/health
+
+	option          httpchk GET /accounts/v1/health
         rspadd          Access-Control-Allow-Origin:\ *
 	default-server	rise 1 fall 3 inter 2s fastinter 1s downinter 5s error-limit 4 on-error mark-down
 	server          local_accounts01 localhost:30064 check observe layer7
 	server          local_accounts02 localhost:31064 check fall 30 backup
 
 backend                 service_accounts_b
-	reqrep          ^([^\ ]*)\ /accounts/v1/(.*) \1\ /\2
-	option          httpchk GET /blueeyes/services/accounts/v1/health
+
+	option          httpchk GET /accounts/v1/health
         rspadd          Access-Control-Allow-Origin:\ *
 	server          local_accounts localhost:31064 check rise 1 fall 30
 
 backend                 service_jobs
-	reqrep          ^([^\ ]*)\ /jobs/v1/(.*) \1\ /jobs/\2
-	option          httpchk GET /blueeyes/services/jobs/v1/health
+
+	option          httpchk GET /jobs/v1/health
         rspadd          Access-Control-Allow-Origin:\ *
 	default-server	rise 1 fall 3 inter 2s fastinter 1s downinter 5s error-limit 4 on-error mark-down
 	server          local_jobs01 localhost:30066 check observe layer7
 	server          local_jobs02 localhost:31066 check fall 30 backup
 
 backend                 service_jobs_b
-	reqrep          ^([^\ ]*)\ /jobs/v1/(.*) \1\ /jobs/\2
-	option          httpchk GET /blueeyes/services/jobs/v1/health
+
+	option          httpchk GET /jobs/v1/health
         rspadd          Access-Control-Allow-Origin:\ *
 	server          local_jobs localhost:31066 check rise 1 fall 30
 
 backend                 service_query
         # Query handles queries and metadata now
-	reqrep          ^([^\ ]*)\ /analytics/v1/(.*) \1\ /analytics/\2
-	reqrep          ^([^\ ]*)\ /meta/v1/(.*) \1\ /meta/\2
-	option          httpchk GET /blueeyes/services/analytics/v2/health
+	reqrep          ^([^\ ]*)\ /meta/v2/(.*) \1\ /analytics/v2/meta/\2
+	option          httpchk GET /analytics/v2/health
         rspadd          Access-Control-Allow-Origin:\ *
 	default-server	rise 1 fall 3 inter 2s fastinter 1s downinter 5s error-limit 4 on-error mark-down
 	server          local_shard01 localhost:30070 check observe layer7
@@ -170,17 +159,15 @@ backend                 service_query
 
 backend                 service_query_b
         # Query handles queries and metadata now
-	reqrep          ^([^\ ]*)\ /analytics/v1/(.*) \1\ /analytics/\2
-	reqrep          ^([^\ ]*)\ /meta/v1/(.*) \1\ /meta/\2
-	option          httpchk GET /blueeyes/services/analytics/v2/health
+	reqrep          ^([^\ ]*)\ /meta/v2/(.*) \1\ /analytics/v2/meta/\2
+	option          httpchk GET /analytics/v2/health
         rspadd          Access-Control-Allow-Origin:\ *
 	server          local_shard02 localhost:31070 check rise 1 fall 30
 
 backend                 service_staging
         # Query handles queries and metadata now
-	reqrep          ^([^\ ]*)\ /analytics/v1/(.*) \1\ /analytics/\2
-	reqrep          ^([^\ ]*)\ /meta/v1/(.*) \1\ /meta/\2
-	option          httpchk GET /blueeyes/services/analytics/v2/health
+	reqrep          ^([^\ ]*)\ /meta/v2/(.*) \1\ /analytics/v2/meta/\2
+	option          httpchk GET /analytics/v2/health
         rspadd          Access-Control-Allow-Origin:\ *
 	server          local_staging01 localhost:40070 check rise 1 fall 30
 
@@ -189,7 +176,7 @@ backend                 localapache
 
 backend                 fake_options
         reqirep         ^Host.* Host:\ api.precog.com
-	reqrep          ^([^\ ]*)\ /.* \1\ /\ HTTP/1.1
+
         server          fake_options localhost:20000
 
 listen stats :2442
