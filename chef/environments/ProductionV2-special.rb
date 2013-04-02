@@ -1,6 +1,7 @@
 name "ProductionV2-Special"
 description "ProductionV2 special server env"
 cookbook_versions ({
+  "haproxy" => "< 0.1.31"
 })
 default_attributes ({
   "postfix" => {
