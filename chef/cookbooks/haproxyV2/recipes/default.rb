@@ -10,6 +10,16 @@ package "haproxy" do
   package_name "haproxy"
 end
 
+package "socat" do
+  package_name "socat"
+end
+
+directory "/var/lib/haproxy" do
+  owner "haproxy"
+  group "haproxy"
+  mode "755"
+end
+
 service "haproxy" do
   service_name "haproxy"
   action :enable

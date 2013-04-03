@@ -10,6 +10,9 @@ global
 	#debug
 	#quiet
 
+        # turn on stats unix socket
+        stats   socket /var/lib/haproxy/stats level admin
+
 defaults
 	balance         roundrobin
 	maxconn         19500
