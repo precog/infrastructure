@@ -5,6 +5,9 @@ global
         group           haproxy
         daemon
 
+        # turn on stats unix socket
+        stats   socket /var/lib/haproxy/stats level admin
+
 defaults
         balance         roundrobin
         mode            http
