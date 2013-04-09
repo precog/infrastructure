@@ -302,23 +302,23 @@ define service {
 # Blueeyes checks config [hostgroup, name, port, hostname, service/version]
 # These are (currently) very simple checks against the BE health status
 <% be_config = [
-   ["quirrel-shard","Beta ingest",30060,"beta.precog.com","ingest/v2"],
-   ["quirrel-shard","Beta B ingest",31060,"beta.precog.com","ingest/v2"],
-   ["quirrel-shard","Beta auth",30062,"beta.precog.com","security/v1"],
-   ["quirrel-shard","Beta B auth",31062,"beta.precog.com","security/v1"],
-   ["quirrel-shard","Beta accounts",30064,"beta.precog.com","accounts/v1"],
-   ["quirrel-shard","Beta B accounts",31064,"beta.precog.com","accounts/v1"],
-   ["quirrel-shard","Beta jobs",30066,"beta.precog.com","jobs/v1"],
-   ["quirrel-shard","Beta B jobs",31066,"beta.precog.com","jobs/v1"],
+   ["quirrel-shard","Beta ingest",30060,"beta.precog.com","/ingest/v2"],
+   ["quirrel-shard","Beta B ingest",31060,"beta.precog.com","/ingest/v2"],
+   ["quirrel-shard","Beta auth",30062,"beta.precog.com","/security/v1"],
+   ["quirrel-shard","Beta B auth",31062,"beta.precog.com","/security/v1"],
+   ["quirrel-shard","Beta accounts",30064,"beta.precog.com","/accounts/v1"],
+   ["quirrel-shard","Beta B accounts",31064,"beta.precog.com","/accounts/v1"],
+   ["quirrel-shard","Beta jobs",30066,"beta.precog.com","/jobs/v1"],
+   ["quirrel-shard","Beta B jobs",31066,"beta.precog.com","/jobs/v1"],
 
-   ["quirrel-shardV2","Nebula ingest",30060,"nebula.precog.com","ingest/v2"],
-   ["quirrel-shardV2","Nebula B ingest",31060,"nebula.precog.com","ingest/v2"],
-   ["quirrel-shardV2","Nebula auth",30062,"nebula.precog.com","security/v1"],
-   ["quirrel-shardV2","Nebula B auth",31062,"nebula.precog.com","security/v1"],
-   ["quirrel-shardV2","Nebula accounts",30064,"nebula.precog.com","accounts/v1"],
-   ["quirrel-shardV2","Nebula B accounts",31064,"nebula.precog.com","accounts/v1"],
-   ["quirrel-shardV2","Nebula jobs",30066,"nebula.precog.com","jobs/v1"],
-   ["quirrel-shardV2","Nebula B jobs",31066,"nebula.precog.com","jobs/v1"]
+   ["quirrel-shardV2","Nebula ingest",30060,"nebula.precog.com","/ingest/v2"],
+   ["quirrel-shardV2","Nebula B ingest",31060,"nebula.precog.com","/ingest/v2"],
+   ["quirrel-shardV2","Nebula auth",30062,"nebula.precog.com","/security/v1"],
+   ["quirrel-shardV2","Nebula B auth",31062,"nebula.precog.com","/security/v1"],
+   ["quirrel-shardV2","Nebula accounts",30064,"nebula.precog.com","/accounts/v1"],
+   ["quirrel-shardV2","Nebula B accounts",31064,"nebula.precog.com","/accounts/v1"],
+   ["quirrel-shardV2","Nebula jobs",30066,"nebula.precog.com","/jobs/v1"],
+   ["quirrel-shardV2","Nebula B jobs",31066,"nebula.precog.com","/jobs/v1"]
 ]
 %>
 
@@ -327,7 +327,7 @@ define service {
     use                 default-service
     hostgroup_name      <%= hostgroup %>
     service_description <%= name %> health
-    check_command	check_http_content!<%= hostname %>!<%= port %>!/blueeyes/services/<%= service %>/health!uptimeSeconds
+    check_command	check_http_content!<%= hostname %>!<%= port %>!<%= service %>/health!uptimeSeconds
 }
 <% } %>
 
