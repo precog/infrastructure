@@ -106,7 +106,6 @@ frontend                http
 backend                 service_ingest
         reqrep          ^([^\ ]*)\ /ingest/v1/(.*) \1\ /ingest/v2/\2
         option          httpchk GET /ingest/v2/health
-        rspadd          Access-Control-Allow-Origin:\ *
         default-server  rise 1 fall 3 inter 2s fastinter 1s downinter 5s error-limit 4 on-error mark-down
         server          local_ingest01 localhost:30060 check observe layer7
         server          local_ingest02 localhost:31060 check observe layer7
@@ -114,43 +113,36 @@ backend                 service_ingest
 backend                 service_ingest_b
         reqrep          ^([^\ ]*)\ /ingest/v1/(.*) \1\ /ingest/v2/\2
         option          httpchk GET /ingest/v2/health
-        rspadd          Access-Control-Allow-Origin:\ *
         server          local_ingest localhost:31060 check rise 1 fall 30
 
 backend                 service_security
         option          httpchk GET /security/v1/health
-        rspadd          Access-Control-Allow-Origin:\ *
         default-server  rise 1 fall 3 inter 2s fastinter 1s downinter 5s error-limit 4 on-error mark-down
         server          local_security01 localhost:30062 check observe layer7
         server          local_security02 localhost:31062 check fall 30 backup
 
 backend                 service_security_b
         option          httpchk GET /security/v1/health
-        rspadd          Access-Control-Allow-Origin:\ *
         server          local_security localhost:31062 check rise 1 fall 30
 
 backend                 service_accounts
         option          httpchk GET /accounts/v1/health
-        rspadd          Access-Control-Allow-Origin:\ *
         default-server  rise 1 fall 3 inter 2s fastinter 1s downinter 5s error-limit 4 on-error mark-down
         server          local_accounts01 localhost:30064 check observe layer7
         server          local_accounts02 localhost:31064 check fall 30 backup
 
 backend                 service_accounts_b
         option          httpchk GET /accounts/v1/health
-        rspadd          Access-Control-Allow-Origin:\ *
         server          local_accounts localhost:31064 check rise 1 fall 30
 
 backend                 service_jobs
         option          httpchk GET /jobs/v1/health
-        rspadd          Access-Control-Allow-Origin:\ *
         default-server  rise 1 fall 3 inter 2s fastinter 1s downinter 5s error-limit 4 on-error mark-down
         server          local_jobs01 localhost:30066 check observe layer7
         server          local_jobs02 localhost:31066 check fall 30 backup
 
 backend                 service_jobs_b
         option          httpchk GET /jobs/v1/health
-        rspadd          Access-Control-Allow-Origin:\ *
         server          local_jobs localhost:31066 check rise 1 fall 30
 
 backend                 service_query
@@ -158,7 +150,6 @@ backend                 service_query
         reqrep          ^([^\ ]*)\ /analytics/v1/(.*) \1\ /analytics/v2/analytics/\2
         reqrep          ^([^\ ]*)\ /meta/v1/(.*) \1\ /analytics/v2/meta/\2
         option          httpchk GET /analytics/v2/health
-        rspadd          Access-Control-Allow-Origin:\ *
         default-server  rise 1 fall 3 inter 2s fastinter 1s downinter 5s error-limit 4 on-error mark-down
         server          local_shard01 localhost:30070 check observe layer7
         server          local_shard02 localhost:31070 check observe layer7
@@ -168,7 +159,6 @@ backend                 service_query_b
         reqrep          ^([^\ ]*)\ /analytics/v1/(.*) \1\ /analytics/v2/analytics/\2
         reqrep          ^([^\ ]*)\ /meta/v1/(.*) \1\ /analytics/v2/meta/\2
         option          httpchk GET /analytics/v2/health
-        rspadd          Access-Control-Allow-Origin:\ *
         server          local_shard02 localhost:31070 check rise 1 fall 30
 
 backend                 service_staging
@@ -176,7 +166,6 @@ backend                 service_staging
         reqrep          ^([^\ ]*)\ /analytics/v1/(.*) \1\ /analytics/v2/analytics/\2
         reqrep          ^([^\ ]*)\ /meta/v1/(.*) \1\ /analytics/v2/meta/\2
         option          httpchk GET /analytics/v2/health
-        rspadd          Access-Control-Allow-Origin:\ *
         server          local_staging01 localhost:40070 check rise 1 fall 30
 
 backend                 localapache
