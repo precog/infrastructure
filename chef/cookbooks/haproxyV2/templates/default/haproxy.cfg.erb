@@ -36,19 +36,14 @@ defaults
 
 frontend                http
         bind            *:80
+	bind            *:443 ssl crt /etc/haproxy/precog-chain.pem crt /etc/haproxy/certs ciphers HIGH:MEDIUM:!ADH
 
         option          httplog
         capture         request header X-Forwarded-For len 15
         capture         request header Referer len 50
         log             /dev/log daemon
 
-        # Deny forged decrypt headers for SSL
-        acl             has_ssl_header hdr_cnt(reportgriddecrypter) gt 0
-        block           if has_ssl_header !LOCALHOST
-
-        # Deny known bad guys
         acl             bad_path path_beg /w00tw00t
-        block           if bad_path
 
         acl             ANALYTICS_PATH path_beg /analytics/v1
         acl             META_PATH path_beg /meta/v1
@@ -65,10 +60,13 @@ frontend                http
 
         acl             STAGING_HOST hdr_dom(host) -i staging
         acl             NEBULAB_HOST hdr_dom(host) -i nebula-b
+        acl             HAS_SSL ssl_fc
 
+        # Deny known bad guys
+        block           if bad_path
 
         # Block external access to accounts -- all blocks apply before any use_backend rule
-        block           if ACCOUNTS_PATH !LOCALHOST
+        block           if ACCOUNTS_PATH !HAS_SSL
 
         # Backend rules -- processed after all block rules
         use_backend     fake_options      if METH_OPTIONS
@@ -79,8 +77,8 @@ frontend                http
         use_backend     service_security_b  if NEBULAB_HOST SECURITY_PATH or NEBULAB_HOST SECURITY_HEALTH
         use_backend     service_security    if SECURITY_PATH or SECURITY_HEALTH
 
-        use_backend     service_accounts_b  if NEBULAB_HOST ACCOUNTS_PATH or NEBULAB_HOST ACCOUNTS_HEALTH
-        use_backend     service_accounts    if ACCOUNTS_PATH or ACCOUNTS_HEALTH
+        use_backend     service_accounts_b  if NEBULAB_HOST ACCOUNTS_PATH HAS_SSL or NEBULAB_HOST ACCOUNTS_HEALTH
+        use_backend     service_accounts    if ACCOUNTS_PATH HAS_SSL or ACCOUNTS_HEALTH
 
         use_backend     service_staging     if STAGING_HOST ANALYTICS_PATH or STAGING_HOST META_PATH or STAGING_HOST ACCOUNTS_HEALTH
         use_backend     service_query_b     if NEBULAB_HOST ANALYTICS_PATH or NEBULAB_HOST META_PATH or NEBULAB_HOST ACCOUNTS_HEALTH

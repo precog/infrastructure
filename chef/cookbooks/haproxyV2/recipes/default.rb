@@ -5,7 +5,9 @@
 # Copyright 2010-2012, ReportGrid
 #
 # All rights reserved - Do Not Redistribute
-#
+
+include_recipe "haproxyV2::certs"
+
 package "haproxy" do
   package_name "haproxy"
 end
