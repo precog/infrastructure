@@ -20,8 +20,8 @@ template "mongodb.default" do
   mode "0644"
 end
 
-#package "mongodb-10gen" do
-#  package_name node[:mongodb][:package]
-#  version node[:mongodb][:version] if node[:mongodb].has_key?(:version)
-#  options '-o Dpkg::Options::="--force-confold"'
-#end
+package "mongodb-10gen" do
+  package_name node[:mongodb][:package]
+  version node[:mongodb][:version] if node[:mongodb].has_key?(:version)
+  options '-o Dpkg::Options::="--force-confold"'
+end
