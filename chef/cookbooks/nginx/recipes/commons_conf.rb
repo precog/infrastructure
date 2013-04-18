@@ -18,6 +18,10 @@
 # limitations under the License.
 #
 
+cookbook_file "#{node['nginx']['dir']}/conf.d/default.conf" do
+  notifies :reload, 'service[nginx]'
+end
+
 template "nginx.conf" do
   path "#{node['nginx']['dir']}/nginx.conf"
   source "nginx.conf.erb"
