@@ -6,6 +6,8 @@ server {
 
 	server_name www.precog.com;
 
+	rewrite ^/developers(.*)$ http://developers.precog.com$1 redirect;
+
         ssl on;
         ssl_certificate /etc/nginx/ssl/precog.cert;
         ssl_certificate_key /etc/nginx/ssl/precog.key;
@@ -17,14 +19,14 @@ server {
         ssl_prefer_server_ciphers on;
  
         # char set
-#        charset utf-8;
+        charset utf-8;
 
-#        location ~* \.(css|png|jpg|jpeg|gif|ico)$ {
-#                expires 14d;
-#        }
+        location ~* \.(css|png|jpg|jpeg|gif|ico)$ {
+                expires 14d;
+        }
 
         location / {
-#                expires 7d;
+                expires 7d;
                 # First attempt to serve request as file, then
                 # as directory, then fall back to index.html
                 try_files $uri $uri/ =404; # /index.html; # do not fall back so we can notice the problems
@@ -32,8 +34,8 @@ server {
                 # include /etc/nginx/naxsi.rules
         }
 
-	access_log  <%= node['nginx']['log_dir'] %>/precogsite-access.log;
-	error_log  <%= node['nginx']['log_dir'] %>/precogsite-error.log;
+	access_log  <%= node['nginx']['log_dir'] %>/ssl-precogsite-access.log;
+	error_log  <%= node['nginx']['log_dir'] %>/ssl-precogsite-error.log;
 
         #error_page 404 /404.html;
 

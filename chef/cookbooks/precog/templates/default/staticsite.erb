@@ -7,15 +7,17 @@ server {
 
 	server_name www.precog.com;
 
-        # char set
-#        charset utf-8;
+	rewrite ^/developers(.*)$ http://developers.precog.com$1 redirect;
 
-#        location ~* \.(css|png|jpg|jpeg|gif|ico)$ {
-#                expires 14d;
-#        }
+        # char set
+        charset utf-8;
+
+        location ~* \.(css|png|jpg|jpeg|gif|ico)$ {
+                expires 14d;
+        }
 
         location / {
-#                expires 7d;
+                expires 7d;
                 # First attempt to serve request as file, then
                 # as directory, then fall back to index.html
                 try_files $uri $uri/ =404; # /index.html; # do not fall back so we can notice the problems
