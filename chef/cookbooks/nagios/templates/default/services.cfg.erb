@@ -471,7 +471,7 @@ define service {
     use                 default-service
     hostgroup_name      precogwebsitevarnish
     service_description Precog Website
-    check_command       check_http_content!www.precog.com!80!/!ReportGrid
+    check_command       check_http_content!www.precog.com!80!/!Precog
 }
 
 define service {
