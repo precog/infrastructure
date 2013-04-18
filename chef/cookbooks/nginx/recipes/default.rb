@@ -19,6 +19,7 @@
 #
 
 include_recipe 'nginx::ohai_plugin'
+include_recipe 'nginx::monit'
 
 case node['nginx']['install_method']
 when 'source'
@@ -44,3 +45,4 @@ service 'nginx' do
   supports :status => true, :restart => true, :reload => true
   action :start
 end
+

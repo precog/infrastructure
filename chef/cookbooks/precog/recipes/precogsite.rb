@@ -1,5 +1,5 @@
 #
-# Cookbook Name:: reportgrid
+# Cookbook Name:: precog
 # Recipe:: precogsite
 #
 # Copyright 2012, Precog
