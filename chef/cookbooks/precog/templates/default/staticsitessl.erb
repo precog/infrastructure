@@ -1,0 +1,47 @@
+server {
+       	listen 443;
+
+        root /var/www/precogsite/current;
+        index index.html index.htm;
+
+	server_name www.precog.com;
+
+        ssl on;
+        ssl_certificate /etc/nginx/ssl/precog.cert;
+        ssl_certificate_key /etc/nginx/ssl/precog.key;
+ 
+        #ssl_session_timeout 5m;
+ 
+        #ssl_protocols SSLv3 TLSv1;
+        ssl_ciphers ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv3:+EXP;
+        ssl_prefer_server_ciphers on;
+ 
+        # char set
+#        charset utf-8;
+
+#        location ~* \.(css|png|jpg|jpeg|gif|ico)$ {
+#                expires 14d;
+#        }
+
+        location / {
+#                expires 7d;
+                # First attempt to serve request as file, then
+                # as directory, then fall back to index.html
+                try_files $uri $uri/ =404; # /index.html; # do not fall back so we can notice the problems
+                # Uncomment to enable naxsi on this location
+                # include /etc/nginx/naxsi.rules
+        }
+
+	access_log  <%= node['nginx']['log_dir'] %>/precogsite-access.log;
+	error_log  <%= node['nginx']['log_dir'] %>/precogsite-error.log;
+
+        #error_page 404 /404.html;
+
+        # redirect server error pages to the static page /50x.html
+        #
+        #error_page 500 502 503 504 /50x.html;
+        #location = /50x.html {
+        #       root /usr/share/nginx/www;
+        #}
+}
+
