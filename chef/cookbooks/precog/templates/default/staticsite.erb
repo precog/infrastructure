@@ -5,7 +5,7 @@ server {
         root /var/www/precogsite/current;
         index index.html index.htm;
 
-	server_name www.precog.com;
+	server_name www.precog.com *.precog.com;
 
 	include redirects.d/staticsite.conf;
 
