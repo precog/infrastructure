@@ -6,7 +6,8 @@ server {
 
 	server_name web4.precog.com;
 
-	rewrite ^/developers(.*)$ http://developers.precog.com$1 redirect;
+	include redirects.d/staticsite.conf;
+
 	rewrite ^ https://web4.precog.com$request_uri? redirect;
 
 	access_log  <%= node['nginx']['log_dir'] %>/precogsite-access.log;

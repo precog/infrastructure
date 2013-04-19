@@ -7,7 +7,7 @@ server {
 
 	server_name www.precog.com;
 
-	rewrite ^/developers(.*)$ http://developers.precog.com$1 redirect;
+	include redirects.d/staticsite.conf;
 
         # char set
         charset utf-8;

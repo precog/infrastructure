@@ -22,6 +22,16 @@ directory '/var/www/precogsite/releases' do
   mode  "2775"
 end
 
+directory '/etc/nginx/redirects.d' do
+  owner 'root'
+  group 'root'
+  mode 0755
+end
+
+link '/etc/nginx/redirects.d/staticsite.conf' do
+  to '/var/www/precogsite/current/redirects.conf'
+end
+
 template "#{node['nginx']['dir']}/sites-available/staticsite" do
   source "staticsite.erb"
   owner "root"
