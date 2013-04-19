@@ -1,0 +1,36 @@
+map $arg_p $wpredirect {
+        include /etc/nginx/redirects.d/blog.conf;
+}
+
+server {
+        listen 80;
+
+        server_name blog.precog.com blogtest.precog.com;
+
+        return 302 $wpredirect;
+
+        access_log  <%= node['nginx']['log_dir'] %>/blog-access.log;
+        error_log  <%= node['nginx']['log_dir'] %>/blog-error.log;
+}
+
+server {
+        listen 443;
+
+        server_name blog.precog.com blogtest.precog.com;
+
+        ssl on;
+        ssl_certificate /etc/nginx/ssl/precog.cert;
+        ssl_certificate_key /etc/nginx/ssl/precog.key;
+
+        #ssl_session_timeout 5m;
+
+        #ssl_protocols SSLv3 TLSv1;
+        ssl_ciphers ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv3:+EXP;
+        ssl_prefer_server_ciphers on;
+
+        return 302 $wpredirect;
+
+        access_log  <%= node['nginx']['log_dir'] %>/ssl-blog-access.log;
+        error_log  <%= node['nginx']['log_dir'] %>/ssl-blog-error.log;
+}
+

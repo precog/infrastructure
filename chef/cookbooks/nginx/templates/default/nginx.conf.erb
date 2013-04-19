@@ -1,106 +1,69 @@
-user www-data;
-worker_processes 2;
+user <%= node['nginx']['user'] %><% if node['nginx']['user'] != node['nginx']['group'] %> <%= node['nginx']['group'] %><% end %>;
+worker_processes  <%= node['nginx']['worker_processes'] %>;
+<% if node['nginx']['daemon_disable'] -%>
+daemon off;
+<% end -%>
+<% if node['nginx']['worker_rlimit_nofile'] -%>
+worker_rlimit_nofile <%= node['nginx']['worker_rlimit_nofile'] %>;
+<% end -%>
 
-error_log  /var/log/nginx/error.log;
-pid        /var/run/nginx.pid;
+error_log  <%= node['nginx']['log_dir'] %>/error.log;
+pid        <%= node['nginx']['pid'] %>;
 
 events {
-    worker_connections  1024;
-    # multi_accept on;
+  worker_connections  <%= node['nginx']['worker_connections'] %>;
+<% if node['nginx']['multi_accept'] -%>
+  multi_accept on;
+<% end -%>
+<% if node['nginx']['event'] -%>
+  use <%= node['nginx']['event'] %>;
+<% end -%>
 }
 
 http {
-  include       /etc/nginx/mime.types;
-
-  log_format upstreamlog '[$time_local] [$remote_addr/$remote_user/$server_name] to: [$upstream_addr] status: $status tx: $bytes_sent req_time: $request_time request: [$request] up_resptime: $upstream_response_time body: [$request_body]';
-
-  access_log	/var/log/nginx/access.log upstreamlog;
-
-  sendfile        on;
-  #tcp_nopush     on;
-
-  #keepalive_timeout  0;
-  keepalive_timeout  65;
-  tcp_nodelay        on;
-
-  gzip  on;
-  gzip_disable "MSIE [1-6]\.(?!.*SV1)";
-
-  <% @services.each do |service, params| %>
-  upstream <%= "#{service[0]}_#{service[1]}" %> {
-    <% params[:servers].each do |server|
-         if !server.nil? && server == @node[:fqdn] then %>
-    server <%= "localhost:#{params[:port]}" %>;
-    <%     else %>
-    server <%= "#{server}:#{params[:port]}" %> backup;
-    <%   end %>
-    <% end %>
-  }
-
+  <% if node.recipe?('nginx::naxsi_module') %>
+  include       <%= node['nginx']['dir'] %>/naxsi_core.rules;
   <% end %>
 
-  proxy_cache_path /var/nginx/cache levels=1:2 keys_zone=STATIC:50m;
+  include       <%= node['nginx']['dir'] %>/mime.types;
+  default_type  application/octet-stream;
 
-  server {
-    listen 85;
-    server_name "api.reportgrid.com";
+  <% unless node['nginx']['disable_access_log'] -%>
+  access_log	<%= node['nginx']['log_dir'] %>/access.log;
+  <% end %>
 
-    # Health check should succeed
-    location /haproxy/health {
-      return 200 Healthy;
-    }
+  sendfile <%= node['nginx']['sendfile'] %>;
+  tcp_nopush on;
+  tcp_nodelay on;
 
-    # If the custom header exists here and it's not from localhost, it's invalid
-    if ($remote_addr !~ 127.*) {
-      set $blockfakessl T;
-    }
+  <% if node['nginx']['keepalive'] == "on" %>
+  keepalive_timeout  <%= node['nginx']['keepalive_timeout'] %>;
+  <% end %>
 
-    if ($http_reportgriddecrypter) {
-      set $blockfakessl "T$blockfakessl";
-    }
+  gzip  <%= node['nginx']['gzip'] %>;
+  <% if node['nginx']['gzip'] == "on" %>
+  gzip_http_version <%= node['nginx']['gzip_http_version'] %>;
+  gzip_comp_level <%= node['nginx']['gzip_comp_level'] %>;
+  gzip_proxied <%= node['nginx']['gzip_proxied'] %>;
+  gzip_vary <%= node['nginx']['gzip_vary'] %>;
+  <% if node['nginx']['gzip_buffers'] -%>
+  gzip_buffers <%= node['nginx']['gzip_buffers'] %>;
+  <% end -%>
+  gzip_types <%= node['nginx']['gzip_types'].join(' ') %>;
+  gzip_min_length  1000;
+  gzip_disable     "MSIE [1-6]\.";
+  <% end %>
 
-    if ($blockfakessl = "TT") {
-      return 403;
-    }            
-    
-    # We completely block access to the billing admin interface via proxy
-    location /services/billing/v1/accounts/assess {
-      return 403;
-    }
+  server_names_hash_bucket_size <%= node['nginx']['server_names_hash_bucket_size'] %>;
+  types_hash_max_size <%= node['nginx']['types_hash_max_size'] %>;
+  types_hash_bucket_size <%= node['nginx']['types_hash_bucket_size'] %>;
+  <% if node['nginx']['proxy_read_timeout'] -%>
+  proxy_read_timeout <%= node['nginx']['proxy_read_timeout'] %>;
+  <% end -%>
+  <% if node['nginx']['client_max_body_size'] -%>
+  client_max_body_size <%= node['nginx']['client_max_body_size'] %>;
+  <% end -%>
 
-    location /services/viz {
-      rewrite ^/services/viz/(.*)$ /$1 break;
-      proxy_pass http://localhost:20000;
-      proxy_set_header Host $http_host;
-    }
-
-   <% @services.each do |service, params| %>
-    location <%= "/services/#{service[0]}/#{service[1]}/" %> {
-      # Rewrite incoming request to use the service's URI scheme
-      #rewrite ^/services/[[:alnum:]-]+/[[:alnum:]-]+/(.*)$ /$1 break;
-      proxy_set_header X-Service-URL-Root /services/<%= "#{service[0]}/#{service[1]}" %>;
-      add_header Access-Control-Allow-Origin *;
-
-      proxy_cache off;
-      proxy_pass http://<%= "#{service[0]}_#{service[1]}" %>/;
-      proxy_set_header Host $http_host;
-    }
-
-    location <%= "/blueeyes/services/#{service[0]}/#{service[1]}/" %> {
-      proxy_cache off;
-      proxy_pass http://localhost:<%= params[:port] %>;
-      proxy_set_header Host $http_host;
-    }
-
-   <% end %>  
-    # Anything else gets proxied/cached
-    
-    location / {
-      proxy_cache STATIC;
-      proxy_cache_valid 5m;
-      proxy_ignore_headers Cache-Control;
-      proxy_pass http://static.api.reportgrid.com:80;
-      proxy_set_header Host api.reportgrid.com;
-    }
- }
+  include <%= node['nginx']['dir'] %>/conf.d/*.conf;
+  include <%= node['nginx']['dir'] %>/sites-enabled/*;
 }

@@ -1,69 +1,48 @@
 #
 # Cookbook Name:: nginx
 # Recipe:: default
+# Author:: AJ Christensen <aj@junglist.gen.nz>
 #
-# Copyright 2010, ReportGrid
+# Copyright 2008-2012, Opscode, Inc.
 #
-# All rights reserved - Do Not Redistribute
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-add_apt_repo do
-  url "ppa:nginx/stable"
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+include_recipe 'nginx::ohai_plugin'
+include_recipe 'nginx::monit'
+
+case node['nginx']['install_method']
+when 'source'
+  include_recipe 'nginx::source'
+when 'package'
+  case node['platform']
+  when 'redhat','centos','scientific','amazon','oracle'
+    if node['nginx']['repo_source'] == 'epel'
+      include_recipe 'yum::epel'
+    else
+      include_recipe 'nginx::repo'
+    end
+  end
+  package node['nginx']['package_name']
+  service 'nginx' do
+    supports :status => true, :restart => true, :reload => true
+    action :enable
+  end
+  include_recipe 'nginx::commons'
 end
 
-package "nginx" do
-  package_name "nginx-full"
+service 'nginx' do
+  supports :status => true, :restart => true, :reload => true
+  action :start
 end
 
-directory "/var/nginx/cache" do
-  owner "www-data"
-  mode  "0700"
-  recursive true
-end
-
-service "nginx" do
-  service_name "nginx"
-  action :enable
-end
-
-# Setup and generation for haproxy.cfg 
-appservers = search(:node, "(role:appserver* OR roles:appserver*) AND chef_environment:#{node.chef_environment}").map { |n| n[:fqdn] }
-
-# haproxy should at least reference localhost
-if appservers.length == 0 then
-  appservers = [node[:fqdn]]
-end
-
-services = {
-  ['analytics', 'v1'] => {
-    :servers => appservers,
-    :port    => 30020
-  },
-  ['jessup', 'v1'] => {
-    :servers => appservers,
-    :port    => 30030
-  },
-  ['billing', 'v1'] => {
-    :servers => appservers,
-    :port    => 30040
-  },
-  ['vistrack', 'v1'] => {
-    :servers => appservers,
-    :port    => 30050
-  }
-}
-
-template "nginx.conf" do
-  variables(
-    :services => services 
-  )
-  path "/etc/nginx/nginx.conf"
-  mode "0644"
-  notifies :restart, resources(:service => "nginx")
-end
-
-template "nginx.monit" do
-  source "nginx.monit.erb"
-  path "/etc/monit/conf.d/nginx.monit"
-  mode "0644"
-  notifies :restart, resources(:service => "monit")
-end
