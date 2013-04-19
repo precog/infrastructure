@@ -197,10 +197,10 @@ def check_rep_lag(con, warning, critical, perf_data):
             if member['stateStr'] == 'SECONDARY':
                 lastSlaveOpTime = member['optime'].time
                 replicationLag = lastMasterOpTime - lastSlaveOpTime - slaveDelays[member['name']]
-                
+
                 if replicationLag is None:
                     replicationLag = 0
-                    
+
                 data = data + member['name'] + " lag=%s;" % replicationLag
                 lag = max(lag, replicationLag)
 
@@ -351,13 +351,16 @@ def index_miss_ratio(con, warning, critical, perf_data):
         try:
             miss_ratio = float(data['indexCounters']['btree']['missRatio'])
         except KeyError:
-            not_supported_msg = "not supported on this platform"
-            if data['indexCounters']['note'] == not_supported_msg:
-                print "OK - MongoDB says: " + not_supported_msg
-                sys.exit(0)
-            else:
-                print "WARNING - Can't get counter from MongoDB"
-                sys.exit(1)
+            try:
+                miss_ratio = float(data['indexCounters']['missRatio'])
+            except:
+                not_supported_msg = "not supported on this platform"
+                if data['indexCounters']['note'] == not_supported_msg:
+                    print "OK - MongoDB says: " + not_supported_msg
+                    sys.exit(0)
+                else:
+                    print "WARNING - Can't get counter from MongoDB"
+                    sys.exit(1)
 
         message = "Miss Ratio: %.2f" % miss_ratio
         if perf_data:
