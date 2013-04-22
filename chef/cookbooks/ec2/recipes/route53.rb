@@ -7,6 +7,9 @@
 # All rights reserved - Do Not Redistribute
 #
 
+# This is required for the gem to work
+package "libopenssl-ruby1.8"
+
 # FIXME: http://tickets.opscode.com/browse/CHEF-1669
 gem_package "route53" do
   package_name "route53"
