@@ -28,10 +28,12 @@ defaults
         stats           hide-version
         stats           refresh 30s
         stats           uri /haproxy/stats
-        timeout         client 10m
-        timeout         connect 10m
-        timeout         http-request 30s
-        timeout         server 30m
+	timeout         queue 10m           # Timeout waiting for accept() on queue congestion
+        timeout         connect 10s         # Time to syn/ack
+        timeout         client 10m          # Time between bytes on header
+        timeout         http-request 20m    # Total header time
+        timeout         server 4h           # How long the server may take to answer
+	timeout         http-keep-alive 30s # How long after server answers before releasing connection
         retries         30
 
 frontend                http
