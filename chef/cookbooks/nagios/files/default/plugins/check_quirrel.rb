@@ -28,7 +28,7 @@ begin
   escaped = URI.escape(content.gsub('%27','\'').gsub('%3B',';')).gsub('+', '%2B').gsub('&', '%26')
   #escaped = URI.escape(content).gsub('+', '%2B')
 
-  url = URI.parse("http://#{host}:#{port}/analytics/fs/?apiKey=#{token}&method=GET&callback=ReportGridJsonpCallback16517847&q=#{escaped}")
+  url = URI.parse("http://#{host}:#{port}/analytics/v2/analytics/fs/?apiKey=#{token}&method=GET&callback=ReportGridJsonpCallback16517847&q=#{escaped}")
 
   start_time = Time.now
  # puts "URL= #{url}"
