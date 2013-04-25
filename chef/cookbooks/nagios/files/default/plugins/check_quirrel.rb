@@ -37,8 +37,8 @@ begin
     requrl = url.request_uri
     http.request_get(requrl) do |response|
       if not response.is_a? Net::HTTPOK then
-        #$stderr.puts(response)
-        $stderr.puts("UNKNOWN:Error collecting stats: #{response.read_body}")
+        puts("UNKNOWN:Error collecting stats: #{response.read_body}")
+        exit(3)
       else
         $stderr.puts(response.read_body)
         begin
@@ -54,12 +54,13 @@ begin
             puts "OK:#{message}"
           end
         rescue => e
-          $stderr.puts("UNKNOWN:Error parsing response: #{e.message}")
+          puts("UNKNOWN:Error parsing response: #{e.message}")
+          exit(3)
         end
       end
     end
   end
 rescue => e
-  $stderr.puts("UNKNOWN:Error processing poll: #{e.message}")
+  puts("UNKNOWN:Error processing poll: #{e.message}")
   exit(3)
 end

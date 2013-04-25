@@ -36,7 +36,8 @@ begin
   Net::HTTP.start(url.host, url.port) do |http|
     http.request_get(path) do |response|
       if not response.is_a? Net::HTTPOK then
-        $stderr.put("UNKNOWN:Error collecting stats: #{response.read_body}")
+        put("UNKNOWN:Error collecting stats: #{response.read_body}")
+        exit(3)
       else
         begin
           data = JSON.parse(response.read_body)
@@ -91,12 +92,13 @@ begin
             end
           end
         rescue => e
-          $stderr.puts("UNKNOWN:Error parsing response: #{e.message}")
+          puts("UNKNOWN:Error parsing response: #{e.message}")
+          exit(3)
         end
       end
     end
   end
 rescue => e
-  $stderr.puts("UNKNOWN:Error processing poll: #{e.message}")
+  puts("UNKNOWN:Error processing poll: #{e.message}")
   exit(3)
 end
