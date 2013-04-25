@@ -375,3 +375,8 @@ define command {
     command_name    check_precog_account
     command_line    $USER1$/check_http -I $HOSTADDRESS$ -S -H $ARG1$ -p $ARG2$ -u $ARG3$ -a "$ARG4$" -s $ARG5$ -w 5 -c 10 -t 30
 }
+
+define command { # Needs a bizarre shell script to interface with the perl script
+    command_name    check_hastats
+    command_line    $USER1$/cleanup_proxy.sh $USER1$/check_hastats.pl $HOSTADDRESS$ 80 $ARG1$ $ARG2$ $ARG3$
+}

@@ -164,6 +164,22 @@ define service {
     check_command	check_rg_service!/blueeyes/services/analytics/v1/health!response!30000!50000
 }
 
+define service {
+    use                 default-service
+    hostgroup_name      appserverV2
+    service_description HAProxy Frontend Connections
+    process_perf_data   1
+    check_command   check_hastats!http!200!1000
+}
+
+define service {
+    use                 default-service
+    hostgroup_name      appserverV2
+    service_description HAProxy Analytics Connections
+    process_perf_data   1
+    check_command   check_hastats!services_analytics_v1!8!10
+}
+
 # devci checks
 define service {
     use                 default-service
