@@ -9,6 +9,7 @@
 include_recipe "precog::nginxcerts"
 include_recipe "nginx::repo"
 include_recipe "nginx"
+include_recipe "nginx::http_stub_status_module"
 
 directory '/var/www/precogsite' do
   owner "ubuntu"

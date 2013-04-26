@@ -13,6 +13,14 @@ server {
         # char set
         charset utf-8;
 
+        location ~/rrd {
+                autoindex on;
+                root   /var/www/stats;
+                access_log  /var/log/nginx/rrd.access.log;
+                error_log  /var/log/nginx/rrd.error.log;
+                try_files $uri $uri/ rrd/index.html;
+        }
+
         location ~* \.(css|png|jpg|jpeg|gif|ico)$ {
                 expires 14d;
         }
