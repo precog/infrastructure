@@ -177,7 +177,7 @@ define service {
     hostgroup_name      appserverV2
     service_description HAProxy Analytics Connections
     process_perf_data   1
-    check_command   check_hastats!services_analytics_v1!8!10
+    check_command   check_hastats!services_analytics_v1!80!100
 }
 
 # devci checks
