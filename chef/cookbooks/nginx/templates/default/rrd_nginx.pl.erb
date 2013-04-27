@@ -5,7 +5,7 @@ use LWP::UserAgent;
 # define location of rrdtool databases
 my $rrd = '<%= node['nginx']['rrd']['database_path'] %>';
 # define database name
-my $database = '<%= node['nginx']['rrd']['database-name'] %>';
+my $database = '<%= node['nginx']['rrd']['database_name'] %>';
 # define location of images
 my $img = '<%= node['nginx']['rrd']['output_path'] %>';
 # define your nginx stats URL
