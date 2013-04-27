@@ -16,13 +16,15 @@ template "/usr/local/bin/rrd_nginx.pl" do
   mode "0755"
 end
 
-cron "/usr/local/bin/rrd_nginx.pl"
+cron "/usr/local/bin/rrd_nginx.pl" do
+  command "/usr/local/bin/rrd_nginx.pl"
+end
 
 directory node['nginx']['rrd']['output_path'] do
   owner node['nginx']['user']
   group node['nginx']['group']
   recursive true
-  mode 6755
+  mode "6755"
 end
 
 directory node['nginx']['rrd']['database_path'] do
