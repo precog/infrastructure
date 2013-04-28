@@ -11,7 +11,8 @@ global
         #quiet
 
         # turn on stats unix socket
-        stats   socket /var/lib/haproxy/stats level admin
+	stats socket    /var/run/haproxy.stat
+        stats socket    /var/lib/haproxy/stats level admin
 
 defaults
         balance         roundrobin
