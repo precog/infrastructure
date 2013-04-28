@@ -57,7 +57,7 @@ nginx_site 'staticsite-ssl' do
   enable true
 end
 
-munin_plugin "nginx_combined" do
+munin_plugin "nginx_combined_" do
   plugin "nginx_combined_127.0.0.1"
   create_file true
 end
