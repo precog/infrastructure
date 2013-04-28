@@ -1,7 +1,8 @@
 <VirtualHost *:<%= @listen_port %>>
   ServerAdmin     <%= node['munin']['sysadmin_email'] %>
-  ServerName      <%= node['fqdn'] %>
-  ServerAlias     munin munin.<%= node.chef_environment =~ /_default/ ? "default" : node.chef_environment %>.<%= @public_domain %>
+#  ServerName      <%= node['fqdn'] %>
+#  ServerAlias     munin munin.<%= node.chef_environment =~ /_default/ ? "default" : node.chef_environment %>.<%= @public_domain %>
+  ServerName     munin.<%= node.chef_environment =~ /_default/ ? "default" : node.chef_environment %>.<%= @public_domain %>
   Alias /munin <%= @docroot %>
   DocumentRoot <%= @docroot %>
   CustomLog       <%= node['apache']['log_dir'] %>/munin_access.log combined
