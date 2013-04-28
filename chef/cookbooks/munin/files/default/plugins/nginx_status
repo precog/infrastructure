@@ -12,7 +12,7 @@ if (! eval "require LWP::UserAgent;"){
 
 chomp(my $fqdn='localhost');
 
-my $URL = exists $ENV{'url'} ? $ENV{'url'} : "http://$fqdn/nginx_status";
+my $URL = exists $ENV{'url'} ? $ENV{'url'} : "http://$fqdn:8090/nginx_status";
 
 if ( exists $ARGV[0] and $ARGV[0] eq "autoconf" )
 {
