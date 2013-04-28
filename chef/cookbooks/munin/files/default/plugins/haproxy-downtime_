@@ -2,7 +2,7 @@
 # Pasha "p01nt" Klets <pasha@klets.name>
 
 name=`basename $0`
-title=`echo ${name} | awk -F_ '{print $NF}'`
+title=`echo ${name} | cut -d _ -f 2-`
 
 hp_stat() {
 	echo "show stat" | socat unix-connect:/var/run/haproxy.stat stdio

@@ -11,7 +11,7 @@ global
         #quiet
 
         # turn on stats unix socket
-	stats socket    /var/run/haproxy.stat
+	stats socket    /var/run/haproxy.stat user haproxy group haproxy
         stats socket    /var/lib/haproxy/stats level admin
 
 defaults

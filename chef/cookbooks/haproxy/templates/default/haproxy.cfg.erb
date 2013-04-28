@@ -4,7 +4,7 @@ global
   user haproxy
   group haproxy
   log /dev/log daemon <%= @node[:haproxy][:log_level] %>
-  stats socket /var/run/haproxy.stat
+  stats socket /var/run/haproxy.stat user haproxy group haproxy
 
   maxconn 20000
 
