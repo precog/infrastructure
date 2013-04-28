@@ -9,6 +9,10 @@ default_attributes(
   "nagios" => {
     "server_auth_method" => "htauth",
     'pagerduty_key' => '9966a8ce29fc472bb0c46682dcb61752'
+  },
+  "munin" => {
+    'sysadmin_email' => 'operations@reportgrid.com',
+    'server_auth_method' => 'htauth'
   }
 )
-override_attributes "apache" => { "listen_ports" => [ "80", "20000", "443" ] }
+override_attributes "apache" => { "listen_ports" => [ "80", "443" ] }
