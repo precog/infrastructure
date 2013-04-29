@@ -35,8 +35,8 @@ while ( $file = <INFILE> ) {
     chomp(@field);
 		
     if ( ($field[0] eq $specific_line ) && !($field[1] eq "BACKEND") ) {
-        $mStats = "$mStats $field[1]=$field[4]";
-	my ($servername) = $field[1] =~ /^([^.]*)\./;
+	my ($servername) = $field[1] =~ /^([^.]*)/;
+        $mStats = "$mStats $servername=$field[4]";
         if ($mPerfs eq "|") {
 		$mPerfs = "$mPerfs $servername=$field[4]";
 	} else {

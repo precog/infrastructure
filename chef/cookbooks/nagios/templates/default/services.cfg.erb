@@ -169,7 +169,8 @@ define service {
     hostgroup_name      appserverV2
     service_description HAProxy Frontend Connections
     process_perf_data   1
-    check_command   check_hastats!http!200!1000
+    action_url          /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
+    check_command        check_hastats!http!200!1000
 }
 
 define service {
@@ -177,7 +178,8 @@ define service {
     hostgroup_name      appserverV2
     service_description HAProxy Analytics Connections
     process_perf_data   1
-    check_command   check_hastats!services_analytics_v1!80!100
+    action_url          /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
+    check_command       check_hastats!services_analytics_v1!80!100
 }
 
 # devci checks
