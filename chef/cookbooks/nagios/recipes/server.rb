@@ -59,12 +59,6 @@ end
 
 include_recipe "nagios::server_#{node['nagios']['server']['install_method']}"
 
-service "nagios" do
-  service_name node['nagios']['server']['service_name']
-  supports :status => true, :restart => true, :reload => true
-  action [ :enable, :start ]
-end
-
 nagios_conf "nagios" do
   config_subdir false
 end
@@ -151,3 +145,10 @@ end
 nagios_conf "hosts" do
   variables :nodes => nodes
 end
+
+service "nagios" do
+  service_name node['nagios']['server']['service_name']
+  supports :status => true, :restart => true, :reload => true
+  action [ :enable, :start ]
+end
+
