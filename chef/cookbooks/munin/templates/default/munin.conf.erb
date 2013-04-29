@@ -17,7 +17,7 @@ tmpldir <%= node['munin']['tmpldir'] %>
 max_processes <%= node['munin']['max_processes'] %>
 <% end %>
 max_graph_jobs <%= node['munin']['max_graph_jobs'] %>
-max_cgi_graph_jobs <%= node['munin']['max_cgi_graph_jobs'] %>
+#max_cgi_graph_jobs <%= node['munin']['max_cgi_graph_jobs'] %>
 
 # a simple host tree
 <% @munin_nodes.each do |system| -%>
