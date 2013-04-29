@@ -22,15 +22,18 @@ end
 cookbook_file "/etc/nginx/ssl/precog.cert" do
   owner owner_name
   mode "444"
+  notifies :reload, "service[nginx]"
 end
 
 cookbook_file "/etc/nginx/ssl/precog.ca.cert" do
   owner owner_name
   mode "444"
+  notifies :reload, "service[nginx]"
 end
 
 cookbook_file "/etc/nginx/ssl/precog.key" do
   owner owner_name
   mode "400"
+  notifies :reload, "service[nginx]"
 end
 

@@ -88,7 +88,6 @@ end
 action :add do
   new_resource.updated_by_last_action(false)
   @repo_file = nil
-
   recipe_eval do
     # add key
     if new_resource.keyserver && new_resource.key
@@ -113,6 +112,7 @@ action :add do
                             new_resource.arch,
                             new_resource.deb_src)
 
+
     @repo_file = file "/etc/apt/sources.list.d/#{new_resource.name}.list" do
       owner "root"
       group "root"
@@ -124,7 +124,10 @@ action :add do
     end
   end
 
+  # Work around chef-10.14 recipe_eval regression (CHEF-3493)
+  converge if @repo_file.nil? && respond_to?(:converge)
   raise RuntimeError, "The repository file to create is nil, cannot continue." if @repo_file.nil?
+
   new_resource.updated_by_last_action(@repo_file.updated?)
 end
 

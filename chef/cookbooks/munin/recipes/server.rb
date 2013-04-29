@@ -17,59 +17,96 @@
 # limitations under the License.
 #
 
-include_recipe "apache2"
-include_recipe "apache2::mod_auth_openid"
-include_recipe "apache2::mod_rewrite"
+web_srv = node['munin']['web_server'].to_sym
+case web_srv
+when :apache
+  include_recipe 'munin::server_apache'
+  web_user = node['apache']['user']
+  web_group = node['apache']['group']
+when :nginx
+  include_recipe 'munin::server_nginx'
+  web_user = node['nginx']['user']
+  web_group = node['nginx']['group']
+else
+  raise "Unsupported web server type provided for munin. Supported: apache or nginx"
+end
+
 include_recipe "munin::client"
 
-package "munin"
+sysadmins = search(:users, 'groups:sysadmin')
+munin_servers = search(:node, "munin:[* TO *] AND (role:monitored OR role:monitoring)")
+if munin_servers.empty?
+  Chef::Log.info("No nodes returned from search, using this node so munin configuration has data")
+  munin_servers = Array.new
+  munin_servers << node
+end
 
-case node[:platform]
+munin_servers.sort! { |a,b| a[:fqdn] <=> b[:fqdn] }
+
+if node['public_domain']
+  case node.chef_environment
+  when "production"
+    public_domain = node['public_domain']
+  else
+    public_domain = "#{node.chef_environment}.#{node['public_domain']}"
+  end
+else
+  public_domain = node['domain']
+end
+
+case node['platform']
+when "freebsd"
+  package "munin-master"
+else
+  package "munin"
+end
+
+case node['platform']
 when "arch"
   cron "munin-graph-html" do
     command "/usr/bin/munin-cron"
     user "munin"
     minute "*/5"
   end
+when "freebsd"
+  cron "munin-graph-html" do
+    command "/usr/local/bin/munin-cron"
+    user "munin"
+    minute "*/5"
+    ignore_failure true
+  end
 else
   cookbook_file "/etc/cron.d/munin" do
     source "munin-cron"
     mode "0644"
     owner "root"
-    group "root"
+    group node['munin']['root']['group']
     backup 0
   end
 end
 
-munin_nodes = search(:node, "munin:[* TO *] AND (role:monitored OR role:monitoring)")
-
-if node[:public_domain]
-  case node[:app_environment]
-  when "production"
-    public_domain = node[:public_domain]
-  else
-    public_domain = "#{node[:app_environment]}.#{node[:public_domain]}"
-  end
-else
-  public_domain = node[:domain]
-end
-
-template "/etc/munin/munin.conf" do
+template "#{node['munin']['basedir']}/munin.conf" do
   source "munin.conf.erb"
   mode 0644
-  variables(:munin_nodes => munin_nodes)
+  variables(:munin_nodes => munin_servers, :docroot => node['munin']['docroot'])
 end
 
-apache_site "000-default" do
-  enable false
-end
-
-template "#{node[:apache][:dir]}/sites-available/munin.conf" do
-  source "apache2.conf.erb"
-  mode 0644
-  variables :public_domain => public_domain
-  if ::File.symlink?("#{node[:apache][:dir]}/sites-enabled/munin.conf")
-    notifies :reload, resources(:service => "apache2")
+case node['munin']['server_auth_method']
+when "openid"
+  if(web_srv == :apache)
+    include_recipe "apache2::mod_auth_openid"
+  else
+    raise "OpenID is unsupported on non-apache installs"
+  end
+else
+  template "#{node['munin']['basedir']}/htpasswd.users" do
+    source "htpasswd.users.erb"
+    owner "munin"
+    group web_group 
+    mode 0644
+    variables(
+      :sysadmins => sysadmins
+    )
   end
 end
 
@@ -79,4 +116,3 @@ directory node['munin']['docroot'] do
   mode 0755
 end
 
-apache_site "munin.conf"

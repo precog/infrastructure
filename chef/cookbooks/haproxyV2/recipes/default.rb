@@ -8,12 +8,13 @@
 
 include_recipe "haproxyV2::certs"
 
-package "haproxy" do
-  package_name "haproxy"
-end
+package "haproxy"
+package "socat"
 
-package "socat" do
-  package_name "socat"
+%w{security, accounts, jobs, query, ingest}.each do |service|
+  munin_haproxy service do
+    backend "service_#{service}"
+  end
 end
 
 directory "/var/lib/haproxy" do

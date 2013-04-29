@@ -50,6 +50,12 @@ services = {
   }
 }
 
+services.each do |k, v|
+  munin_haproxy k[0] do
+    backend "services_#{k.join("_")}"
+  end
+end
+
 template "haproxy.cfg" do
   variables(
     :services => services 

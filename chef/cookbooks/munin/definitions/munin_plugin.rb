@@ -18,30 +18,35 @@
 #
 
 
-define :munin_plugin, :plugin_config => "/etc/munin/plugins", :plugin_dir => "/usr/share/munin/plugins", :create_file => false, :enable => true do
+
+define :munin_plugin, :create_file => false, :enable => true, :cookbook => 'munin' do
 
   include_recipe "munin::client"
 
   plugin = params[:plugin] ? params[:plugin] : params[:name]
+  plugin_config = params[:plugin_config] ? params[:plugin_config] : node['munin']['plugins']
+  plugin_dir = params[:plugin_dir] ? params[:plugin_dir] : node['munin']['plugin_dir']
+
+  service_name = params[:service_name] ? params[:service_name] : node['munin']['service_name']
 
   if params[:create_file]
-    cookbook_file "#{params[:plugin_dir]}/#{params[:name]}" do
-      cookbook "munin"
+    cookbook_file "#{plugin_dir}/#{params[:name]}" do
+      cookbook params[:cookbook]
       source "plugins/#{params[:name]}"
       owner "root"
-      group "root"
+      group node['munin']['root']['group']
       mode 0755
     end
   end
 
-  link "#{params[:plugin_config]}/#{plugin}" do
-    to "#{params[:plugin_dir]}/#{params[:name]}"
+  link "#{plugin_config}/#{plugin}" do
+    to "#{plugin_dir}/#{params[:name]}"
     if params[:enable]
       action :create
     else
       action :delete
     end
-    notifies :restart, resources(:service => "munin-node")
+    notifies :restart, resources(:service => service_name)
   end
 
 end

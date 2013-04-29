@@ -169,7 +169,8 @@ define service {
     hostgroup_name      appserverV2
     service_description HAProxy Frontend Connections
     process_perf_data   1
-    check_command   check_hastats!http!200!1000
+    action_url          /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
+    check_command        check_hastats!http!200!1000
 }
 
 define service {
@@ -177,7 +178,8 @@ define service {
     hostgroup_name      appserverV2
     service_description HAProxy Analytics Connections
     process_perf_data   1
-    check_command   check_hastats!services_analytics_v1!80!100
+    action_url          /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
+    check_command       check_hastats!services_analytics_v1!80!100
 }
 
 # devci checks
@@ -471,14 +473,22 @@ define service {
 # Monitor the web servers
 define service {
     use                 default-service
-    hostgroup_name      precogwebsitevarnish
-    service_description Precog Website
-    check_command       check_http_content!www.precog.com!80!/!Precog
+    hostgroup_name      precogstaticsite
+    service_description Precog Website HTTP
+    check_command       check_http
 }
 
 define service {
     use                 default-service
-    hostgroup_name      precogwebsitevarnish
-    service_description Precog Website Events
-    check_command       check_http_content!www.precog.com!80!/about/events!Event
+    hostgroup_name      precogstaticsite
+    service_description Precog Website
+    check_command       check_https_content!www.precog.com!443!/!Precog
 }
+
+define service {
+    use                 default-service
+    hostgroup_name      precogstaticsite
+    service_description Precog Website Events
+    check_command       check_https_content!www.precog.com!443!/about/events/!Event
+}
+

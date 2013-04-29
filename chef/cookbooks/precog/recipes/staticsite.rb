@@ -9,7 +9,7 @@
 include_recipe "precog::nginxcerts"
 include_recipe "nginx::repo"
 include_recipe "nginx"
-include_recipe "nginx::http_stub_status_module"
+include_recipe "nginx::rrd"
 
 directory '/var/www/precogsite' do
   owner "ubuntu"
@@ -55,5 +55,14 @@ end
 
 nginx_site 'staticsite-ssl' do
   enable true
+end
+
+munin_plugin "nginx_combined_" do
+  plugin "nginx_combined_127.0.0.1"
+  create_file true
+end
+
+munin_plugin "nginx_memory" do
+  create_file true
 end
 
