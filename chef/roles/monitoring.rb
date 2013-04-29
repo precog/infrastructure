@@ -12,7 +12,8 @@ default_attributes(
   },
   "munin" => {
     'sysadmin_email' => 'operations@reportgrid.com',
-    'server_auth_method' => 'htauth'
+    'server_auth_method' => 'htauth',
+    'max_graph_jobs' => 12
   }
 )
 override_attributes "apache" => { "listen_ports" => [ "80", "443" ] }
