@@ -518,11 +518,3 @@ define service {
     service_description Precog Website
     check_command       check_https_content!www.precog.com!443!/!Precog
 }
-
-define service {
-    use                 default-service
-    hostgroup_name      precogstaticsite
-    service_description Precog Website Events
-    check_command       check_https_content!www.precog.com!443!/about/events/!Event
-}
-
