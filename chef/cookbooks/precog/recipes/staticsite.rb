@@ -35,6 +35,14 @@ directory '/var/www/precogsite/shared/apidocs' do
   mode  "2775"
 end
 
+%w{java dotnet js python ruby}.each do |language|
+  directory "/var/www/precogsite/shared/apidocs/#{language}" do
+    owner "ubuntu"
+    group "www-data"
+    mode  "2775"
+  end
+end
+
 directory '/etc/nginx/redirects.d' do
   owner 'root'
   group 'root'
