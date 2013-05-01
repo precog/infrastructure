@@ -4,16 +4,16 @@ server {
         root /var/www/precogsite/current;
         index index.html index.htm;
 
-	server_name *.precog.com;
+        server_name *.precog.com;
 
-	include redirects.d/staticsite.conf;
+        include redirects.d/staticsite.conf;
 
-	rewrite ^ https://web4.precog.com$request_uri? redirect;
+        rewrite ^ https://web4.precog.com$request_uri? redirect;
 
-	access_log  <%= node['nginx']['log_dir'] %>/precogsite-access.log;
-	error_log  <%= node['nginx']['log_dir'] %>/precogsite-error.log;
+        access_log  <%= node['nginx']['log_dir'] %>/precogsite-access.log;
+        error_log  <%= node['nginx']['log_dir'] %>/precogsite-error.log;
 
-        #error_page 404 /404.html;
+        error_page 404 /site/404/index.html;
 
         # redirect server error pages to the static page /50x.html
         #
