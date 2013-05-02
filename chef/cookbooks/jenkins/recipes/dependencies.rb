@@ -22,6 +22,10 @@ group "rvm" do
   members node['jenkins']['rvm_users']
 end
 
+package 'yui-compressor'
+package 'optipng'
+package 'jpegoptim'
+
 %w{pip pytest Fabric Pygments ohconvert Sphinx}.each do |package|
   python_pip package do
     action :install
