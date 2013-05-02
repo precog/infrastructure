@@ -22,19 +22,9 @@ group "rvm" do
   members node['jenkins']['rvm_users']
 end
 
-python_pip "py" do
-  action :install
-end
-python_pip "pytest" do
-  action :install
-end
-python_pip "Fabric" do
-  action :install
-end
-python_pip "Pygments" do
-  action :install
-end
-python_pip "ohconvert" do
-  action :install
+%w{pip pytest Fabric Pygments ohconvert Sphinx}.each do |package|
+  python_pip package do
+    action :install
+  end
 end
 
