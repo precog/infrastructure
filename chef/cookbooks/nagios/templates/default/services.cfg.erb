@@ -170,7 +170,7 @@ define service {
     service_description HAProxy Frontend Connections
     process_perf_data   1
     action_url          /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
-    check_command        check_hastats!http!200!1000
+    check_command        check_hastats!http!200!900
 }
 
 define service {
@@ -179,7 +179,7 @@ define service {
     service_description HAProxy Analytics Connections
     process_perf_data   1
     action_url          /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
-    check_command       check_hastats!services_analytics_v1!80!100
+    check_command       check_hastats!services_analytics_v1!80!95
 }
 
 # devci checks
@@ -414,7 +414,7 @@ define service {
     service_description HAProxy Frontend Connections
     process_perf_data   1
     action_url          /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
-    check_command        check_hastats!http!200!1000
+    check_command       check_hastats!http!200!900
 }
 
 <% %w{security accounts jobs ingest query}.each{ |service| %>
@@ -424,7 +424,7 @@ define service {
     service_description HAProxy <%= service %> Connections
     process_perf_data   1
     action_url          /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
-    check_command       check_hastats!service_<%= service %>!80!100
+    check_command       check_hastats!service_<%= service %>!80!95
 }
 <% } %>
 <% } %>
@@ -435,7 +435,7 @@ define service {
     service_description HAProxy Demo Connections
     process_perf_data   1
     action_url          /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
-    check_command       check_hastats!demo_quirrel!80!100
+    check_command       check_hastats!demo_quirrel!80!95
 }
 
 
