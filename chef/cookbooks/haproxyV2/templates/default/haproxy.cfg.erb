@@ -11,7 +11,7 @@ global
         #quiet
 
         # turn on stats unix socket
-	stats socket    /var/run/haproxy.stat user haproxy group haproxy
+        stats socket    /var/run/haproxy.stat user haproxy group haproxy
         stats socket    /var/lib/haproxy/stats level admin
 
 defaults
@@ -29,17 +29,17 @@ defaults
         stats           hide-version
         stats           refresh 30s
         stats           uri /haproxy/stats
-	timeout         queue 10m           # Timeout waiting for accept() on queue congestion
+        timeout         queue 10m           # Timeout waiting for accept() on queue congestion
         timeout         connect 10s         # Time to syn/ack
         timeout         client 10m          # Time between bytes on header
         timeout         http-request 20m    # Total header time
         timeout         server 4h           # How long the server may take to answer
-	timeout         http-keep-alive 30s # How long after server answers before releasing connection
+        timeout         http-keep-alive 30s # How long after server answers before releasing connection
         retries         30
 
 frontend                http
         bind            *:80
-	bind            *:443 ssl crt /etc/haproxy/precog-chain.pem crt /etc/haproxy/certs ciphers HIGH:MEDIUM:!ADH
+        bind            *:443 ssl crt /etc/haproxy/precog-chain.pem crt /etc/haproxy/certs ciphers HIGH:MEDIUM:!ADH
 
         option          httplog
         capture         request header X-Forwarded-For len 15
