@@ -12,6 +12,7 @@ object_cache_file=<%= node['nagios']['cache_dir'] %>/objects.cache
 precached_object_file=<%= node['nagios']['cache_dir'] %>/objects.precache
 
 resource_file=<%= node['nagios']['conf_dir'] %>/resource.cfg
+resource_file=<%= node['nagios']['conf_dir'] %>/semicolon.cfg
 status_file=<%= node['nagios']['cache_dir'] %>/status.dat
 status_update_interval=10
 nagios_user=<%= node['nagios']['user'] %>

@@ -411,6 +411,15 @@ define service {
 define service {
     use                 default-service
     hostgroup_name      <%= hostgroup %>
+    service_description HAProxy
+    process_perf_data   1
+    action_url          /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
+    check_command       check_haproxy!/haproxy/stats
+}
+
+define service {
+    use                 default-service
+    hostgroup_name      <%= hostgroup %>
     service_description HAProxy Frontend Connections
     process_perf_data   1
     action_url          /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$

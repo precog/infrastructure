@@ -22,6 +22,7 @@
   nagios3
   nagios-nrpe-plugin
   nagios-images
+  libnagios-plugin-perl
 }.each do |pkg|
   package pkg
 end

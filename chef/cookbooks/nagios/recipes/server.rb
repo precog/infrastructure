@@ -152,3 +152,5 @@ service "nagios" do
   action [ :enable, :start ]
 end
 
+cookbook_file "#{node['nagios']['conf_dir']}/semicolon.cfg"
+
