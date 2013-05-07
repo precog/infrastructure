@@ -170,7 +170,7 @@ define service {
     service_description HAProxy Frontend Connections
     process_perf_data   1
     action_url          /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
-    check_command        check_hastats!http!200!1000
+    check_command        check_hastats!http!200!900
 }
 
 define service {
@@ -179,7 +179,7 @@ define service {
     service_description HAProxy Analytics Connections
     process_perf_data   1
     action_url          /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
-    check_command       check_hastats!services_analytics_v1!80!100
+    check_command       check_hastats!services_analytics_v1!80!95
 }
 
 # devci checks
@@ -405,6 +405,49 @@ define service {
        check_command          check_quirrel!30070!C0F57A14-2931-4BEF-8ABF-B6E239A2FD59!"SnapEngage query"!"import std::stats::* import std::time::* agents := //0000000056/se12014/timzon-snapabug-widget/status upperBound := 1358261667962 lowerBound := 1357023600000 extraLB := lowerBound - (24*60*60000) results := solve 'agent agents' := agents where agents.timestamp <= upperBound & agents.timestamp >= extraLB & agents.agentId = 'agent order := denseRank(agents'.timestamp) agents'' := agents' with { rank: order } newagents := new agents'' newagents' := newagents with { rank: newagents.rank - 1 } result := newagents' ~ agents'' { first: agents'', second: newagents' } where newagents'.rank = agents''.rank {start: std::math::max(result.first.timestamp, lowerBound), end: result.second.timestamp, agentId: result.first.agentId, status: result.first.status, name: result.first.agentAlias, data: result.first} results where results.end > lowerBound"!10000!15000
 }
 
+# HAProxy checks for V2 services
+
+<% %w{quirrel-shard quirrel-shardV2}.each{ |hostgroup| %>
+define service {
+    use                 default-service
+    hostgroup_name      <%= hostgroup %>
+    service_description HAProxy
+    process_perf_data   1
+    action_url          /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
+    check_command       check_haproxy!/haproxy/stats
+}
+
+define service {
+    use                 default-service
+    hostgroup_name      <%= hostgroup %>
+    service_description HAProxy Frontend Connections
+    process_perf_data   1
+    action_url          /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
+    check_command       check_hastats!http!200!900
+}
+
+<% %w{security accounts jobs ingest query}.each{ |service| %>
+define service {
+    use                 default-service
+    hostgroup_name      <%= hostgroup %>
+    service_description HAProxy <%= service %> Connections
+    process_perf_data   1
+    action_url          /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
+    check_command       check_hastats!service_<%= service %>!80!95
+}
+<% } %>
+<% } %>
+ 
+define service {
+    use                 default-service
+    hostgroup_name      quirrel-shard
+    service_description HAProxy Demo Connections
+    process_perf_data   1
+    action_url          /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
+    check_command       check_hastats!demo_quirrel!80!95
+}
+
+
 # Quirrel shard additional services
 define service {
        use                 default-service
@@ -484,11 +527,3 @@ define service {
     service_description Precog Website
     check_command       check_https_content!www.precog.com!443!/!Precog
 }
-
-define service {
-    use                 default-service
-    hostgroup_name      precogstaticsite
-    service_description Precog Website Events
-    check_command       check_https_content!www.precog.com!443!/about/events/!Event
-}
-

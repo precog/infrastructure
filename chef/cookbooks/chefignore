@@ -2,3 +2,6 @@
 *~
 # vim
 *.sw[a-z]
+# repos
+.git
+.svn

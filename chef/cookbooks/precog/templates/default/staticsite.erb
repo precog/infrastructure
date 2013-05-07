@@ -4,11 +4,11 @@ server {
         root /var/www/precogsite/current;
         index index.html index.htm;
 
-	server_name www.precog.com *.precog.com;
+        server_name www.precog.com *.precog.com;
 
-	rewrite ^/account https://$host$request_uri? redirect;
+        rewrite ^/account https://$host$request_uri? redirect;
 
-	include redirects.d/staticsite.conf;
+        include redirects.d/staticsite.conf;
 
         # char set
         charset utf-8;
@@ -25,19 +25,21 @@ server {
                 expires 14d;
         }
 
-        location / {
+        location /apidocs {
+                autoindex on;
                 expires 7d;
-                # First attempt to serve request as file, then
-                # as directory, then fall back to index.html
-                try_files $uri $uri/ =404; # /index.html; # do not fall back so we can notice the problems
-                # Uncomment to enable naxsi on this location
-                # include /etc/nginx/naxsi.rules
+                try_files $uri $uri/ $uri/index.html =404;
         }
 
-	access_log  <%= node['nginx']['log_dir'] %>/precogsite-access.log;
-	error_log  <%= node['nginx']['log_dir'] %>/precogsite-error.log;
+        location / {
+                expires 7d;
+                try_files $uri $uri/ =404; # /index.html; # do not fall back so we can notice the problems
+        }
 
-        #error_page 404 /404.html;
+        access_log  <%= node['nginx']['log_dir'] %>/precogsite-access.log;
+        error_log  <%= node['nginx']['log_dir'] %>/precogsite-error.log;
+
+        error_page 404 /site/404/index.html;
 
         # redirect server error pages to the static page /50x.html
         #

@@ -378,5 +378,12 @@ define command {
 
 define command { # Needs a bizarre shell script to interface with the perl script
     command_name    check_hastats
-    command_line    $USER1$/cleanup_proxy.sh $USER1$/check_hastats.pl $HOSTADDRESS$ 80 $ARG1$ $ARG2$ $ARG3$
+    command_line    $USER1$/check_hastats.pl $HOSTADDRESS$ 80 $ARG1$ $ARG2$ $ARG3$
+    #command_line    $USER1$/cleanup_proxy.sh $USER1$/check_hastats.pl $HOSTADDRESS$ 80 $ARG1$ $ARG2$ $ARG3$
 }
+
+define command {
+    command_name    check_haproxy
+    command_line    $USER1$/check_haproxy.pl -u "http://$HOSTADDRESS$$ARG1$$USER5$csv"
+}
+
