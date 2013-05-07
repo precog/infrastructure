@@ -245,7 +245,7 @@ define service {
     use                 default-service
     hostgroup_name          mongodb-replset-server
     service_description     Mongo Flush Average
-    check_command           check_mongodb!flushing!27018!1000!2000
+    check_command           check_mongodb!flushing!27018!5000!15000
 }
 
 define service {
