@@ -30,18 +30,18 @@ end
 
 begin
   host, path, command, warn, critical = ARGV.shift(6)
-  
+
   url = URI.parse("http://#{host}/")
-  
+
   Net::HTTP.start(url.host, url.port) do |http|
     http.request_get(path) do |response|
       if not response.is_a? Net::HTTPOK then
-        put("UNKNOWN:Error collecting stats: #{response.read_body}")
+        puts "UNKNOWN:Error collecting stats: #{response.read_body}"
         exit(3)
       else
         begin
           data = JSON.parse(response.read_body)
-        
+
           case command
           when "errors"
             error_value = nil
