@@ -20,7 +20,7 @@ LOCKFILE=/var/log/fixlock.${1}
 
     if [ -n "$SRV" ]
     then
-        echo "disable server service_query/$SRV" | socat /var/lib/haproxy/stats stdio
+        echo "disable server service_query/$SRV" | socat /var/lib/haproxy/stats stdio | grep -v '^$'
         while echo "show sess" | socat /var/run/haproxy.stat stdio | grep service_query | grep -q $SRV
         do
             echo "Waiting for sessions on $SRV to end"
@@ -32,7 +32,7 @@ LOCKFILE=/var/log/fixlock.${1}
 
     if [ -n "$SRV" ]
     then
-        echo "enable server service_query/$SRV" | socat /var/lib/haproxy/stats stdio
+        echo "enable server service_query/$SRV" | socat /var/lib/haproxy/stats stdio | grep -v '^$'
     fi
 
     rm $LOCKFILE
