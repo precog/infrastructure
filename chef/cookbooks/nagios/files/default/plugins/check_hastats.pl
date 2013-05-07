@@ -2,7 +2,7 @@
 #use strict;    # turn on compiler restrictions
 use LWP::Simple;
 
-my $file  = "";  my @field   = ();  
+my $file  = "";  my @field   = ();
 my $num_args = $#ARGV +1;
 if ($num_args < 3) {
 # SHould be at least 2 variables... Server & JBoss Node1
@@ -10,9 +10,9 @@ if ($num_args < 3) {
   exit;
 }else
 {
-	 $mServer = $ARGV[0]; $mPort = $ARGV[1]; 
+	 $mServer = $ARGV[0]; $mPort = $ARGV[1];
 	 $specific_line = $ARGV[2];
-	 $mWARN = $ARGV[3]; $mCRIT = $ARGV[4]; 
+	 $mWARN = $ARGV[3]; $mCRIT = $ARGV[4];
 }
 my $browser = LWP::UserAgent->new;
  my @ns_headers = (  'Accept-Charset' => 'iso-8859-1,*,utf-8',
@@ -43,13 +43,18 @@ while ( $file = <INFILE> ) {
 		$mPerfs = "$mPerfs, $servername=$field[4]";
 	}
 	#if (!($field[1] eq "FRONTEND") ) {
-        	  if (($field[4] > $mWARN) && ($mHitCrit==0)) {  $mAlert ="Slave Overload:"; 
-        	  	 $mWarnOk=1;  if ($field[4] > $mCRIT) {$mAlert ="Slave CRITICAL:"; $mHitCrit=1;}
-        	  } 
+        	  if (($field[4] > $mWARN) && ($mHitCrit==0)) {  $mAlert ="Slave Overload:";
+        	  	 $mWarnOk=1;
+			 if ($field[4] > $mCRIT) {
+				 $mAlert ="Slave CRITICAL:";
+				 $mHitCrit=1;
+				 $mWarnOk=2;
+			 }
+        	  }
 	  #}
     }
 }
-close(INFILE);  
+close(INFILE);
 unlink($mFile);
 print "$mAlert $mStats $mPerfs\n";
 exit $mWarnOk;
