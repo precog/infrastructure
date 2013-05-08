@@ -5,7 +5,7 @@ name=`basename $0`
 title=`echo ${name} | cut -d _ -f 2-`
 
 hp_stat() {
-	echo "show stat" | socat unix-connect:/var/run/haproxy.stat stdio
+	echo "show stat" | socat unix-connect:${socket} stdio
 }
 
 servers_section() {
@@ -17,11 +17,11 @@ servers() {
 }
 
 labels() {
-	servers_section | awk -F, '{print $2"_dwn.label "$2" down\n"$2"_dwntime.label "$2" downtime\n"$2"_dwn.type COUNTER\n"$2"_dwntime.type COUNTER\n"$2"_dwntime.negative "$2"_dwn" }'
+	servers_section | awk -F, '{sub(/^[^A-Za-z_]/, "_", $2); gsub(/[^A-Za-z0-9_]/, "_", $2); print $2"_dwn.label "$2" down\n"$2"_dwntime.label "$2" downtime\n"$2"_dwn.type COUNTER\n"$2"_dwntime.type COUNTER\n"$2"_dwntime.negative "$2"_dwn" }'
 }
 
 values() {
-	servers_section | awk -F, '{print $2"_dwn.value "$23"\n"$2"_dwntime.value "$25}'
+	servers_section | awk -F, '{sub(/^[^A-Za-z_]/, "_", $2); gsub(/[^A-Za-z0-9_]/, "_", $2); print $2"_dwn.value "$23"\n"$2"_dwntime.value "$25}'
 }
 
 graph_title="${title} downtime"
