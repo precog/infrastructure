@@ -11,7 +11,7 @@ include_recipe "haproxyV2::certs"
 package "haproxy"
 package "socat"
 
-%w{security, accounts, jobs, query, ingest}.each do |service|
+%w{security accounts jobs query ingest}.each do |service|
   munin_haproxy service do
     backend "service_#{service}"
   end
