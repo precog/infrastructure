@@ -168,6 +168,7 @@ define service {
     use                 default-service
     hostgroup_name      appserverV2
     service_description HAProxy Frontend Connections
+    normal_check_interval  60
     process_perf_data   1
     action_url          /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
     check_command        check_hastats!http!200!900
@@ -177,6 +178,7 @@ define service {
     use                 default-service
     hostgroup_name      appserverV2
     service_description HAProxy Analytics Connections
+    normal_check_interval  60
     process_perf_data   1
     action_url          /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
     check_command       check_hastats!services_analytics_v1!80!95
@@ -412,6 +414,7 @@ define service {
     use                 default-service
     hostgroup_name      <%= hostgroup %>
     service_description HAProxy
+    normal_check_interval  60
     process_perf_data   1
     action_url          /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
     check_command       check_haproxy!/haproxy/stats
@@ -421,6 +424,7 @@ define service {
     use                 default-service
     hostgroup_name      <%= hostgroup %>
     service_description HAProxy Frontend Connections
+    normal_check_interval  60
     process_perf_data   1
     action_url          /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
     check_command       check_hastats!http!200!900
@@ -431,6 +435,7 @@ define service {
     use                 default-service
     hostgroup_name      <%= hostgroup %>
     service_description HAProxy <%= service %> Connections
+    normal_check_interval  60
     process_perf_data   1
     action_url          /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
     check_command       check_hastats!service_<%= service %>!80!95
