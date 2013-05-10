@@ -462,61 +462,66 @@ define service {
 }
 
 # API content checks
+<% ["reportgrid_api", "appserverV2"].each { |hostgroup| %>
+
 define service {
     use                 default-service
-    hostgroup_name      reportgrid_api
+    hostgroup_name      <%= hostgroup %>
     service_description Precog JS
     check_command       check_http_content!api.reportgrid.com!80!/js/precog.js!Precog
 }
 
 define service {
     use                 default-service
-    hostgroup_name      reportgrid_api
+    hostgroup_name      <%= hostgroup %>
     service_description Reportgrid Core JS
     check_command       check_http_content!api.reportgrid.com!80!/js/reportgrid-core.js!ReportGrid
 }
 
 define service {
     use                 default-service
-    hostgroup_name      reportgrid_api
+    hostgroup_name      <%= hostgroup %>
     service_description Reportgrid Core CSS
     check_command       check_http_content!api.reportgrid.com!80!/css/rg.css!rg-colors-default
 }
 
 define service {
     use                 default-service
-    hostgroup_name      reportgrid_api
+    hostgroup_name      <%= hostgroup %>
     service_description Reportgrid Query JS
     check_command       check_http_content!api.reportgrid.com!80!/js/reportgrid-query.js!function
 }
 
 define service {
     use                 default-service
-    hostgroup_name      reportgrid_api
+    hostgroup_name      <%= hostgroup %>
     service_description Reportgrid Viz JS
     check_command       check_http_content!api.reportgrid.com!80!/js/reportgrid-viz.js!function
 }
 
 define service {
     use                 default-service
-    hostgroup_name      reportgrid_api
+    hostgroup_name      <%= hostgroup %>
     service_description Reportgrid Charts JS
     check_command       check_http_content!api.reportgrid.com!80!/js/reportgrid-charts.js!function
 }
 
 define service {
     use                 default-service
-    hostgroup_name      reportgrid_api
+    hostgroup_name      <%= hostgroup %>
     service_description Reportgrid Charts CSS
     check_command       check_http_content!api.reportgrid.com!80!/css/rg-charts.css!rg-colors-charts
 }
 
 define service {
     use                 default-service
-    hostgroup_name      reportgrid_api
+    hostgroup_name      <%= hostgroup %>
     service_description Reportgrid Viz Samples
     check_command       check_http_content!api.reportgrid.com!80!/services/viz/samples/index.php!overlapping
 }
+
+<% } %>
+
 
 # Monitor the web servers
 define service {
