@@ -44,6 +44,7 @@ frontend                http
         option          httplog
         capture         request header X-Forwarded-For len 15
         capture         request header Referer len 50
+        capture         request header Content-Type len 30
         log             /dev/log daemon
 
         acl             bad_path path_beg /w00tw00t
