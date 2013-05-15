@@ -24,6 +24,7 @@ http {
   tcp_nodelay        on;
 
   gzip  on;
+  gzip_proxied any;
   gzip_disable "MSIE [1-6]\.(?!.*SV1)";
 
   <% @services.each do |service, params| %>
