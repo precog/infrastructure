@@ -171,7 +171,7 @@ define service {
     normal_check_interval  60
     process_perf_data   1
     action_url          /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
-    check_command        check_hastats!http!200!900
+    check_command        check_hastats!http!500!900
 }
 
 define service {
@@ -181,7 +181,7 @@ define service {
     normal_check_interval  60
     process_perf_data   1
     action_url          /nagiosgraph/cgi-bin/show.cgi?host=$HOSTNAME$&service=$SERVICEDESC$
-    check_command       check_hastats!services_analytics_v1!150!190
+    check_command       check_hastats!services_analytics_v1!450!480
 }
 
 # devci checks
