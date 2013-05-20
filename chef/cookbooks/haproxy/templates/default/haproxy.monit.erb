@@ -6,6 +6,5 @@ check process haproxy with pidfile /var/run/haproxy.pid
 
 check file haproxy.log with path /var/log/haproxy.log
   ignore match "w00tw00t.at.ISC.SANS"
-  if match '([[:digit:]]+\/){4}[[:digit:]]+ 40[058]' for 2 cycles then alert
   if match '([[:digit:]]+\/){4}[[:digit:]]+ 50[[:digit:]]' for 2 cycles then alert
-
+  alert monit-nofications@precog.pagerduty.com on { content }
