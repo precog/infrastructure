@@ -95,10 +95,12 @@ frontend                http
         acl             devlab_req hdr_dom(host)  -i devlab
         acl             labcoat_req  hdr_dom(host)    -i labcoat
         acl             devlabcoat_req hdr_dom(host)  -i devlabcoat
+        acl             labraptor_req  hdr_dom(host)    -i labraptor
+        acl             devlabraptor_req hdr_dom(host)  -i devlabraptor
         acl             builder_req  hdr_dom(host) -i builder
         acl             devbuilder_req  hdr_dom(host) -i devbuilder
         acl             local_req hdr_dom(host)  -i <%= node[:hostname] %>
-        use_backend     localapache       if ide_req or devide_req or lab_req or devlab_req or labcoat_req or devlabcoat_req or local_req or builder_req or devbuilder_req
+        use_backend     localapache       if ide_req or devide_req or lab_req or devlab_req or labcoat_req or devlabcoat_req or local_req or builder_req or devbuilder_req or labraptor_req or devlabraptor_req
 
         default_backend service_query
 
