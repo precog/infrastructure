@@ -12,7 +12,6 @@ include_recipe "apache2::mod_alias"
 include_recipe "apache2::mod_rewrite"
 include_recipe "apache2::mod_deflate"
 include_recipe "apache2::mod_expires"
-include_recipe "s3tools"
 
 directory "#{node[:precog][:raptor][:root]}" do
   recursive true
