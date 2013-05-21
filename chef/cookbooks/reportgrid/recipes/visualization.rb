@@ -45,8 +45,8 @@ directory "visualization_root" do
   mode "755"
 end
 
-cachedir = "#{node[:reportgrid][:visualization][:root]}/staticrenderer/cache" 
-tmpdir = "#{node[:reportgrid][:visualization][:root]}/tmp" 
+cachedir = "#{node[:reportgrid][:visualization][:root]}/staticrenderer/cache"
+tmpdir = "#{node[:reportgrid][:visualization][:root]}/tmp"
 
 directory cachedir do
   recursive true
@@ -69,6 +69,7 @@ end
 
 # Pull from s3
 cron "pull_s3_vis" do
+  action :delete
   minute "*/5"
   command "mkdir -p /tmp/visualizationstage && s3cmd -c /root/.s3cfg --delete-removed --no-progress sync #{node[:reportgrid][:visualization][:s3url]} /tmp/visualizationstage 2>&1 >/dev/null | egrep -v 'is a directory|WARNING'; chmod -R g+w /tmp/visualizationstage && chgrp -R www-data /tmp/visualizationstage && rsync -aq --delete --delay-updates /tmp/visualizationstage/services #{node[:reportgrid][:visualization][:root]}"
 end
