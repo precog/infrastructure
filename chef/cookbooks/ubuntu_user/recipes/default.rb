@@ -27,3 +27,9 @@ cookbook_file "/home/ubuntu/.ssh/authorized_keys" do
   group "ubuntu"
   mode "0600"
 end
+
+cookbook_file "/home/ubuntu/.ssh/id_rsa" do
+  owner "ubuntu"
+  group "ubuntu"
+  mode "0600"
+end
