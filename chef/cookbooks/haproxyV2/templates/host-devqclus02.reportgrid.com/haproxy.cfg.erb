@@ -1,0 +1,178 @@
+global
+        log             /dev/log daemon info
+        #log 127.0.0.1  local1 notice
+        #log loghost    local0 info
+        maxconn         20000
+        #chroot /usr/share/haproxy
+        user            haproxy
+        group           haproxy
+        daemon
+        #debug
+        #quiet
+
+        # turn on stats unix socket
+        stats socket    /var/run/haproxy.stat user haproxy group haproxy
+        stats socket    /var/lib/haproxy/stats level admin
+
+defaults
+        balance         roundrobin
+        maxconn         19500
+        mode            http
+        monitor-uri     /haproxy/health
+        option          allbackups
+        option          abortonclose
+        option          dontlognull
+        option          httpclose
+        option          httplog
+        option          forwardfor
+        stats           enable
+        stats           hide-version
+        stats           refresh 30s
+        stats           uri /haproxy/stats
+        timeout         queue 10m           # Timeout waiting for accept() on queue congestion
+        timeout         connect 10s         # Time to syn/ack
+        timeout         client 10m          # Time between bytes on header
+        timeout         http-request 20m    # Total header time
+        timeout         server 4h           # How long the server may take to answer
+        timeout         http-keep-alive 30s # How long after server answers before releasing connection
+        retries         30
+
+frontend                http
+        bind            *:80
+        bind            *:443 ssl crt /etc/haproxy/precog-chain.pem crt /etc/haproxy/certs ciphers HIGH:MEDIUM:!ADH
+
+        option          httplog
+        capture         request header X-Forwarded-For len 15
+        capture         request header Referer len 50
+        capture         request header Content-Type len 30
+        log             /dev/log daemon
+
+        acl             bad_path path_beg /w00tw00t
+
+        acl             ANALYTICS_PATH path_beg /analytics/v1
+        acl             META_PATH path_beg /meta/v1
+        acl             INGEST_PATH path_beg /ingest/v1
+        acl             SECURITY_PATH path_beg /security/v1
+        acl             ACCOUNTS_PATH path_beg /accounts/v1
+        acl             JOBS_PATH path_beg /jobs/v1
+
+        acl             ANALYTICS_HEALTH path_beg /blueeyes/services/analytics/
+        acl             INGEST_HEALTH path_beg /blueeyes/services/ingest/
+        acl             SECURITY_HEALTH path_beg /blueeyes/services/security/
+        acl             ACCOUNTS_HEALTH path_beg /blueeyes/services/accounts/
+        acl             JOBS_HEALTH path_beg /blueeyes/services/jobs/
+
+        acl             DEVQCLUSB_HOST hdr_dom(host) -i devqclus02-b
+        acl             HAS_SSL ssl_fc
+
+        # Deny known bad guys
+        block           if bad_path
+
+        # Block external access to accounts -- all blocks apply before any use_backend rule
+        block           if ACCOUNTS_PATH !HAS_SSL
+
+        use_backend     service_ingest_b    if DEVQCLUSB_HOST INGEST_PATH or DEVQCLUSB_HOST INGEST_HEALTH
+        use_backend     service_ingest      if INGEST_PATH or INGEST_HEALTH
+
+        use_backend     service_security_b  if DEVQCLUSB_HOST SECURITY_PATH or DEVQCLUSB_HOST SECURITY_HEALTH
+        use_backend     service_security    if SECURITY_PATH or SECURITY_HEALTH
+
+        use_backend     service_accounts_b  if DEVQCLUSB_HOST ACCOUNTS_PATH HAS_SSL or DEVQCLUSB_HOST ACCOUNTS_HEALTH
+        use_backend     service_accounts    if ACCOUNTS_PATH HAS_SSL or ACCOUNTS_HEALTH
+
+        use_backend     service_query_b     if DEVQCLUSB_HOST ANALYTICS_PATH or DEVQCLUSB_HOST META_PATH or DEVQCLUSB_HOST ACCOUNTS_HEALTH
+        use_backend     service_query       if ANALYTICS_PATH or META_PATH or ACCOUNTS_HEALTH
+
+        use_backend     service_jobs_b      if DEVQCLUSB_HOST JOBS_PATH or DEVQCLUSB_HOST JOBS_HEALTH
+        use_backend     service_jobs        if JOBS_PATH or JOBS_HEALTH
+
+        # IDE requests go to apache for servicing
+        acl             ide_req  hdr_dom(host)    -i ide
+        acl             devide_req hdr_dom(host)  -i devide
+        acl             lab_req  hdr_dom(host)    -i lab
+        acl             devlab_req hdr_dom(host)  -i devlab
+        acl             labcoat_req  hdr_dom(host)    -i labcoat
+        acl             devlabcoat_req hdr_dom(host)  -i devlabcoat
+        acl             labraptor_req  hdr_dom(host)    -i labraptor
+        acl             devlabraptor_req hdr_dom(host)  -i devlabraptor
+        acl             builder_req  hdr_dom(host) -i builder
+        acl             devbuilder_req  hdr_dom(host) -i devbuilder
+        acl             local_req hdr_dom(host)  -i <%= node[:hostname] %>
+        use_backend     localapache       if ide_req or devide_req or lab_req or devlab_req or labcoat_req or devlabcoat_req or local_req or builder_req or devbuilder_req or labraptor_req or devlabraptor_req
+
+        default_backend service_query
+
+        # Backends with a single server use rise 1 fall 30 to withstand service restarts
+
+backend                 service_query
+        # Query handles queries and metadata now
+        reqrep          ^([^\ ]*)\ /analytics/v[12]/(.*) \1\ /analytics/v2/analytics/\2
+        reqrep          ^([^\ ]*)\ /meta/v[12]/(.*) \1\ /analytics/v2/meta/\2
+        option          httpchk GET /analytics/v2/health
+        default-server  rise 1 fall 3 inter 2s fastinter 1s downinter 5s error-limit 4 on-error mark-down
+        server          local_shard01 localhost:30070 check observe layer7
+
+backend                 service_query_b
+        # Query handles queries and metadata now
+        reqrep          ^([^\ ]*)\ /analytics/v[12]/(.*) \1\ /analytics/v2/analytics/\2
+        reqrep          ^([^\ ]*)\ /meta/v[12]/(.*) \1\ /analytics/v2/meta/\2
+        option          httpchk GET /analytics/v2/health
+        server          local_shard01 localhost:30070 check observe layer7
+        server          local_shard02 localhost:31070 check rise 1 fall 30
+
+backend                 service_ingest
+        reqrep          ^([^\ ]*)\ /ingest/v[12]/(.*) \1\ /ingest/v2/\2
+        option          httpchk GET /ingest/v2/health
+        default-server  rise 1 fall 3 inter 2s fastinter 1s downinter 5s error-limit 4 on-error mark-down
+        server          local_ingest01 localhost:30060 check observe layer7
+
+backend                 service_ingest_b
+        reqrep          ^([^\ ]*)\ /ingest/v[12]/(.*) \1\ /ingest/v2/\2
+        option          httpchk GET /ingest/v2/health
+        server          local_ingest01 localhost:30060 check observe layer7
+        server          local_ingest02 localhost:31060 check rise 1 fall 30
+
+backend                 service_security
+        option          httpchk GET /security/v1/health
+        default-server  rise 1 fall 3 inter 2s fastinter 1s downinter 5s error-limit 4 on-error mark-down
+        server          local_security01 localhost:30062 check observe layer7
+
+backend                 service_security_b
+        option          httpchk GET /security/v1/health
+        server          local_security01 localhost:30062 check observe layer7
+        server          local_security02 localhost:31062 check rise 1 fall 30
+
+backend                 service_accounts
+        option          httpchk GET /accounts/v1/health
+        default-server  rise 1 fall 3 inter 2s fastinter 1s downinter 5s error-limit 4 on-error mark-down
+        server          local_accounts01 localhost:30064 check observe layer7
+
+backend                 service_accounts_b
+        option          httpchk GET /accounts/v1/health
+        server          local_accounts01 localhost:30064 check observe layer7
+        server          local_accounts02 localhost:31064 check rise 1 fall 30
+
+backend                 service_jobs
+        option          httpchk GET /jobs/v1/health
+        default-server  rise 1 fall 3 inter 2s fastinter 1s downinter 5s error-limit 4 on-error mark-down
+        server          local_jobs01 localhost:30066 check observe layer7
+
+backend                 service_jobs_b
+        option          httpchk GET /jobs/v1/health
+        server          local_jobs01 localhost:30066 check observe layer7
+        server          local_jobs02 localhost:31066 check rise 1 fall 30
+
+backend                 localapache
+        server          localapache localhost:20000
+
+listen stats :2442
+    mode                http
+    log                 global
+    stats               enable
+    stats               hide-version
+    stats               realm Haproxy\ Statistics
+    stats               uri /
+    stats               auth dev:onemalltorulethering
+    stats               admin if TRUE
+    stats               refresh 30s
+
