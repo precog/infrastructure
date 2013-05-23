@@ -27,8 +27,44 @@
 
     Header set Access-Control-Allow-Origin *
     Header set Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, X-File-Name, X-File-Size, X-File-Type, X-Precog-Path, X-Precog-Service, X-Precog-Token, X-Precog-Uuid, Accept"
-    Header set Access-Control-Allow-Method *
+    Header set Access-Control-Allow-Methods GET
+    Header append Access-Control-Allow-Methods HEAD
+    Header append Access-Control-Allow-Methods POST
+    Header append Access-Control-Allow-Methods OPTIONS
+    Header append Access-Control-Allow-Methods TRACE
+    Header append Access-Control-Allow-Methods PUT
+    Header append Access-Control-Allow-Methods DELETE
+
+    ### Compression configuration
+    # Insert filter
+    SetOutputFilter DEFLATE
+
+    # Netscape 4.x has some problems...
+    BrowserMatch ^Mozilla/4 gzip-only-text/html
+
+    # Netscape 4.06-4.08 have some more problems
+    BrowserMatch ^Mozilla/4\.0[678] no-gzip
+
+    # MSIE masquerades as Netscape, but it is fine
+    BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+
+    # Don't compress images
+    SetEnvIfNoCase Request_URI \.(?:gif|jpe?g|png)$ no-gzip dont-vary
+
+    ### Expire configuration
+    # enable expirations
+    ExpiresActive On
+
+    # expire images after a month in the client's cache
+    ExpiresByType image/* "access plus 1 month"
+
+    # Text documents are good for a week from the time they were changed
+    ExpiresByType text/* "modification plus 1 week"
+
   </Directory>
+
+  # Make legacy URLs work still
+  Alias /ide <%= @params[:docroot] %>
   
   <Directory />
     Options FollowSymLinks
@@ -46,17 +82,4 @@
   LogLevel info
   ErrorLog <%= node[:apache][:log_dir] %>/<%= @params[:name] %>-error.log
   CustomLog <%= node[:apache][:log_dir] %>/<%= @params[:name] %>-access.log combined
-
-#  RewriteEngine On
-#  RewriteLog <%= node[:apache][:log_dir] %>/<%= @application_name %>-rewrite.log
-#  RewriteLogLevel 0
-#
-#  # Canonical host, <%= @params[:server_name] %>
-#  RewriteCond %{HTTP_HOST}   !^<%= @params[:server_name] %> [NC]
-#  RewriteCond %{HTTP_HOST}   !^$
-#  RewriteRule ^/(.*)$        http://<%= @params[:server_name] %>/$1 [L,R=301]
-#
-#  RewriteCond %{DOCUMENT_ROOT}/system/maintenance.html -f
-#  RewriteCond %{SCRIPT_FILENAME} !maintenance.html
-#  RewriteRule ^.*$ /system/maintenance.html [L]
 </VirtualHost>
