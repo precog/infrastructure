@@ -153,7 +153,7 @@ backend                 service_query
         reqrep          ^([^\ ]*)\ /analytics/v1/(.*) \1\ /analytics/v2/analytics/\2
         reqrep          ^([^\ ]*)\ /meta/v1/(.*) \1\ /analytics/v2/meta/\2
         option          httpchk GET /analytics/v2/health
-        default-server  rise 1 fall 3 inter 2s fastinter 1s downinter 5s error-limit 4 on-error mark-down
+        default-server  rise 1 fall 3 inter 2s fastinter 1s downinter 5s error-limit 4 on-error mark-down maxconn 15
         server          local_shard01 localhost:30070 check observe layer7
         server          local_shard02 localhost:31070 check observe layer7
 
