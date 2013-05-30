@@ -10,6 +10,14 @@ include_recipe "nginx::repo"
 include_recipe "nginx"
 include_recipe "nginx::rrd"
 include_recipe "precog::nginxcerts"
+include_recipe "nodejs"
+
+directory '/var/cache/nginx/proxy_cache' do
+  owner 'www-data'
+  group 'root'
+  mode "700"
+  recursive true
+end
 
 directory '/var/www/precogsite' do
   owner "ubuntu"
@@ -29,6 +37,30 @@ directory '/var/www/precogsite/shared' do
   mode  "2775"
 end
 
+directory '/var/www/nodejs' do
+  owner "ubuntu"
+  group "www-data"
+  mode  "2775"
+end
+
+directory '/var/www/nodejs/releases' do
+  owner "ubuntu"
+  group "www-data"
+  mode  "2775"
+end
+
+directory '/var/www/nodejs/shared' do
+  owner "ubuntu"
+  group "www-data"
+  mode  "2775"
+end
+
+directory '/var/log/nodejs' do
+  owner 'www-data'
+  group 'www-data'
+  mode "775"
+end
+
 directory '/var/www/precogsite/shared/apidocs' do
   owner "ubuntu"
   group "www-data"
@@ -46,7 +78,7 @@ end
 directory '/etc/nginx/redirects.d' do
   owner 'root'
   group 'root'
-  mode 0755
+  mode '755'
 end
 
 link '/etc/nginx/redirects.d/staticsite.conf' do
@@ -57,7 +89,7 @@ template "#{node['nginx']['dir']}/sites-available/staticsite" do
   source "staticsite.erb"
   owner "root"
   group "root"
-  mode 00644
+  mode '644'
   notifies :reload, 'service[nginx]'
 end
 
@@ -69,12 +101,18 @@ template "#{node['nginx']['dir']}/sites-available/staticsite-ssl" do
   source "staticsitessl.erb"
   owner "root"
   group "root"
-  mode 00644
+  mode '644'
   notifies :reload, 'service[nginx]'
 end
 
 nginx_site 'staticsite-ssl' do
   enable true
+end
+
+cookbook_file '/etc/init/nodejs.conf' do
+  owner 'root'
+  group 'root'
+  mode '644'
 end
 
 munin_plugin "nginx_combined_" do
