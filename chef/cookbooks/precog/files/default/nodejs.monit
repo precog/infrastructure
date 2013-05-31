@@ -1,0 +1,12 @@
+check process nodejs_instance1 with pidfile /var/run/nodejs.instance1.pid
+  start program = "/sbin/start nodejs N=1"
+  stop program  = "/sbin/stop nodejs N=1"
+  if failed port 29001 protocol HTTP with timeout 15 seconds for 3 cycles then restart
+  if 3 restarts within 10 cycles then timeout
+
+check process nodejs_instance2 with pidfile /var/run/nodejs.instance2.pid
+  start program = "/sbin/start nodejs N=2"
+  stop program  = "/sbin/stop nodejs N=2"
+  if failed port 29002 protocol HTTP with timeout 15 seconds for 3 cycles then restart
+  if 3 restarts within 10 cycles then timeout
+

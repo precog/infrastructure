@@ -124,3 +124,8 @@ munin_plugin "nginx_memory" do
   create_file true
 end
 
+cookbook_file "/etc/monit/conf.d/nodejs.monit" do
+  mode "0644"
+  notifies :restart, resources(:service => "monit")
+end
+
