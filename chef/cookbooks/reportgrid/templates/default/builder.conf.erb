@@ -4,7 +4,21 @@
   ServerAlias <% @params[:server_aliases][1..-1].each do |a| %><%= "#{a}" %> <% end %>
   DocumentRoot <%= @params[:docroot] %>
   RewriteEngine On
-  
+
+  # do not allow .git version control files to be issued
+  <Directorymatch "^/.*/\.git+/">
+    Order deny,allow
+    Deny from all
+  </Directorymatch>
+  <Files ~ "^\.git">
+      Order allow,deny
+      Deny from all
+  </Files>
+  <Files "fabfile.py">
+      Order allow,deny
+      Deny from all
+  </Files>
+
   <Directory <%= @params[:docroot] %>>
     Options FollowSymLinks
     AllowOverride Limit FileInfo

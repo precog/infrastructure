@@ -16,11 +16,13 @@ include_recipe "s3tools"
 
 directory "#{node[:precog][:builder][:root]}" do
   recursive true
-  owner "www-data"
-  mode  "755"
+  owner "ubuntu"
+  group "www-data"
+  mode  "6755"
 end
 
 cron "pull_s3_builder" do
+  action :delete
   minute "*/5"
   command "mkdir -p /tmp/builderstage && s3cmd -c /root/.s3cfg --delete-removed --no-progress sync #{node[:precog][:builder][:s3url]} /tmp/builderstage 2>&1 >/dev/null | egrep -v 'is a directory|WARNING'; chmod -R g+w /tmp/builderstage && chgrp -R www-data /tmp/builderstage && rsync -aq --delete --delay-updates /tmp/builderstage/ #{node[:precog][:builder][:root]}"
 end
@@ -28,7 +30,7 @@ end
 web_app "builder" do
   server_name node['fqdn']
   server_aliases ["builder.reportgrid.com", "devbuilder.reportgrid.com"]
-  docroot "#{node[:precog][:builder][:root]}/"
+  docroot "#{node[:precog][:builder][:root]}/current/"
   template "builder.conf.erb"
 end
 
