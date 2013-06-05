@@ -1,12 +1,21 @@
+proxy_cache_path  /var/cache/nginx/proxy_cache levels=1:2 keys_zone=one:8m max_size=3000m inactive=600m;
+#proxy_temp_path /var/tmp;
+upstream nodejs_upstream {
+        server 127.0.0.1:29001;
+        server 127.0.0.1:29002;
+        keepalive 64;
+}
+
+
 server {
-       	listen 443 default;
+        listen 443 default;
 
         root /var/www/precogsite/current;
         index index.html index.htm;
 
-	server_name www.precog.com *.precog.com;
+        server_name www.precog.com *.precog.com;
 
-	include redirects.d/staticsite.conf;
+        include redirects.d/staticsite.conf;
 
         ssl on;
         ssl_certificate /etc/nginx/ssl/precog.cert;
@@ -25,6 +34,22 @@ server {
                 expires 14d;
         }
 
+        location /nodejs {
+                proxy_redirect off;
+                proxy_set_header X-Real-IP $remote_addr;
+                #proxy_set_header X-Forwarder-For $http_x_cluster_client_ip;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+                proxy_set_header Host $http_host;
+                proxy_set_header X-NginX-Proxy true;
+                proxy_set_header Connection "";
+                proxy_http_version 1.1;
+                proxy_cache one;
+                proxy_cache_key node$request_uri$scheme;
+                proxy_next_upstream error timeout http_503;
+                proxy_pass http://nodejs_upstream;
+        }
+
         location /apidocs {
                 autoindex on;
                 expires 7d;
@@ -36,8 +61,8 @@ server {
                 try_files $uri $uri/ =404;
         }
 
-	access_log  <%= node['nginx']['log_dir'] %>/ssl-precogsite-access.log;
-	error_log  <%= node['nginx']['log_dir'] %>/ssl-precogsite-error.log;
+        access_log  <%= node['nginx']['log_dir'] %>/ssl-precogsite-access.log;
+        error_log  <%= node['nginx']['log_dir'] %>/ssl-precogsite-error.log;
 
         error_page 404 /site/404/index.html;
         error_page 500 502 503 504 /site/5xx/index.html;
