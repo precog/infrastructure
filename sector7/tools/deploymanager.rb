@@ -64,7 +64,7 @@ end
 begin
   case command.downcase
   when "addservice"
-    
+
     if ARGV.length != 1 then
       puts "Usage: addService <service name>"
     else
@@ -72,7 +72,7 @@ begin
     end
 
   when "listconfigs" then
-    
+
     if ARGV.length < 1 or ARGV.length > 2 then
       puts "Usage: listConfigs <service name> [detail|latest]"
     else
@@ -85,7 +85,7 @@ begin
       puts "Configs: "
 
       if ARGV[1] == "latest" and configs.length > 0 then configs = [configs.select{|c| c.rejected == false }[0]] end
-      
+
       configs.each do |config|
         tag_string = if config.tag != nil then
                        "(tag #{config.tag})"
@@ -94,19 +94,19 @@ begin
                      end
 
         puts "  #{config.name}-#{config.serial} #{tag_string} : stable=#{config.stable}, rejected=#{config.rejected}, deployed=#{config.deployed.size}, deploying=#{config.deploying.size}, failed=#{config.failed.size}"
-        
+
         if ARGV.length == 2 then
           config.hooks.each do |k,v|
             sym = if v.symlink then " => #{v.symlink}" end
             puts "    #{k} = #{v.source}#{sym}"
           end
-          
+
           puts "    Files:"
           config.files.sort{|a,b| a.source <=> b.source}.each do |file|
             sym = if file.symlink then " => #{file.symlink}" end
             puts "      #{file.source}#{sym}"
           end
-          
+
           if config.deployed.size > 0 then
             puts "    Successfully deployed on:"
             config.deployed.sort{|a,b| a <=> b}.each {|d| puts "      #{d}" }
@@ -129,7 +129,7 @@ begin
               []
             end
           }.flatten
-          
+
           if running_hosts.length > 0 then
             puts "    Currently running on:"
             puts running_hosts.sort{|a,b| a <=> b}.map{|h| "      #{h}\n" }
@@ -184,7 +184,7 @@ begin
         end
       end
     end
-    
+
   when "addconfig"
 
     if ARGV.length < 1 then
@@ -197,10 +197,10 @@ tag=<tag name> - specify a tag for this config
 stable=<stable value> specify true or false to mark the config as stable (defaults to true)
 
 Hooks:
-preinstall=<source file|remove>  
-postinstall=<source file|remove> 
-preremove=<source file|remove>   
-postremove=<source file|remove>  
+preinstall=<source file|remove>
+postinstall=<source file|remove>
+preremove=<source file|remove>
+postremove=<source file|remove>
 
 Setting a hook to a S3 URL sets the hook, setting to "remove" will remove the hook
 
@@ -260,14 +260,14 @@ EOH
           puts "Missing data after '=' in \"#{arg}\""
           exit(-2)
         end
-        
+
         if not value then
           # this is a simple file
           source, mode = key.split(",")
 
           config["files"] << uploader.file_for(service_name,source, nil, mode, false, s3_root)
         else
-          # Either a symlinked file, tag, or hook. 
+          # Either a symlinked file, tag, or hook.
           source, mode = value.split(",")
 
           if hooknames.has_key?(key) then
@@ -394,4 +394,5 @@ EOH
   end
 rescue => e
   puts e.message
+  exit(1)
 end
