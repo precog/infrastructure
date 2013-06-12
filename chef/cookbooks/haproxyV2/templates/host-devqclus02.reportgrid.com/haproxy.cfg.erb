@@ -50,6 +50,7 @@ frontend                http
         acl             bad_path path_beg /w00tw00t
 
         acl             ANALYTICS_PATH path_beg /analytics/v1
+        acl             ANALYSIS_PATH path_beg /analysis/v1
         acl             META_PATH path_beg /meta/v1
         acl             DATA_PATH path_beg /data/v1
         acl             INGEST_PATH path_beg /ingest/v1
@@ -81,8 +82,8 @@ frontend                http
         use_backend     service_accounts_b  if DEVQCLUSB_HOST ACCOUNTS_PATH HAS_SSL or DEVQCLUSB_HOST ACCOUNTS_HEALTH
         use_backend     service_accounts    if ACCOUNTS_PATH HAS_SSL or ACCOUNTS_HEALTH
 
-        use_backend     service_query_b     if DEVQCLUSB_HOST ANALYTICS_PATH or DEVQCLUSB_HOST META_PATH or DEVQCLUSB_HOST DATA_PATH or DEVQCLUSB_HOST ACCOUNTS_HEALTH
-        use_backend     service_query       if ANALYTICS_PATH or META_PATH or DATA_PATH or ACCOUNTS_HEALTH
+        use_backend     service_query_b     if DEVQCLUSB_HOST ANALYTICS_PATH or DEVQCLUSB_HOST META_PATH or DEVQCLUSB_HOST DATA_PATH or DEVQCLUSB_HOST ANALYSIS_PATH or DEVQCLUSB_HOST ACCOUNTS_HEALTH
+        use_backend     service_query       if ANALYTICS_PATH or META_PATH or DATA_PATH or ANALYSIS_PATH or ACCOUNTS_HEALTH
 
         use_backend     service_jobs_b      if DEVQCLUSB_HOST JOBS_PATH or DEVQCLUSB_HOST JOBS_HEALTH
         use_backend     service_jobs        if JOBS_PATH or JOBS_HEALTH
@@ -108,6 +109,7 @@ frontend                http
 backend                 service_query
         # Query handles queries and metadata now
         reqrep          ^([^\ ]*)\ /analytics/v[12]/(.*) \1\ /analytics/v2/analytics/\2
+        reqrep          ^([^\ ]*)\ /analysis/v[12]/(.*) \1\ /analytics/v2/analysis/\2
         reqrep          ^([^\ ]*)\ /meta/v[12]/(.*) \1\ /analytics/v2/meta/\2
         reqrep          ^([^\ ]*)\ /data/v[12]/(.*) \1\ /analytics/v2/data/\2
         option          httpchk GET /analytics/v2/health
@@ -117,6 +119,7 @@ backend                 service_query
 backend                 service_query_b
         # Query handles queries and metadata now
         reqrep          ^([^\ ]*)\ /analytics/v[12]/(.*) \1\ /analytics/v2/analytics/\2
+        reqrep          ^([^\ ]*)\ /analysis/v[12]/(.*) \1\ /analytics/v2/analysis/\2
         reqrep          ^([^\ ]*)\ /meta/v[12]/(.*) \1\ /analytics/v2/meta/\2
         reqrep          ^([^\ ]*)\ /data/v[12]/(.*) \1\ /analytics/v2/data/\2
         option          httpchk GET /analytics/v2/health
