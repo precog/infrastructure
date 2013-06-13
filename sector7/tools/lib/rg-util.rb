@@ -14,12 +14,26 @@ class Util
   end
 
   def self.valid_hash (target, url, s3cfg, log)
-    url_hash = `s3cmd --config #{s3cfg} info #{url} | awk '/MD5 sum/{print $3}' 2> /dev/null`.strip
+    sleep = 1
+    count = 10
 
-    if $? != 0 then
+    begin
+      url_hash = `s3cmd --config #{s3cfg} info #{url} | awk '/MD5 sum/{print $3}' 2> /dev/null`.strip
+
+      if $? != 0 then
+        count = 0
+        url_hash = ""
+      elsif url_hash.length == 0 then
+        sleep(sleep)
+        sleep = sleep * 2
+        count = count - 1
+      end
+    end while url_hash.length == 0 && count > 0
+
+    if url_hash.length == 0 then
       raise "Unable to obtain hash for #{url}"
     end
-    
+
     file_hash = Digest::MD5.hexdigest(IO.read(target))
 
     log.debug("Comparing hash on #{target} to #{url}")
